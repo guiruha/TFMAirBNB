@@ -22,7 +22,11 @@ for i in range(1, len(archives)):
     df = df.append(pd.read_csv(archives[i]))
    
 df.drop(['number_of_reviews_ltm', 'license', 'Unnamed: 0', 'requires_license'], axis = 1, inplace = True)
-    
+df['date'] = pd.to_datetime(df['date'])
+df['Year'] = df['date'].dt.year
+df['Month'] = df['date'].dt.month    
+df['Day'] = df['date'].dt.day 
+
 df.groupby(['date', 'id'])['goodprice'].count()[df.groupby(['date', 'id'])['goodprice'].count()>1]
 
 df.drop_duplicates(subset = ['date', 'id'], inplace = True)
@@ -93,6 +97,7 @@ plt.xticks(df.groupby('date')['PricePNight'].mean().index, rotation = 75)
 plt.tight_layout()
 
 df['LogPricePNight'] = np.log(df['PricePNight'])
+df.drop(['goodprice'], inplace = True)
 
 # Pareix que a partir de 12 llits son outliers respecte al preu amb prou Leverage
 
@@ -116,7 +121,7 @@ plt.tight_layout()
 
 np.corrcoef(df['bedrooms'], df['bathrooms'])
 
-corrcolumns = list(df.dtypes[df.dtypes != 'object'].index)
+corrcolumns = list(df.dtypes[(df.dtypes == 'float') | (df.dtypes == 'int')].index)
 
 matrixcorrA = df[corrcolumns[1:21]].corr()
 
@@ -130,7 +135,7 @@ matrixcorrC = df[corrcolumns[41:]].corr()
 
 sns.heatmap(matrixcorrC, vmin = -1, vmax = 1, cmap = "viridis", linecolor = "black")
 
-fig, ax = plt.subplots(1, 1, figsize = (30, 30))
+fig, ax = plt.subplots(1, 1, figsize = (35, 30))
 sns.heatmap(df[corrcolumns[1:]].corr(), vmin = -1, vmax = 1, center = 0, cmap = "RdBu", ax = ax, annot = True,  annot_kws = {"size": 8})
 plt.show()
 
@@ -138,7 +143,7 @@ plt.show()
 mask = np.zeros_like(df[corrcolumns[1:]].corr())
 mask[np.triu_indices_from(mask)] = True
 fig, ax = plt.subplots(1, 1, figsize = (35, 30))
-sns.heatmap(df[corrcolumns[1:]].corr(), vmin = -1, vmax = 1, center = 0, mask = mask, cmap = "RdBu", ax = ax, annot = True,  annot_kws = {"size": 8})
+sns.heatmap(round(df[corrcolumns[1:]].corr(), 3), vmin = -1, vmax = 1, center = 0, mask = mask, cmap = "RdBu", ax = ax, annot = True,  annot_kws = {"size": 8})
 plt.show()
 
 from sklearn.linear_model import LinearRegression
@@ -157,9 +162,11 @@ lineareg.fit(X_train, y_train)
 lineareg.score(X_test, y_test)
 
 # HO FAIG AMB TOTES LES VARIABLES
-X_total = df[corrcolumns[1:-3]].values
+atricompl = pd.Series(corrcolumns)[pd.Series(corrcolumns).str.contains('rice') == False].tolist()
 
-X_train, X_test, y_train, y_test = train_test_split(X_total, y, test_size = 0.3, random_state = 1997)
+X = df[atricompl]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 1997)
 
 lineareg = LinearRegression()
 
@@ -175,19 +182,60 @@ ridreg.fit(X_train, y_train)
 
 ridreg.score(X_test, y_test)
 
-for n,v in zip(corrcolumns[1:-3], lassoreg.coef_):
-    print('{} -> {}'.format(n, v))
-    
-# UTILITZE NOMÉS ELS ATRIBUTS DE LA RIDGE
+ridgeatributos = []
+for n,v in zip(atricompl, ridreg.coef_):
+    if np.abs(v) > 0.01:
+        ridgeatributos.append(n)
 
-X = df[['host_is_superhost', 'host_has_profile_pic', 'cleaning_fee', 'guests_included', 'minimum_nights', 'availability_365', 'number_of_reviews', 'review_scores_accuracy']]
+X = df[ridgeatributos].values
 y = df['LogPricePNight'].values
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 1997)
 
-lineareg = LinearRegression()
+ridatrreg = LinearRegression()
+ridatrreg.fit(X_train, y_train)
 
-lineareg.fit(X_train, y_train)
+ridatrreg.score(X_test, y_test)
 
-lineareg.score(X_test, y_test)
-# No té massa sentit el que diu la RIDGE
+# VAIG A PROBRAR UNA ELASTIC NET
+
+from sklearn.linear_model import ElasticNet
+
+atricompl = pd.Series(corrcolumns)[pd.Series(corrcolumns).str.contains('rice') == False].tolist()
+
+X = df[atricompl].values
+y = df['PricePNight']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 1997)
+
+LinEN = ElasticNet()
+LinEN.fit(X_train, y_train)
+
+atributos = []
+for atr, coef in zip(atricompl, LinEN.coef_):
+    if np.abs(v) > 0:
+        atributos.append(atr)
+
+serieatributos = pd.DataFrame(zip(atricompl, LinEN.coef_, np.abs(LinEN.coef_)), columns = ['Atributos', 'Coeficiente', 'ValorAbsoluto']).set_index('Atributos').sort_values('ValorAbsoluto', ascending = False)
+serieatributos[:30]
+
+
+atributosfinal = list(serieatributos[:30].index)
+
+X = df[atributosfinal].values
+y = df['LogPricePNight'].values
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 1997)
+
+finallinreg = LinearRegression()
+finallinreg.fit(X_train, y_train)
+
+finallinreg.score(X_test, y_test) # Esta es la millor regresión que hi ha per ara
+
+y_pred = finallinreg.predict(X_test)
+
+from sklearn.metrics import mean_squared_error
+
+np.sqrt(mean_squared_error(y_test, y_pred))
+
+np.sqrt(mean_squared_error(np.exp(y_test), np.exp(y_pred)))
