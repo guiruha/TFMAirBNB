@@ -21,15 +21,15 @@ df = pd.read_csv(archives[0])
 for i in range(1, len(archives)):
     df = df.append(pd.read_csv(archives[i]))
    
-df.drop(['number_of_reviews_ltm', 'license', 'Unnamed: 0', 'requires_license'], axis = 1, inplace = True)
+df.drop(['number_of_reviews_ltm', 'license', 'Unnamed: 0', 'requires_license', 'availability_365'], axis = 1, inplace = True)
 df['date'] = pd.to_datetime(df['date'])
 df['Year'] = df['date'].dt.year
 df['Month'] = df['date'].dt.month    
 df['Day'] = df['date'].dt.day 
 
-df.groupby(['date', 'id'])['goodprice'].count()[df.groupby(['date', 'id'])['goodprice'].count()>1]
+df.groupby(['id', 'date','goodprice'])['goodprice'].count()
 
-df.drop_duplicates(subset = ['date', 'id'], inplace = True)
+df.drop_duplicates(subset = ['date', 'id', 'goodprice'], inplace = True)
 
 df.drop('price', axis = 1, inplace = True)
 
@@ -97,8 +97,12 @@ plt.xticks(df.groupby('date')['PricePNight'].mean().index, rotation = 75)
 plt.tight_layout()
 
 df['LogPricePNight'] = np.log(df['PricePNight'])
-df.drop(['goodprice'], inplace = True)
+df.drop(['goodprice'], axis = 1, inplace = True)
 
+fig, ax = plt.subplots(1, 1, figsize = (20, 10))
+plt.plot(df.groupby('date')['LogPricePNight'].mean().index, df.groupby('date')['LogPricePNight'].mean(), color = "red")
+plt.xticks(df.groupby('date')['LogPricePNight'].mean().index, rotation = 75)
+plt.tight_layout()
 # Pareix que a partir de 12 llits son outliers respecte al preu amb prou Leverage
 
 fig, ax = plt.subplots(1, 1, figsize = (15, 10))
@@ -121,30 +125,76 @@ plt.tight_layout()
 
 np.corrcoef(df['bedrooms'], df['bathrooms'])
 
-corrcolumns = list(df.dtypes[(df.dtypes == 'float') | (df.dtypes == 'int')].index)
+# ARA FAIG UN POC DE FEATURE ENGINEERING I FEATURE SELECTION
+df.dtypes[df.dtypes == 'object']
+columnselection = ["host_response_time", "neighbourhood_group_cleansed", "property_type", "room_type", "bed_type", "cancellation_policy"]
+X_raw = pd.get_dummies(df, columns = columnselection)
 
-matrixcorrA = df[corrcolumns[1:21]].corr()
 
-sns.heatmap(matrixcorrA, vmin = -1, vmax = 1, cmap = "viridis", linecolor = "black")
+factorcolumns = [x for x in list(X_raw.dtypes[(X_raw.dtypes == 'int')| (X_raw.dtypes == 'uint8')].index) if 0 in X_raw[x].value_counts().index]
 
-matrixcorrB = df[corrcolumns[21:41]].corr()
+X_raw[factorcolumns] = X_raw[factorcolumns].astype('category')
 
-sns.heatmap(matrixcorrB, vmin = -1, vmax = 1, cmap = "viridis", linecolor = "black")
 
-matrixcorrC = df[corrcolumns[41:]].corr()
+corrcolumns = list(X_raw.dtypes[(X_raw.dtypes == 'float') | (X_raw.dtypes == 'int')].index)
 
-sns.heatmap(matrixcorrC, vmin = -1, vmax = 1, cmap = "viridis", linecolor = "black")
+correlations = X_raw[corrcolumns].corr()
 
-fig, ax = plt.subplots(1, 1, figsize = (35, 30))
-sns.heatmap(df[corrcolumns[1:]].corr(), vmin = -1, vmax = 1, center = 0, cmap = "RdBu", ax = ax, annot = True,  annot_kws = {"size": 8})
+colineales = []
+for column in correlations.columns:
+    for row in correlations.index:
+        if (np.abs(correlations.loc[row, column]) > 0.7) & (correlations.loc[row, column] !=  1):
+            print(row, 'y', column, 'tienen una correlación de', correlations.loc[row, column])
+            colineales.append(row)
+selection = ['bedrooms', 'beds', 'accommodates', 'review_scores_accuracy', 'review_scores_value', 'review_scores_rating']
+for column in selection:
+    print(column, 'LogPricePNight', X_raw['LogPricePNight'].corr(X_raw[column]))
+
+np.corrcoef(X_raw['review_scores_value'], X_raw['review_scores_accuracy']) 
+                  
+X_raw.drop(['review_scores_rating', 'beds', 'bedrooms'], axis = 1, inplace = True)
+
+corrcolumns = list(X_raw.dtypes[(X_raw.dtypes == 'float') | (X_raw.dtypes == 'int')].index)
+fig, ax = plt.subplots(1, 1, figsize = (50, 35))
+sns.heatmap(X_raw[corrcolumns[1:]].corr(), vmin = -1, vmax = 1, center = 0, cmap = "RdBu", ax = ax, annot = True,  annot_kws = {"size": 8})
 plt.show()
 
 # EL DE BAIX ES PER FER UNA MATRIU TRIANGULAR INFERIOR PER ESTALVIAR LA PART SUPERIOR QUE ES INNECESARIA
-mask = np.zeros_like(df[corrcolumns[1:]].corr())
+mask = np.zeros_like(X_raw[corrcolumns[1:]].corr())
 mask[np.triu_indices_from(mask)] = True
 fig, ax = plt.subplots(1, 1, figsize = (35, 30))
-sns.heatmap(round(df[corrcolumns[1:]].corr(), 3), vmin = -1, vmax = 1, center = 0, mask = mask, cmap = "RdBu", ax = ax, annot = True,  annot_kws = {"size": 8})
+sns.heatmap(round(X_raw[corrcolumns[1:]].corr(), 3), vmin = -1, vmax = 1, center = 0, mask = mask, cmap = "RdBu", ax = ax, annot = True,  annot_kws = {"size": 8})
 plt.show()
+
+
+# ARA CORRELACIONS ENTRE VARIABLES CATEGORIQUES
+catpar = [(i,j) for i in X_raw.dtypes[X_raw.dtypes == "category"].index.values for j in X_raw.dtypes[X_raw.dtypes == "category"].index.values]
+
+phi, p_values = [], []
+
+import scipy
+
+for c in catpar:
+    if c[0] != c[1]:
+        chistest = scipy.stats.chi2_contingency(pd.crosstab(X_raw[c[0]], X_raw[c[1]]))
+        n = pd.crosstab(X_raw[c[0]], X_raw[c[1]]).sum().sum()
+        phival = np.sqrt(chistest[0]/n)
+        phi.append(phival)
+    else:
+        phi.append(1)
+
+len(X_raw.dtypes[X_raw.dtypes == "category"].index.values)
+
+phi2 = np.array(phi).reshape(58, 58)
+phi2 = pd.DataFrame(phi2, index = X_raw.dtypes[X_raw.dtypes == "category"].index.values, columns = X_raw.dtypes[X_raw.dtypes == "category"].index.values)
+
+fig, ax = plt.subplots(1, 1, figsize = (35, 30))
+sns.heatmap(round(phi2, 3), vmin = -1, vmax = 1, center = 0, cmap = "RdBu", ax = ax, annot = True,  annot_kws = {"size": 8})
+plt.show()
+
+for column in X_raw.dtypes[X_raw.dtypes == "category"].index.values:
+    print(column, 'LogPricePNight', scipy.stats.pointbiserialr(X_raw[column], X_raw['LogPricePNight'])[0])
+
 
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
@@ -160,11 +210,13 @@ lineareg = LinearRegression()
 lineareg.fit(X_train, y_train)
 
 lineareg.score(X_test, y_test)
+X_raw.dtypes.
+selection = list(X_raw.dtypes[(X_raw.dtypes != 'O') & (X_raw.columns != 'date')].index)
 
+atricompl = pd.Series(selection)[pd.Series(selection).str.contains('rice') == False].tolist()
+
+X = X_raw[atricompl].values
 # HO FAIG AMB TOTES LES VARIABLES
-atricompl = pd.Series(corrcolumns)[pd.Series(corrcolumns).str.contains('rice') == False].tolist()
-
-X = df[atricompl]
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 1997)
 
@@ -184,7 +236,7 @@ ridreg.score(X_test, y_test)
 
 ridgeatributos = []
 for n,v in zip(atricompl, ridreg.coef_):
-    if np.abs(v) > 0.01:
+    if np.abs(v) > 0:
         ridgeatributos.append(n)
 
 X = df[ridgeatributos].values
@@ -197,14 +249,15 @@ ridatrreg.fit(X_train, y_train)
 
 ridatrreg.score(X_test, y_test)
 
+serieatributos = pd.DataFrame(zip(ridgeatributos, ridreg.coef_, np.abs(ridreg.coef_)), columns = ['Atributos', 'Coeficiente', 'ValorAbsoluto']).set_index('Atributos').sort_values('ValorAbsoluto', ascending = False)
+serieatributos[:30]
+
 # VAIG A PROBRAR UNA ELASTIC NET
 
 from sklearn.linear_model import ElasticNet
 
-atricompl = pd.Series(corrcolumns)[pd.Series(corrcolumns).str.contains('rice') == False].tolist()
-
 X = df[atricompl].values
-y = df['PricePNight']
+y = df['LogPricePNight'].values
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 1997)
 
@@ -216,14 +269,14 @@ for atr, coef in zip(atricompl, LinEN.coef_):
     if np.abs(v) > 0:
         atributos.append(atr)
 
-serieatributos = pd.DataFrame(zip(atricompl, LinEN.coef_, np.abs(LinEN.coef_)), columns = ['Atributos', 'Coeficiente', 'ValorAbsoluto']).set_index('Atributos').sort_values('ValorAbsoluto', ascending = False)
+serieatributos = pd.DataFrame(zip(atributos, LinEN.coef_, np.abs(LinEN.coef_)), columns = ['Atributos', 'Coeficiente', 'ValorAbsoluto']).set_index('Atributos').sort_values('ValorAbsoluto', ascending = False)
 serieatributos[:30]
 
 
 atributosfinal = list(serieatributos[:30].index)
 
-X = df[atributosfinal].values
-y = df['LogPricePNight'].values
+X = X_raw[atributosfinal].values
+y = X_raw['LogPricePNight'].values
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 1997)
 
@@ -239,3 +292,15 @@ from sklearn.metrics import mean_squared_error
 np.sqrt(mean_squared_error(y_test, y_pred))
 
 np.sqrt(mean_squared_error(np.exp(y_test), np.exp(y_pred)))
+
+# VAIG A PROBAR AMB STATSMODELS
+
+import statsmodels.regression.linear_model as sm
+X = df[atricompl].values
+y = df['LogPricePNight']
+X2 = np.append(arr = np.ones((len(X), 1)).astype(int), values = X, axis = 1)
+
+X_train, X_test, y_train, y_test = train_test_split(X2, y, test_size = 0.3, random_state = 1997)
+reg_ols = sm.OLS(endog = y_train, exog = X_train).fit()
+
+reg_ols.summary()
