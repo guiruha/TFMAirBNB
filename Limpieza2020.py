@@ -11,7 +11,7 @@ import numpy as np
 
 
 df = pd.read_csv('~/DadesAirBNB/Listings/March2020.csv')
-
+df = df.append(pd.read_csv('~/DadesAirBNB/Listings/October2019.csv'))
 
 df.drop(df.columns[df.columns.str.endswith('url')], axis = 1, inplace = True)
 
@@ -97,7 +97,7 @@ for column in df.columns[df.columns.str.startswith('review')]:
     df.dropna(subset = [column], inplace = True)
 
 dropC = ['calendar_updated', 'calendar_last_scraped', 'host_location', 'last_review', 'last_scraped', 
-         'neighbourhood', 'neighbourhood_cleansed']
+         'neighbourhood', 'neighbourhood_cleansed', 'host_acceptance_rate']
 df.drop(dropC, axis = 1, inplace = True)
 
 df.dropna(subset = ['host_since'], inplace = True)
@@ -119,20 +119,27 @@ dicotmicol = ['instant_bookable', 'is_business_travel_ready', 'is_location_exact
 for column in dicotmicol:
     df[column] = df[column].apply(lambda x: 1 if x=='t' else 0)
 
-DropC = ['host_id', 'first_review']
+DropC = ['host_id', 'first_review', 'license', 'number_of_reviews_ltm']
 df.drop(DropC, axis = 1, inplace = True)
 
 cal = pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_March2020.csv")
+cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_October2019.csv"), ignore_index = True)
 
 cal['date'] = pd.to_datetime(cal['date'])
 
-cal = cal[(cal['date'].dt.day == 1) | (cal['date'].dt.day == 8)| (cal['date'].dt.day == 15)| (cal['date'].dt.day == 21)][['listing_id', 'date', 'price', 'available']]
+cal = cal[(cal['date'].dt.day == 1) | (cal['date'].dt.day == 7)| (cal['date'].dt.day == 13)| (cal['date'].dt.day == 19)| (cal['date'].dt.day == 25)| (cal['date'].dt.day == 30)]
+
+cal = cal[['listing_id', 'date', 'price', 'available']]
 
 cal.columns  = ['id', 'date', 'goodprice', 'available']
 
 cal = cal.drop_duplicates(subset = ['date', 'goodprice', 'id'])
 
 cal['goodprice'] = cal['goodprice'].str.replace('$', '').str.replace(',','').astype('float')
+
+DF = pd.merge(df, cal, how = 'inner', on = 'id')
+
+DF.drop_duplicates(subset = ['date', 'id', 'goodprice'], inplace = True)
 
 DF.to_csv('~/DadesAirBNB/df2020.csv')
 

@@ -96,7 +96,7 @@ df['LogPricePNight'] = np.log(df['PricePNight'])
 df.drop(['goodprice'], axis = 1, inplace = True)
 
 fig, ax = plt.subplots(1, 1, figsize = (20, 10))
-plt.plot(df.groupby('date')['LogPricePNight'].mean().index, df.groupby('date')['LogPricePNight'].mean(), color = "red")
+plt.plot(df.groupby('id','date')['LogPricePNight'].mean().index, df.groupby('date')['LogPricePNight'].mean(), color = "red")
 plt.xticks(df.groupby('date')['LogPricePNight'].mean().index, rotation = 75)
 plt.tight_layout()
 

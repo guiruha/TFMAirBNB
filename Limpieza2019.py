@@ -11,7 +11,7 @@ import numpy as np
 
 
 df = pd.read_csv('~/DadesAirBNB/Listings/April2019.csv')
-
+df = df.append(pd.read_csv('~/DadesAirBNB/Listings/October2018.csv'), ignore_index = True)
 
 df.drop(df.columns[df.columns.str.endswith('url')], axis = 1, inplace = True)
 
@@ -119,14 +119,17 @@ dicotmicol = ['instant_bookable', 'is_business_travel_ready', 'is_location_exact
 for column in dicotmicol:
     df[column] = df[column].apply(lambda x: 1 if x=='t' else 0)
 
-DropC = ['host_id', 'first_review']
+DropC = ['host_id', 'first_review', 'license', 'number_of_reviews_ltm']
 df.drop(DropC, axis = 1, inplace = True)
 
 cal = pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_April2019.csv")
+cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_October2018.csv"), ignore_index = True)
 
 cal['date'] = pd.to_datetime(cal['date'])
 
-cal = cal[(cal['date'].dt.day == 1) | (cal['date'].dt.day == 8)| (cal['date'].dt.day == 15)| (cal['date'].dt.day == 21)][['listing_id', 'date', 'price', 'available']]
+cal = cal[(cal['date'].dt.day == 1) | (cal['date'].dt.day == 7)| (cal['date'].dt.day == 13)| (cal['date'].dt.day == 19)| (cal['date'].dt.day == 25)| (cal['date'].dt.day == 30)]
+
+cal = cal[['listing_id', 'date', 'price', 'available']]
 
 cal.columns  = ['id', 'date', 'goodprice', 'available']
 
@@ -136,10 +139,12 @@ cal['goodprice'] = cal['goodprice'].str.replace('$', '').str.replace(',','').ast
 
 DF = pd.merge(df, cal, how = 'inner', on = 'id')
 
+DF.drop_duplicates(subset = ['date', 'id', 'goodprice'], inplace = True)
+
 DF.to_csv('~/DadesAirBNB/df2019.csv')
 
-
 # DECOMENTA PER COMPROBAR QUE LA REPARTICIÓ HA SIGUT EQUITATIVA
-#DF.groupby('date')['adjusted_price'].count()
-#DF.groupby('id')['adjusted_price'].count()
-#DF.groupby(['id', 'date'])['adjusted_price'].count()
+#DF.groupby('date')['goodprice'].count()
+#DF.groupby('id')['goodprice'].count()
+#DF.groupby(['id', 'date'])['goodprice'].count()
+
