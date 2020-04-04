@@ -27,7 +27,7 @@ df['Year'] = df['date'].dt.year
 df['Month'] = df['date'].dt.month    
 df['Day'] = df['date'].dt.day 
 df['DayOfWeek'] = df['date'].dt.weekday
-df['date'] = df['date'].dt.date
+#df['date'] = df['date'].dt.date
 df = df.sort_values('date')
 
 pricenulls = (df[df['goodprice'].isnull()]['date'].value_counts()/df['date'].value_counts()).sort_values(ascending = False)
@@ -138,7 +138,9 @@ fig, ax = plt.subplots(1, 1, figsize = (40, 15))
 sns.pointplot(df['date'], df['LogPricePNight'].rolling(50).mean())
 plt.xticks(rotation = 90)
 plt.tight_layout()
-# ANALITZEM HOST RESPONSE TIME
+
+# RESPONSE TIME
+
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
 sns.barplot(df['host_response_time'].value_counts().index, df['host_response_time'].value_counts()/df.shape[0], ax = ax[0])
 sns.pointplot(df['host_response_time'], df['PricePNight'], ax = ax[1])
@@ -146,7 +148,7 @@ sns.boxplot(df['host_response_time'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
 plt.show()
 
-# ===
+# HOST IS SUPERHOST
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
 sns.barplot(df['host_is_superhost'].value_counts().index, df['host_is_superhost'].value_counts()/df.shape[0], ax = ax[0])
@@ -155,7 +157,7 @@ sns.boxplot(df['host_is_superhost'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
 plt.show()
 
-# ===
+# HOST TOTAL LISTINGS COUNT
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
 sns.distplot(df['host_total_listings_count'], ax = ax[0])
@@ -164,7 +166,7 @@ sns.regplot(df['host_total_listings_count'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
 plt.show()
 
-# ===
+# PROFILE PIC
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
 sns.barplot(df['host_has_profile_pic'].value_counts().index, df['host_has_profile_pic'].value_counts()/df.shape[0], ax = ax[0])
@@ -173,7 +175,7 @@ sns.boxplot(df['host_has_profile_pic'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
 plt.show()
 
-# !!!
+# IDENTITY VERIFIED
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
 sns.barplot(df['host_identity_verified'].value_counts().index, df['host_identity_verified'].value_counts()/df.shape[0], ax = ax[0])
@@ -182,7 +184,7 @@ sns.boxplot(df['host_identity_verified'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
 plt.show()
 
-# !!!
+# NEIGHBOURHOOD GROUP CLEANSED
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
 sns.barplot(df['neighbourhood_group_cleansed'].value_counts().index, df['neighbourhood_group_cleansed'].value_counts()/df.shape[0], ax = ax[0])
@@ -191,7 +193,7 @@ sns.boxplot(df['neighbourhood_group_cleansed'], df['LogPricePNight'], ax = ax[2]
 plt.xticks(rotation = 45)
 plt.show()
 
-# ===
+# IS LOCATION EXACT
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
 sns.barplot(df['is_location_exact'].value_counts().index, df['is_location_exact'].value_counts()/df.shape[0], ax = ax[0])
@@ -200,7 +202,7 @@ sns.boxplot(df['is_location_exact'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
 plt.show()
 
-# !!!
+# PROPORTY TYPE
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
 sns.barplot(df['property_type'].value_counts().index, df['property_type'].value_counts()/df.shape[0], ax = ax[0])
@@ -209,7 +211,7 @@ sns.boxplot(df['property_type'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
 plt.show()
 
-# ???
+# ROOM TYPE
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
 sns.barplot(df['room_type'].value_counts().index, df['room_type'].value_counts()/df.shape[0], ax = ax[0])
@@ -220,10 +222,106 @@ plt.show()
 
 # Només Private Room i Entire Home com a dummys?
 
+# ACCOMMODATES
+
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
 sns.barplot(df['accommodates'].value_counts().index, df['accommodates'].value_counts()/df.shape[0], ax = ax[0])
 sns.pointplot(df['accommodates'], df['PricePNight'], ax = ax[1])
 sns.boxplot(df['accommodates'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
+plt.show()
+
+# AIR CONDITIONING
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['Air conditioning'].value_counts().index, df['Air conditioning'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['Air conditioning'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['Air conditioning'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+# SMOLING ALLOWED
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['Smoking allowed'].value_counts().index, df['Smoking allowed'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['Smoking allowed'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['Smoking allowed'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+# FAMILY/KID FRIENDLY
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['Family/kid friendly'].value_counts().index, df['Family/kid friendly'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['Family/kid friendly'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['Family/kid friendly'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+# HOST GREETS YOU
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['Host greets you'].value_counts().index, df['Host greets you'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['Host greets you'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['Host greets you'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+# LAPTOP FRIENDLY WORKSPACE
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['Laptop friendly workspace'].value_counts().index, df['Laptop friendly workspace'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['Laptop friendly workspace'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['Laptop friendly workspace'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+
+# VAIG A FER UN INTENT DE MAPA
+import geopandas as gpd
+from shapely.geometry.polygon import Polygon
+from shapely.geometry.multipolygon import MultiPolygon
+from shapely.geometry import Point
+
+bcn_df = gpd.read_file("/home/guillem/DadesAirBNB/BCN_UNITATS_ADM/0301100100_UNITATS_ADM_POLIGONS.json")
+
+map_df = df.drop_duplicates(subset = ['id'])[['neighbourhood_group_cleansed', 'latitude', 'longitude']]
+
+map_df['geometry'] = map_df.apply(lambda x: Point(x.longitude, x.latitude), axis = 1)
+
+map_df = gpd.GeoDataFrame(map_df, geometry = map_df.geometry)
+
+fig, ax = plt.subplots(1, 1, figsize = (20, 15))
+map_df.plot(column = 'neighbourhood_group_cleansed', cmap = 'Set3', ax = ax)
+plt.show()
+
+# https://gist.github.com/mhweber/cf36bb4e09df9deee5eb54dc6be74d26
+
+"""def explode(indata):
+    indf = gpd.GeoDataFrame.from_file(indata)
+    outdf = gpd.GeoDataFrame(columns=indf.columns)
+    for idx, row in indf.iterrows():
+        if type(row.geometry) == Polygon:
+            outdf = outdf.append(row,ignore_index=True)
+        if type(row.geometry) == MultiPolygon:
+            multdf = gpd.GeoDataFrame(columns=indf.columns)
+            recs = len(row.geometry)
+            multdf = multdf.append([row]*recs,ignore_index=True)
+            for geom in range(recs):
+                multdf.loc[geom,'geometry'] = row.geometry[geom]
+            outdf = outdf.append(multdf,ignore_index=True)
+    return outdf
+
+
+bcn_df = explode("/home/guillem/DadesAirBNB/BCN_UNITATS_ADM/0301100100_UNITATS_ADM_POLIGONS.json")
+"""
+
+bcn_df = gpd.read_file("/home/guillem/DadesAirBNB/BCN_UNITATS_ADM/0301100100_UNITATS_ADM_POLIGONS.json")
+bcn_df.to_crs(epsg = 4326, inplace = True)
+
+fig, ax = plt.subplots(1, 1, figsize = (20, 20))
+bcn_df.plot(ax = ax)
+map_df.plot(column = "neighbourhood_group_cleansed", cmap = "Set3", ax = ax, legend = True, markersize = 7, 
+            marker = 'x', edgecolor = "black")
 plt.show()
 
