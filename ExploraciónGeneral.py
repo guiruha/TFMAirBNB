@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-plt.style.use('ggplot')
+plt.style.use('fivethirtyeight')
 
 archives = !ls | grep 'df'
 
@@ -27,8 +27,8 @@ df['Year'] = df['date'].dt.year
 df['Month'] = df['date'].dt.month    
 df['Day'] = df['date'].dt.day 
 df['DayOfWeek'] = df['date'].dt.weekday
-#df['date'] = df['date'].dt.date
 df = df.sort_values('date')
+
 
 pricenulls = (df[df['goodprice'].isnull()]['date'].value_counts()/df['date'].value_counts()).sort_values(ascending = False)
 df[df['goodprice'].isnull()]['available'].value_counts()
@@ -48,19 +48,21 @@ agrupacion = df.groupby('date')['goodprice'].describe()
 
 df = df[df['Year']>2017]
 
+
 df['PricePNight'] = [price/minnight if (price > 300)&(minnight > 1) else price for price, minnight in zip(df['goodprice'], df['minimum_nights'])]
 
 df[(df['goodprice']>300)&(df['minimum_nights']>1)][['goodprice', 'minimum_nights', 'PricePNight']]
 
-df[(df['goodprice']>1200)&(df['minimum_nights']>1)]['id'].value_counts()
+df[(df['goodprice']>= 1200)&(df['minimum_nights']>1)]['id'].value_counts()
 
 def who(x):
     print('\n', df[df['id']==x]['name'].unique(), '\n')
     return 'https://www.airbnb.es/rooms/' + str(x)
 
-who(2261714)
+who(14171072)
 
-df = df[(df['goodprice']<1100)]
+df = df[(df['goodprice']<1200)]
+df = df[(df['PricePNight'] >= 8)]
 
 # EXPLORACIÓN DE LA VARIABLE DEPENDIENTE
 
@@ -70,51 +72,22 @@ plt.tight_layout()
 
 df['PricePNight'].describe()
 
-df = df[(df['PricePNight'] >= 8)]
-
 df['LogPricePNight'] = np.log(df['PricePNight'])
 df.drop(['goodprice'], axis = 1, inplace = True)
 
 df['PricePNight'].describe()
 
 normal = np.random.normal(loc = df['LogPricePNight'].mean(), scale = df['LogPricePNight'].std(), size = df['LogPricePNight'].shape[0])
-normalstand = np.random.normal(loc = df['NormPricePNight'].mean(), scale = df['NormPricePNight'].std(), size = df['NormPricePNight'].shape[0])
 
 fig, ax = plt.subplots(1, 1, figsize = (20, 10))
-sns.distplot(df['LogPricePNight'], bins = 13,)
-sns.distplot(normal, bins = 13)
+sns.distplot(df['LogPricePNight'], bins = 15)
+sns.distplot(normal, bins = 15)
 plt.tight_layout()
 
-fig, ax = plt.subplots(1, 1, figsize = (20, 10))
-sns.distplot(df.sort_values(['id', 'date'])['LogPricePNight'], bins = 13,)
-sns.distplot(normal, bins = 13)
-plt.tight_layout()
 
-fig, ax = plt.subplots(1, 1, figsize = (20, 10))
-sns.distplot(df.sort_values(['id', 'date'])['NormPricePNight'], bins = 13,)
-sns.distplot(normalstand, bins = 13)
-plt.tight_layout()
-
-import statsmodels.stats as st
 import scipy.stats as sp
 
-esta, pv = st._lilliefors(df['NormPricePNight'], dist = 'norm',   pvalmethod = 'table')
-
-print("Estadisctico = {}, pvalue = {}".format(esta, pv))
-if pv > 0.05:
-    print("Es probablemente una muestra procedente de una Normal")
-else:
-    print("No parece que proceda de una Normal")
-    
-esta, pv = sp.anderson(df['NormPricePNight'])
-
-print("Estadisctico = {}, pvalue = {}".format(esta, pv))
-if pv > 0.05:
-    print("Es probablemente una muestra procedente de una Normal")
-else:
-    print("No parece que proceda de una Normal")
-
-esta, pv = sp.normaltest(df['NormPricePNight'])
+esta, pv = sp.normaltest(df['LogPricePNight'])
 
 print("Estadisctico = {}, pvalue = {}".format(esta, pv))
 if pv > 0.05:
@@ -124,19 +97,33 @@ else:
 
 # NO SE APROXIMA A UNA NORMAL SEGONS ESTOS TEST
 
+df.set_index('date', inplace = True)
+
 fig, ax = plt.subplots(1, 1, figsize = (40, 15))
-sns.pointplot(df['date'], df['PricePNight'])
+sns.pointplot(df.index.date, df['PricePNight'], ax = ax)
 plt.xticks(rotation = 90)
 plt.tight_layout()
 
-fig, ax = plt.subplots(1, 1, figsize = (40, 15))
-sns.pointplot(df['date'], df['LogPricePNight'])
-plt.xticks(rotation = 90)
+df.groupby(df.index)['PricePNight'].describe()[df.groupby(df.index)['PricePNight'].mean() == df.groupby(df.index)['PricePNight'].mean().max()]
+
+fig, ax = plt.subplots(1, 1, figsize = (20, 13))
+plt.plot(df.resample('M')['PricePNight'].mean().index, df.resample('M')['PricePNight'].mean())
+plt.xticks(df.resample('M')['PricePNight'].mean().index, rotation = 45)
 plt.tight_layout()
 
 fig, ax = plt.subplots(1, 1, figsize = (40, 15))
-sns.pointplot(df['date'], df['LogPricePNight'].rolling(50).mean())
+sns.pointplot(df.index.date, df['LogPricePNight'])
 plt.xticks(rotation = 90)
+plt.tight_layout()
+
+fig, ax = plt.subplots(1, 1, figsize = (20, 13))
+plt.plot(df.resample('M')['LogPricePNight'].mean().index, df.resample('M')['LogPricePNight'].mean())
+plt.xticks(df.resample('M')['LogPricePNight'].mean().index, rotation = 45)
+plt.tight_layout()
+
+fig, ax = plt.subplots(1, 1, figsize = (40, 13))
+plt.plot(df.resample('W')['LogPricePNight'].mean().index, df.resample('W')['LogPricePNight'].mean())
+plt.xticks(df.resample('W')['LogPricePNight'].mean().index, rotation = 75)
 plt.tight_layout()
 
 # RESPONSE TIME
@@ -202,7 +189,7 @@ sns.boxplot(df['is_location_exact'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
 plt.show()
 
-# PROPORTY TYPE
+# PROPERTY TYPE
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
 sns.barplot(df['property_type'].value_counts().index, df['property_type'].value_counts()/df.shape[0], ax = ax[0])
@@ -231,6 +218,15 @@ sns.boxplot(df['accommodates'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
 plt.show()
 
+# BATHROOMS
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['bathrooms'].apply(lambda x: np.floor(x)).value_counts().index, df['bathrooms'].apply(lambda x: np.floor(x)).value_counts(), ax = ax[0])
+sns.pointplot(df['bathrooms'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['accommodates'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
 # AIR CONDITIONING
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
@@ -240,7 +236,7 @@ sns.boxplot(df['Air conditioning'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
 plt.show()
 
-# SMOLING ALLOWED
+# SMOKING ALLOWED
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
 sns.barplot(df['Smoking allowed'].value_counts().index, df['Smoking allowed'].value_counts()/df.shape[0], ax = ax[0])
@@ -276,52 +272,59 @@ sns.boxplot(df['Laptop friendly workspace'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
 plt.show()
 
+# 
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['Laptop friendly workspace'].value_counts().index, df['Laptop friendly workspace'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['Laptop friendly workspace'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['Laptop friendly workspace'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
 
 # VAIG A FER UN INTENT DE MAPA
 import geopandas as gpd
 from shapely.geometry.polygon import Polygon
 from shapely.geometry.multipolygon import MultiPolygon
 from shapely.geometry import Point
+import contextily as ctx
 
-bcn_df = gpd.read_file("/home/guillem/DadesAirBNB/BCN_UNITATS_ADM/0301100100_UNITATS_ADM_POLIGONS.json")
+bcn_df = gpd.read_file("/home/guillem/DadesAirBNB/neighbourhoods.geojson")
 
-map_df = df.drop_duplicates(subset = ['id'])[['neighbourhood_group_cleansed', 'latitude', 'longitude']]
+map_df = df.reset_index().drop_duplicates(subset = ['id'])[['neighbourhood_group_cleansed', 'latitude', 'longitude']]
 
 map_df['geometry'] = map_df.apply(lambda x: Point(x.longitude, x.latitude), axis = 1)
 
-map_df = gpd.GeoDataFrame(map_df, geometry = map_df.geometry)
+map_df = gpd.GeoDataFrame(map_df, geometry = map_df.geometry, crs = bcn_df.crs)
 
 fig, ax = plt.subplots(1, 1, figsize = (20, 15))
 map_df.plot(column = 'neighbourhood_group_cleansed', cmap = 'Set3', ax = ax)
 plt.show()
 
-# https://gist.github.com/mhweber/cf36bb4e09df9deee5eb54dc6be74d26
-
-"""def explode(indata):
-    indf = gpd.GeoDataFrame.from_file(indata)
-    outdf = gpd.GeoDataFrame(columns=indf.columns)
-    for idx, row in indf.iterrows():
-        if type(row.geometry) == Polygon:
-            outdf = outdf.append(row,ignore_index=True)
-        if type(row.geometry) == MultiPolygon:
-            multdf = gpd.GeoDataFrame(columns=indf.columns)
-            recs = len(row.geometry)
-            multdf = multdf.append([row]*recs,ignore_index=True)
-            for geom in range(recs):
-                multdf.loc[geom,'geometry'] = row.geometry[geom]
-            outdf = outdf.append(multdf,ignore_index=True)
-    return outdf
-
-
-bcn_df = explode("/home/guillem/DadesAirBNB/BCN_UNITATS_ADM/0301100100_UNITATS_ADM_POLIGONS.json")
-"""
-
-bcn_df = gpd.read_file("/home/guillem/DadesAirBNB/BCN_UNITATS_ADM/0301100100_UNITATS_ADM_POLIGONS.json")
-bcn_df.to_crs(epsg = 4326, inplace = True)
-
 fig, ax = plt.subplots(1, 1, figsize = (20, 20))
-bcn_df.plot(ax = ax)
-map_df.plot(column = "neighbourhood_group_cleansed", cmap = "Set3", ax = ax, legend = True, markersize = 7, 
-            marker = 'x', edgecolor = "black")
+bcn_df.plot(color = 'lightblue', ax = ax)
+map_df.plot(column = "neighbourhood_group_cleansed", cmap = "hsv", ax = ax, legend = True, markersize = 50, 
+            marker = '.')
 plt.show()
 
+map_df = map_df.to_crs(epsg=3857)
+bcn_df = bcn_df.to_crs(epsg=3857)
+
+ax = map_df.plot(column = "neighbourhood_group_cleansed", cmap = "hsv", legend = True, markersize = 50, 
+            marker = '.', figsize = (20, 20))
+ctx.add_basemap(ax)
+plt.show()
+
+AlPbar = map_df.groupby('neighbourhood_group_cleansed').size().reset_index()
+AlPbar.columns = ['neighbourhood_group', 'count']
+
+bcn_df = pd.merge(bcn_df, AlPbar, on = 'neighbourhood_group')
+
+ax = bcn_df.plot(column = "count", cmap = "YlOrRd", legend = True, figsize = (20, 20), alpha = 0.7, scheme = 'maximumbreaks')
+ctx.add_basemap(ax)
+plt.show()
+
+
+mapa = gpd.sjoin(map_df, bcn_df, op = "within")
+mapa.columns
+mapa = gpd.sjoin(bcn_df, mapa.drop(['neighbourhood_group_cleansed', 'index_right', 'neighbourhood', 'neighbourhood_group', 'count'], a), op = "within")
