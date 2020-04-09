@@ -20,7 +20,7 @@ df = pd.read_csv(archives[0])
 for i in range(1, len(archives)):
     df = df.append(pd.read_csv(archives[i]))
    
-df.drop(['number_of_reviews_ltm', 'license', 'Unnamed: 0', 'requires_license', 'availability_365', 'price'], axis = 1, inplace = True)
+df.drop(['Unnamed: 0', 'requires_license', 'price'], axis = 1, inplace = True)
 df['date'] = pd.to_datetime(df['date'])
 df['Year'] = df['date'].dt.year
 df['Month'] = df['date'].dt.month    
@@ -31,6 +31,10 @@ df.groupby(['id', 'date','goodprice'])['goodprice'].count()[df.groupby(['id', 'd
 df.drop_duplicates(subset = ['date', 'id', 'goodprice'], inplace = True)
 
 
+df[df['goodprice'].isnull()]['available'].value_counts()
+
+df.dropna(subset = ['goodprice'], axis = 0, inplace = True)
+
 df.isnull().sum()[df.isnull().sum()>0]
 
 agrupacion = df.groupby('date')['goodprice'].describe()
@@ -40,7 +44,7 @@ df[df['goodprice']>1200]['id'].value_counts()
 
 df = df[(df['goodprice']<1200)]
 
-fig, ax = plt.subplots(1, 1, figsize = (20, 10))
+fig, ax = plt.subplots(1, 1, figsize = (40, 10))
 plt.plot(df.groupby('date')['goodprice'].mean().index, df.groupby('date')['goodprice'].mean(), color = "red")
 plt.xticks(df.groupby('date')['goodprice'].mean().index, rotation = 75)
 plt.tight_layout()
@@ -48,6 +52,8 @@ plt.tight_layout()
 fig, ax = plt.subplots(1, 1, figsize = (20, 10))
 sns.distplot(df['goodprice'])
 plt.tight_layout()
+
+df['goodprice'] = df['goodprice'].apply(lambda x: x + 0.01 if x == 0 else x)
 
 fig, ax = plt.subplots(1, 1, figsize = (20, 10))
 sns.distplot(np.log(df['goodprice']), bins = 13)
@@ -78,10 +84,13 @@ def who(x):
 
 who(199651)
 
+df = df[df['PricePNight'] != 0.01]
+
 fig, ax = plt.subplots(1, 1, figsize = (20, 10))
 sns.distplot(df['PricePNight'], bins = 13)
 plt.tight_layout()
 
+df['PricePNight'].describe()
 fig, ax = plt.subplots(1, 1, figsize = (20, 10))
 sns.distplot(np.log(df['PricePNight']), bins = 13)
 plt.tight_layout()
@@ -96,12 +105,13 @@ df['LogPricePNight'] = np.log(df['PricePNight'])
 df.drop(['goodprice'], axis = 1, inplace = True)
 
 fig, ax = plt.subplots(1, 1, figsize = (20, 10))
-plt.plot(df.groupby('id','date')['LogPricePNight'].mean().index, df.groupby('date')['LogPricePNight'].mean(), color = "red")
+plt.plot(df.groupby('date')['LogPricePNight'].mean().index, df.groupby('date')['LogPricePNight'].mean(), color = "red")
 plt.xticks(df.groupby('date')['LogPricePNight'].mean().index, rotation = 75)
 plt.tight_layout()
 
 # Construim les categories
 factorcolumns = [x for x in list(df.dtypes[df.dtypes == 'int'].index) if 0 in df[x].value_counts().index]
+
 df[factorcolumns] = df[factorcolumns].astype('category')
 
 # DEURÍEM AFEGIR ELS MESOS 1, 2 i 3?                             
@@ -138,11 +148,10 @@ df.dtypes[df.dtypes == 'object']
 columnselection = ["host_response_time", "neighbourhood_group_cleansed", "property_type", "room_type", "bed_type", "cancellation_policy"]
 X_raw = pd.get_dummies(df, columns = columnselection)
 
-
 factorcolumns = [x for x in list(X_raw.dtypes[(X_raw.dtypes == 'uint8')].index) if 0 in X_raw[x].value_counts().index]
 
 X_raw[factorcolumns] = X_raw[factorcolumns].astype('category')
-X_raw.dtypes[X_raw.dtypes == 'category']
+
 
 # ELIMINEM LA COLUMNA ID QUE NO ES IMPORTANT
 X_raw.drop('id', inplace = True, axis = 1)
@@ -203,6 +212,7 @@ fig, ax = plt.subplots(1, 1, figsize = (35, 30))
 sns.heatmap(round(phi2, 3), vmin = -1, vmax = 1, center = 0, cmap = "RdBu", ax = ax, annot = True,  annot_kws = {"size": 8})
 plt.show()
 
+import scipy
 for column in X_raw.dtypes[X_raw.dtypes == "category"].index.values:
     print(column, 'LogPricePNight', scipy.stats.pointbiserialr(X_raw[column], X_raw['LogPricePNight'])[0])
 
@@ -279,7 +289,7 @@ for atr, coef in zip(atricompl, LinEN.coef_):
     if np.abs(v) > 0:
         atributos.append(atr)
 
-serieatributos = pd.DataFrame(zip(atributos, LinEN.user = !whoamicoef_, np.abs(LinEN.coef_)), columns = ['Atributos', 'Coeficiente', 'ValorAbsoluto']).set_index('Atributos').sort_values('ValorAbsoluto', ascending = False)
+serieatributos = pd.DataFrame(zip(atributos, LinEN.user = coef_, np.abs(LinEN.coef_)), columns = ['Atributos', 'Coeficiente', 'ValorAbsoluto']).set_index('Atributos').sort_values('ValorAbsoluto', ascending = False)
 serieatributos[:30]
 
 # FINALMENT PROBE AMB UNA LASSO
