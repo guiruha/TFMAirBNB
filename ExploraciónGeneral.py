@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import scipy
 plt.style.use('fivethirtyeight')
 
 archives = !ls | grep 'df'
@@ -59,7 +60,7 @@ def who(x):
     print('\n', df[df['id']==x]['name'].unique(), '\n')
     return 'https://www.airbnb.es/rooms/' + str(x)
 
-who(21290246)
+who(2368812)
 
 df = df[(df['goodprice']<1200)]
 df = df[(df['PricePNight'] >= 8)]
@@ -218,6 +219,8 @@ sns.pointplot(df['property_type'], df['PricePNight'], ax = ax[1])
 sns.boxplot(df['property_type'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
 plt.show()
+
+df['property_type'].value_counts(normalize = True)
 
 df['property_type'] = df['property_type'].apply(lambda x: 'other' if x != 'apartment' else 'apartment')
 
@@ -408,6 +411,7 @@ sns.boxplot(df['review_scores_cleanliness'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
 plt.show()
 
+np.corrcoef(df['review_scores_cleanliness'], df['LogPricePNight'])
 # REVIEW SCORE CHEKIN
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
@@ -457,6 +461,12 @@ plt.show()
 
 np.corrcoef(df['review_scores_communication'], df['LogPricePNight'])
 
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+ax.plot(df['review_scores_communication'].value_counts(normalize = True).sort_index().cumsum())
+plt.show()
+
+df.drop('review_scores_communication', axis = 1, inplace = True)
+
 # REVIEW SCORE LOCATION
 
 
@@ -469,6 +479,12 @@ plt.show()
 
 np.corrcoef(df['review_scores_location'], df['LogPricePNight'])
 
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+ax.plot(df['review_scores_location'].value_counts(normalize = True).sort_index().cumsum())
+plt.show()
+
+df.drop('review_scores_location', axis = 1, inplace = True)
+
 # REVIEW SCORE VALUE
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
@@ -478,19 +494,280 @@ sns.boxplot(df['review_scores_value'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
 plt.show()
 
+df = df[df['review_scores_value']>5]
+
 np.corrcoef(df['review_scores_value'], df['LogPricePNight'])
 
-columnes = ['bedrooms', 'beds', 'bed_type', 'instant_bookable', 'is_business_travel_ready',
-       'cancellation_policy', 'require_guest_profile_picture',
-       'require_guest_phone_verification', 'reviews_per_month',
-       'host_emailverified', 'host_phoneverified', 'host_hasjumio',
-       'host_reviewverified', 'host_selfieverified', 
-        'Paid parking off premises',
-       'Patio or balcony', 'Luggage dropoff allowed',
-       'Long term stays allowed',  'Step-free access',
-       'Paid parking on premises',
-       'host_acceptance_rate'
+# BEDROOMS
 
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+ax[0].hist(df['bedrooms'])
+sns.pointplot(df['bedrooms'], df['PricePNight'], ax = ax[1])
+sns.violinplot('bedrooms', 'LogPricePNight',  data = df, ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+df[df['bedrooms']>8]['property_type'].value_counts().sum()
+
+df = df[df['bedrooms']<8]
+
+# BEDS
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+ax[0].hist(df['beds'])
+sns.pointplot(df['beds'], df['PricePNight'], ax = ax[1])
+sns.violinplot('beds', 'LogPricePNight',  data = df, ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+ax.plot(df['beds'].value_counts(normalize = True).sort_index().cumsum())
+plt.show()
+
+df['beds'].value_counts(normalize = True).sort_index()*100
+
+df = df[df['beds']<8]
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+ax[0].hist(df['beds'])
+sns.pointplot(df['beds'], df['PricePNight'], ax = ax[1])
+sns.violinplot('beds', 'LogPricePNight',  data = df, ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+
+# BED TYPE
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['bed_type'].value_counts().index, df['bed_type'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['bed_type'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['bed_type'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+df.drop('bed_type', axis = 1, inplace = True)
+
+# INSTAN BOOKABLE
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['instant_bookable'].value_counts().index, df['instant_bookable'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['instant_bookable'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['instant_bookable'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+# IS BUSINESS TRAVEL READY
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['is_business_travel_ready'].value_counts().index, df['is_business_travel_ready'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['is_business_travel_ready'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['is_business_travel_ready'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+df['is_business_travel_ready'].value_counts(normalize = True)
+
+df.drop('is_business_travel_ready', axis = 1, inplace = True)
+
+# CANCELLATION POLICY
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['cancellation_policy'].value_counts().index, df['cancellation_policy'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['cancellation_policy'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['cancellation_policy'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+# REQUIRE GUEST PROFILE PICTURE
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['require_guest_profile_picture'].value_counts().index, df['require_guest_profile_picture'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['require_guest_profile_picture'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['require_guest_profile_picture'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+df.drop('require_guest_profile_picture', axis = 1, inplace = True)
+
+# REQUIRE GUEST PHONE VERIFICATION
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['require_guest_phone_verification'].value_counts().index, df['require_guest_phone_verification'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['require_guest_phone_verification'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['require_guest_phone_verification'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+df['require_guest_phone_verification'].value_counts(normalize = True)
+
+df.drop('require_guest_phone_verification', axis = 1, inplace = True)
+
+# REVIEW PER MONTH
+
+plt.hist(df['reviews_per_month'])
+
+df['reviews_per_month'].value_counts().sort_index()
+
+df[df['reviews_per_month'] == 56.16][['id', 'date', 'host_since']]
+df[df['reviews_per_month'] == 33.26][['id', 'date', 'host_since']]
+df[df['reviews_per_month'] == 24.24][['id', 'date', 'host_since']]
+
+
+df[df['reviews_per_month']>15]['id'].value_counts()
+
+sns.pointplot(df['reviews_per_month'], df['PricePNight'])
+
+df.groupby('id')[['reviews_per_month', 'LogPricePNight']].mean().plot(kind = 'scatter', x = 'reviews_per_month', y = 'LogPricePNight')
+
+df = df[df['reviews_per_month']<12]
+
+plt.hist(df['reviews_per_month'])
+
+plt.hist(np.log(df['reviews_per_month']))
+sns.scatterplot(np.log(df['reviews_per_month']), df['PricePNight'], x_jitter = True, y_jitter = True, alpha = 0.3, size = 8)
+
+fig, ax = plt.subplots(1, 1, figsize = (40, 20))
+sns.pointplot(df['reviews_per_month'], df['PricePNight'], ax = ax)
+plt.show()
+
+np.corrcoef(df['reviews_per_month'], df['LogPricePNight'])
+
+# PER A ELIMINAR SI NO HI HA COLINEALITAT
+
+# HOST EMAIL VERIFIED
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['host_emailverified'].value_counts().index, df['host_emailverified'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['host_emailverified'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['host_emailverified'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+df['host_emailverified'].value_counts(normalize = True)
+
+np.corrcoef(df['host_emailverified'], df['LogPricePNight'])
+scipy.stats.pointbiserialr(df['host_emailverified'], df['LogPricePNight'])[0]
+
+# PER A ELIMINAR SI NO HI HA COLINEALITAT
+
+# HOST PHONE VERIFIED
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['host_phoneverified'].value_counts().index, df['host_phoneverified'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['host_phoneverified'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['host_phoneverified'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+df['host_phoneverified'].value_counts(normalize = True)
+
+df.drop('host_phoneverified', axis = 1, inplace = True)
+
+# HOST HAS JUMIO
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['host_hasjumio'].value_counts().index, df['host_hasjumio'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['host_hasjumio'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['host_hasjumio'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+np.corrcoef(df['host_hasjumio'], df['LogPricePNight'])
+# HOST REVIEW VERIFIED
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['host_reviewverified'].value_counts().index, df['host_reviewverified'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['host_reviewverified'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['host_reviewverified'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+np.corrcoef(df['host_reviewverified'], df['LogPricePNight'])
+# HOST SELFIE VERIFIED
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['host_selfieverified'].value_counts().index, df['host_selfieverified'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['host_selfieverified'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['host_selfieverified'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+np.corrcoef(df['host_selfieverified'], df['LogPricePNight'])
+# PAID PARKING OFF PREMISES
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['Paid parking off premises'].value_counts().index, df['Paid parking off premises'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['Paid parking off premises'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['Paid parking off premises'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+np.corrcoef(df['Paid parking off premises'], df['LogPricePNight'])
+
+# PATIO OR BALCONY
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['Patio or balcony'].value_counts().index, df['Patio or balcony'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['Patio or balcony'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['Patio or balcony'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+np.corrcoef(df['Patio or balcony'], df['LogPricePNight'])
+
+# LUGGAGE DROPOFF ALLOWED
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['Luggage dropoff allowed'].value_counts().index, df['Luggage dropoff allowed'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['Luggage dropoff allowed'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['Luggage dropoff allowed'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+np.corrcoef(df['Luggage dropoff allowed'], df['LogPricePNight'])
+
+# LONG TERM STAYS ALLOWED
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['Long term stays allowed'].value_counts().index, df['Long term stays allowed'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['Long term stays allowed'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['Long term stays allowed'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+np.corrcoef(df['Long term stays allowed'], df['LogPricePNight'])
+
+# STEP - FREE ACCES
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['Step-free access'].value_counts().index, df['Step-free access'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['Step-free access'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['Step-free access'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+np.corrcoef(df['Step-free access'], df['LogPricePNight'])
+# ELIMINAR SI NO HI HA COLINEALITAT
+
+# PAID PARKING ON PREMISES
+
+fig, ax = plt.subplots(3, 1, figsize = (20, 20))
+sns.barplot(df['Paid parking on premises'].value_counts().index, df['Paid parking on premises'].value_counts()/df.shape[0], ax = ax[0])
+sns.pointplot(df['Paid parking on premises'], df['PricePNight'], ax = ax[1])
+sns.boxplot(df['Paid parking on premises'], df['LogPricePNight'], ax = ax[2])
+plt.xticks(rotation = 45)
+plt.show()
+
+np.corrcoef(df['Paid parking on premises'], df['LogPricePNight'])
+
+# HOST ACCEPTANCE RATE
+
+df['host_acceptance_rate'].str.replace('%', '').fillna('other').value_counts(normalize = True)
+df.drop('host_acceptance_rate', axis = 1, inplace = True)
+
+df.shape
+
+df.to_csv('~/DadesAirBNB/DadesPerModelar.csv')
 
 # VAIG A FER UN INTENT DE MAPA
 import geopandas as gpd
@@ -533,7 +810,6 @@ bcn_df = pd.merge(bcn_df, AlPbar, on = 'neighbourhood_group')
 ax = bcn_df.plot(column = "count", cmap = "YlOrRd", legend = True, figsize = (20, 20), alpha = 0.7, scheme = 'maximumbreaks')
 ctx.add_basemap(ax)
 plt.show()
-
 
 mapa = gpd.sjoin(map_df, bcn_df, op = "within")
 mapa.columns
