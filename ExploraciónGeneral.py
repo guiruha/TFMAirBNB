@@ -794,9 +794,6 @@ map_df.plot(column = "neighbourhood_group_cleansed", cmap = "hsv", ax = ax, lege
             marker = '.')
 plt.show()
 
-map_df = map_df.to_crs(epsg=3857)
-bcn_df = bcn_df.to_crs(epsg=3857)
-
 ax = map_df.plot(column = "neighbourhood_group_cleansed", cmap = "hsv", legend = True, markersize = 50, 
             marker = '.', figsize = (20, 20))
 ctx.add_basemap(ax)
@@ -814,3 +811,36 @@ plt.show()
 mapa = gpd.sjoin(map_df, bcn_df, op = "within")
 mapa.columns
 mapa = gpd.sjoin(bcn_df, mapa.drop(['neighbourhood_group_cleansed', 'index_right', 'neighbourhood', 'neighbourhood_group', 'count'], a), op = "within")
+
+# DATASET DELS TRANSPORTS
+
+transport = pd.read_csv("/home/guillem/DadesAirBNB/Metro/TRANSPORTS.csv")
+
+transport.columns
+
+transport = transport[['NOM_CAPA', 'LONGITUD', 'LATITUD', 'EQUIPAMENT', 'NOM_BARRI']]
+
+metro = transport[transport.EQUIPAMENT.str.startswith('METRO')]
+
+metro['geometry'] = metro.apply(lambda x: Point(x.LONGITUD, x.LATITUD), axis = 1)
+
+metro = gpd.GeoDataFrame(metro, geometry = metro.geometry, crs = bcn_df.crs)
+
+metro = metro.to_crs(epsg = 3857)
+map_df = map_df.to_crs(epsg=3857)
+bcn_df = bcn_df.to_crs(epsg=3857)
+
+map_df['dist_metro'] = [min(i.distance(j) for j in metro.geometry) for i in map_df.geometry]
+
+map_df[map_df.index == map_df['dist_metro'].idxmax()][['geometry', 'dist_metro']]
+
+for i in metro.geometry:
+    print(map_df[map_df.index == map_df['dist_metro'].idxmax()].geometry.distance(i))
+
+fig, ax = plt.subplots(1, 1, figsize = (25, 25))
+map_df[map_df.index == map_df['dist_metro'].idxmax()].plot(ax = ax, marker = "X", markersize = 500, color = "maroon")
+map_df[map_df.index == map_df['dist_metro'].idxmin()].plot(ax = ax, marker = "X", markersize = 500, color = "green")
+metro.plot(ax = ax, color = "navy")
+ctx.add_basemap(ax)
+plt.show()
+
