@@ -822,7 +822,7 @@ transport.columns
 transport = transport[['NOM_CAPA', 'LONGITUD', 'LATITUD', 'EQUIPAMENT', 'NOM_BARRI']]
 
 # METRO
-
+transport['NOM_CAPA'].value_counts()
 metro = transport[transport['NOM_CAPA'] == 'Metro i línies urbanes FGC']
 
 metro['geometry'] = metro.apply(lambda x: Point(x.LONGITUD, x.LATITUD), axis = 1)
@@ -972,4 +972,7 @@ distances = map_df[map_df.columns[map_df.columns.str.startswith('dist')].to_list
 distances = distances.apply(lambda x: round(x, 2), axis = 1)
 
 df.to_csv('~/DadesAirBNB/DatosModelar.csv', index = False)
+
+distances.to_csv('~/DadesAirBNB/distanciastransporte.csv')
+
 
