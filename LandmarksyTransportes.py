@@ -3,7 +3,7 @@
 """
 Created on Thu Apr 16 18:14:10 2020
 
-@author: guillem
+@author: guillem & helena
 """
 
 
@@ -12,20 +12,237 @@ from shapely.geometry.polygon import Polygon
 from shapely.geometry.multipolygon import MultiPolygon
 from shapely.geometry import Point
 import contextily as ctx
+import matplotlib.pyplot as plt
+plt.style.use('fivethirtyeight')
 
-df = pd.read_csv('~/DadesAirBNB/DatosModelar.csv')
+df = pd.read_csv('~/DadesAirBNB/DatosGeneral.csv')
 
-bcn_df = gpd.read_file("/home/guillem/DadesAirBNB/neighbourhoods.geojson")
+bcn_df = gpd.read_file("~/DadesAirBNB/neighbourhoods.geojson")
 
-map_df = df.reset_index().drop_duplicates(subset = ['id'])[['id', 'neighbourhood_group_cleansed', 'latitude', 'longitude']]
+map_df = df.reset_index().drop_duplicates(subset = ['id'])[['id', 'neighbourhood_group_cleansed', 
+                                                            'latitude', 'longitude']]
 
 map_df['geometry'] = map_df.apply(lambda x: Point(x.longitude, x.latitude), axis = 1)
 
-map_df = gpd.GeoDataFrame(map_df, geometry = map_df.geometry, crs = bcn_df.crs)
+map_df = gpd.GeoDataFrame(map_df, geometry = gpd.points_from_xy(map_df.longitude, 
+                                                                map_df.latitude), crs = bcn_df.crs)
+
+# LANDMARKS
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import sklearn
+from numpy import loadtxt
+
+f = loadtxt("/Users/helenasaigi/DadesAirBNB/Flickr/Flickr_landmarks_geotags.txt", comments="#", 
+            delimiter=" ", unpack=False)
+
+dff = pd.DataFrame(f)
+
+dff
+
+dff.columns = ['Latitude', 'Longitude']
+
+dff.head()
+
+dff = dff.reset_index()[['Latitude', 'Longitude']]
+
+dff['geometry'] = dff.apply(lambda x: Point(x.Longitude, x.Latitude), axis = 1)
+
+dff = gpd.GeoDataFrame(dff, geometry = gpd.points_from_xy(dff.Longitude, 
+                                                          dff.Latitude, crs = bcn_df.crs)
+
+plt.scatter(dff['Latitude'], dff['Longitude'])
+plt.show()
+
+bcn_df = bcn_df.to_crs(epsg=3857)
+dff = dff.to_crs(epsg=3857)
+
+ax = dff.plot(column = dff['Latitude'], cmap = "YlOrRd", legend = True, 
+              figsize = (20, 20), alpha = 0.7, scheme = 'maximumbreaks')
+ctx.add_basemap(ax)
+plt.show()
+
+ax = dff.plot(column = dff['Longitude'], cmap = "YlOrRd", legend = True, 
+              figsize = (20, 20), alpha = 0.7, scheme = 'maximumbreaks')
+ctx.add_basemap(ax)
+plt.show()
+
+import scipy
+import scipy.cluster.hierarchy as sch
+from sklearn.cluster import AgglomerativeClustering
+from collections import namedtuple
+
+Point = namedtuple("Point", "x y")
+
+dff.geometry.head()
+dff.geometry.x #Longitude
+dff.geometry.y #Latitude
+
+dff['Latitude_metros'] = dff.geometry.y
+dff['Longitude_metros'] = dff.geometry.x
+
+
+ax, fig = plt.subplots(1, 1, figsize=(15,10))
+dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude_metros', 'Longitude_metros']].values, 
+                                        method='complete', metric='euclidean'))
+
+ax, fig = plt.subplots(1, 1, figsize=(15,10))
+dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude_metros', 'Longitude_metros']].values, 
+                                        method='complete', metric='cityblock'))
+
+ax, fig = plt.subplots(1, 1, figsize=(15,10))
+dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude_metros', 'Longitude_metros']].values, 
+                                        method='average', metric='cityblock'))
+
+hc = AgglomerativeClustering(n_clusters=11, affinity='cityblock', linkage='single')
+
+clusters = hc.fit_predict(dff[['Longitude_metros', 'Latitude_metros']])
+
+print(clusters[:10])
+
+dff['clusters'] = hc.fit_predict(dff[['Longitude_metros', 'Latitude_metros']])
+
+dff['clusters'] = dff['clusters'].astype('category')
+
+dff.head()
+
+dff.tail()
+
+dff.clusters.dtypes
+
+ax = dff.plot(column = 'clusters', cmap='Set3', legend = True, 
+              figsize = (20, 20), categorical=True)
+ctx.add_basemap(ax)
+plt.show()
+
+dff.groupby('clusters')['Latitude'].count()
+
+dff.groupby('clusters')['Latitude'].count()[dff.groupby('clusters')['Latitude'].count() == 1]
+
+col_clust = dff.groupby('clusters')['Latitude'].count()[dff.groupby('clusters')['Latitude'].count() > 1].index
+
+dff = dff[(dff['clusters'] != 5) & (dff['clusters'] != 6) & (dff['clusters'] != 10)]
+
+dff.groupby('clusters')['Latitude'].count()
+
+# Hierarchical clustering
+
+dff['clusters'] = hc.fit_predict(dff[['Longitude_metros', 'Latitude_metros']])
+
+ax = dff.plot(column = 'clusters', cmap='Set3', legend = True, 
+              figsize = (20, 20), categorical=True)
+ctx.add_basemap(ax)
+plt.show()
+
+hc = AgglomerativeClustering(n_clusters=13, affinity='cityblock', linkage='average')
+
+dff['clusters_hc'] = hc.fit_predict(dff[['Longitude_metros', 'Latitude_metros']])
+
+ax = dff.plot(column = 'clusters_hc', cmap='tab20b', legend = True, 
+              figsize = (20, 20), categorical=True, edgecolor='black', markersize=100)
+ctx.add_basemap(ax, source=getattr(ctx.sources, 'OSM_C'))
+plt.show()
+
+dff['clusters'].value_counts()
+
+# K-MEANS
+
+from sklearn.cluster import KMeans
+
+km = KMeans()
+km.get_params()
+n_clusters = list(range(1, 20))
+
+wcss = []
+for cluster in n_clusters:
+    km = KMeans(n_clusters=cluster)
+    km.fit(dff[['Longitude_metros', 'Latitude_metros']])
+    wcss.append(km.inertia_)
+
+ax, fig = plt.subplots(1, 1, figsize=(10,7))
+plt.plot(n_clusters,wcss)
+plt.xticks(n_clusters)
+plt.xlabel('Number of Clusters')
+plt.ylabel('wcss')
+plt.title('Elbow Curve')
+plt.show()
+
+km = KMeans(n_clusters=12, n_jobs=10)
+
+dff['clusters_km'] = km.fit_predict(dff[['Longitude', 'Latitude']])
+
+dff[['clusters_hc', 'clusters_km']]
+
+dff['clusters_hc'].value_counts()
+
+dff['clusters_km'].value_counts()
+
+km.cluster_centers_
+
+km.cluster_centers_[:,0]
+km.cluster_centers_[:,1]
+
+sns.scatterplot(km.cluster_centers_[:,0], km.cluster_centers_[:,1])
+
+dff = dff.to_crs(epsg=4326)
+bcn_df = bcn_df.to_crs(epsg=4326)
+
+ax = bcn_df.plot(figsize=(10,7))
+dff.plot(column = 'clusters_km', cmap='tab20b', legend = True, 
+              figsize = (20, 20), categorical=True, edgecolor='black', markersize=100, ax=ax)
+plt.scatter(km.cluster_centers_[:,0], km.cluster_centers_[:,1], marker='*', s=300, color='cyan', edgecolor='black')
+plt.tight_layout()
+
+
+dff.groupby('clusters_km').count()
+
+centroids_km = []
+clusters = []
+for i, j in enumerate(km.cluster_centers_):
+    clusters.append(i)
+    centroids_km.append(j)
+
+centroids_km = pd.DataFrame({'cluster': clusters, 'centroids': centroids_km})
+
+centroids_km
+
+clusters = ['Catedral de Barcelona', 'Sagrada Familia', 'Montjuic', 'Parc Guell', 'Jardinets de Gràcia', 
+            'Vila Olimpica', 'Colon', 'Arc de Triomf', 'Glories', 'Hospital de Sant Pau', 
+            'Pl. Catalunya', 'Pg. de Gràcia']
+
+centroids = km.cluster_centers_.tolist()
+
+centroids_km = pd.DataFrame({'cluster': clusters, 'centroids': centroids})
+
+centroids_km
+
+centroids_km['Longitud'] = [centroids_km.centroids[i][0] for i in range(centroids_km.shape[0])]
+
+centroids_km['Latitud'] = [centroids_km.centroids[i][1] for i in range(centroids_km.shape[0])]
+
+centroids_km['geometry'] = centroids_km.apply(lambda x: Point(x.Longitud, 
+                                                              x.Latitud), axis = 1)
+
+landmarks = gpd.GeoDataFrame(centroids_km, geometry=gpd.points_from_xy(centroids_km.Longitud, 
+                                                                       centroids_km.Latitud), 
+                             crs=bcn_df.crs)
+
+landmarks = landmarks[['cluster', 'geometry']]
+
+
+landmarks = landmarks.to_crs(epsg=3857)
+map_df = map_df.to_crs(epsg=3857)
+
+for i, landmark in enumerate(landmarks.cluster):
+    map_df['{}_distance'.format(landmark)] = [j.distance(landmarks.geometry[i]) 
+                                              for j in map_df.geometry]
+
 
 # DATASET DELS TRANSPORTS
 
-transport = pd.read_csv("/home/guillem/DadesAirBNB/Metro/TRANSPORTS.csv")
+transport = pd.read_csv("~/DadesAirBNB/Transports/METRO.csv")
 
 transport.columns
 
@@ -176,3 +393,19 @@ map_df[map_df.index == map_df['dist_aerobus'].idxmin()].plot(ax = ax, marker = "
 aerobus.plot(ax = ax, color = "navy")
 ctx.add_basemap(ax)
 plt.show()
+
+# Distancias calculadas de landmarks y transportes, hacemos join y generamos csv
+map_df.columns
+
+map_df.head()
+
+cols_select = [x for x in map_df.columns if x not in ['neighbourhood_group_cleansed', 'latitude', 
+                                                      'longitude', 'geometry']]
+
+distances = map_df[cols_select]
+
+df = df.join(distances, on='id', lsuffix='o_')
+
+
+df.to_csv('~/DadesAirBNB/DatosModelar.csv')
+
