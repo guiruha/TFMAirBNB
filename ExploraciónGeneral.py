@@ -768,7 +768,7 @@ df.drop('host_acceptance_rate', axis = 1, inplace = True)
 
 df.shape
 
-#df.to_csv('~/DadesAirBNB/DadesPerModelar.csv', index = False)
+df.to_csv('~/DadesAirBNB/DatosGeneral.csv', index = False)
 
 # VAIG A FER UN INTENT DE MAPA
 import geopandas as gpd

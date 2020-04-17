@@ -5,11 +5,10 @@ Created on Thu Apr 16 18:14:10 2020
 
 @author: guillem & helena
 """
-
-
+import pandas as pd
+import numpy as np
+import seaborn as sns
 import geopandas as gpd
-from shapely.geometry.polygon import Polygon
-from shapely.geometry.multipolygon import MultiPolygon
 from shapely.geometry import Point
 import contextily as ctx
 import matplotlib.pyplot as plt
@@ -17,26 +16,16 @@ plt.style.use('fivethirtyeight')
 
 df = pd.read_csv('~/DadesAirBNB/DatosGeneral.csv')
 
-bcn_df = gpd.read_file("~/DadesAirBNB/neighbourhoods.geojson")
+bcn_df = gpd.read_file("/home/guillem/DadesAirBNB/neighbourhoods.geojson")
 
-map_df = df.reset_index().drop_duplicates(subset = ['id'])[['id', 'neighbourhood_group_cleansed', 
-                                                            'latitude', 'longitude']]
-
+map_df = df.reset_index().drop_duplicates(subset = ['id'])[['id', 'neighbourhood_group_cleansed', 'latitude', 'longitude']]
 map_df['geometry'] = map_df.apply(lambda x: Point(x.longitude, x.latitude), axis = 1)
 
-map_df = gpd.GeoDataFrame(map_df, geometry = gpd.points_from_xy(map_df.longitude, 
-                                                                map_df.latitude), crs = bcn_df.crs)
+map_df = gpd.GeoDataFrame(map_df, geometry = gpd.points_from_xy(map_df.longitude, map_df.latitude), crs = bcn_df.crs)
 
 # LANDMARKS
 
-import pandas as pd
-import numpy as np
-import seaborn as sns
-import sklearn
-from numpy import loadtxt
-
-f = loadtxt("/Users/helenasaigi/DadesAirBNB/Flickr/Flickr_landmarks_geotags.txt", comments="#", 
-            delimiter=" ", unpack=False)
+f = loadtxt("/home/guillem/DadesAirBNB/Flkr/Flickr_landmarks_geotags.txt", comments="#", delimiter=" ", unpack=False)
 
 dff = pd.DataFrame(f)
 
@@ -46,26 +35,21 @@ dff.columns = ['Latitude', 'Longitude']
 
 dff.head()
 
-dff = dff.reset_index()[['Latitude', 'Longitude']]
+## ??? dff = dff.reset_index()[['Latitude', 'Longitude']]
 
 dff['geometry'] = dff.apply(lambda x: Point(x.Longitude, x.Latitude), axis = 1)
 
-dff = gpd.GeoDataFrame(dff, geometry = gpd.points_from_xy(dff.Longitude, 
-                                                          dff.Latitude, crs = bcn_df.crs)
+dff = gpd.GeoDataFrame(dff, geometry = gpd.points_from_xy(dff.Longitude, dff.Latitude), crs = bcn_df.crs)
 
 plt.scatter(dff['Latitude'], dff['Longitude'])
 plt.show()
 
-bcn_df = bcn_df.to_crs(epsg=3857)
 dff = dff.to_crs(epsg=3857)
-
-ax = dff.plot(column = dff['Latitude'], cmap = "YlOrRd", legend = True, 
-              figsize = (20, 20), alpha = 0.7, scheme = 'maximumbreaks')
+ax = dff.plot(cmap = "YlOrRd", legend = True, figsize = (20, 20), alpha = 0.7, scheme = 'maximumbreaks')
 ctx.add_basemap(ax)
 plt.show()
 
-ax = dff.plot(column = dff['Longitude'], cmap = "YlOrRd", legend = True, 
-              figsize = (20, 20), alpha = 0.7, scheme = 'maximumbreaks')
+ax = dff.plot(cmap = "YlOrRd", legend = True, figsize = (20, 20), alpha = 0.7, scheme = 'maximumbreaks')
 ctx.add_basemap(ax)
 plt.show()
 
@@ -74,27 +58,25 @@ import scipy.cluster.hierarchy as sch
 from sklearn.cluster import AgglomerativeClustering
 from collections import namedtuple
 
-Point = namedtuple("Point", "x y")
+# ESTA PART NO FA FALTA
+#Point = namedtuple("Point", "x y")
 
-dff.geometry.head()
-dff.geometry.x #Longitude
-dff.geometry.y #Latitude
+#dff.geometry.head()
+#dff.geometry.x #Longitude
+#dff.geometry.y #Latitude
 
-dff['Latitude_metros'] = dff.geometry.y
-dff['Longitude_metros'] = dff.geometry.x
-
-
-ax, fig = plt.subplots(1, 1, figsize=(15,10))
-dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude_metros', 'Longitude_metros']].values, 
-                                        method='complete', metric='euclidean'))
+#dff['Latitude_metros'] = dff.geometry.y
+#dff['Longitude_metros'] = dff.geometry.x
+#dff.head()
 
 ax, fig = plt.subplots(1, 1, figsize=(15,10))
-dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude_metros', 'Longitude_metros']].values, 
-                                        method='complete', metric='cityblock'))
+dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude', 'Longitude']].values, method='complete', metric='euclidean'))
 
 ax, fig = plt.subplots(1, 1, figsize=(15,10))
-dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude_metros', 'Longitude_metros']].values, 
-                                        method='average', metric='cityblock'))
+dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude', 'Longitude']].values, method='complete', metric='cityblock'))
+
+ax, fig = plt.subplots(1, 1, figsize=(15,10))
+dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude', 'Longitude']].values, method='average', metric='cityblock'))
 
 hc = AgglomerativeClustering(n_clusters=11, affinity='cityblock', linkage='single')
 
@@ -106,14 +88,9 @@ dff['clusters'] = hc.fit_predict(dff[['Longitude_metros', 'Latitude_metros']])
 
 dff['clusters'] = dff['clusters'].astype('category')
 
-dff.head()
-
-dff.tail()
-
 dff.clusters.dtypes
 
-ax = dff.plot(column = 'clusters', cmap='Set3', legend = True, 
-              figsize = (20, 20), categorical=True)
+ax = dff.plot(column = 'clusters', cmap='Set3', legend = True, figsize = (20, 20), categorical=True, markersize = 400)
 ctx.add_basemap(ax)
 plt.show()
 
@@ -121,9 +98,9 @@ dff.groupby('clusters')['Latitude'].count()
 
 dff.groupby('clusters')['Latitude'].count()[dff.groupby('clusters')['Latitude'].count() == 1]
 
-col_clust = dff.groupby('clusters')['Latitude'].count()[dff.groupby('clusters')['Latitude'].count() > 1].index
+col_clust = dff.groupby('clusters')['Latitude'].count()[dff.groupby('clusters')['Latitude'].count() > 5].index.tolist()
 
-dff = dff[(dff['clusters'] != 5) & (dff['clusters'] != 6) & (dff['clusters'] != 10)]
+dff = dff.iloc[[i for i, x in zip(dff.index, dff['clusters']) if x in col_clust]]
 
 dff.groupby('clusters')['Latitude'].count()
 
@@ -131,18 +108,18 @@ dff.groupby('clusters')['Latitude'].count()
 
 dff['clusters'] = hc.fit_predict(dff[['Longitude_metros', 'Latitude_metros']])
 
-ax = dff.plot(column = 'clusters', cmap='Set3', legend = True, 
-              figsize = (20, 20), categorical=True)
+ax = dff.plot(column = 'clusters', cmap='Set3', legend = True, figsize = (20, 20), categorical=True)
 ctx.add_basemap(ax)
 plt.show()
 
+dff = dff.to_crs(epsg = 4326)
 hc = AgglomerativeClustering(n_clusters=13, affinity='cityblock', linkage='average')
 
 dff['clusters_hc'] = hc.fit_predict(dff[['Longitude_metros', 'Latitude_metros']])
 
-ax = dff.plot(column = 'clusters_hc', cmap='tab20b', legend = True, 
-              figsize = (20, 20), categorical=True, edgecolor='black', markersize=100)
-ctx.add_basemap(ax, source=getattr(ctx.sources, 'OSM_C'))
+dff = dff.to_crs(epsg = 3857)
+ax = dff.plot(column = 'clusters_hc', cmap='tab20b', legend = True, figsize = (20, 20), categorical=True, edgecolor='black', markersize=100)
+ctx.add_basemap(ax)
 plt.show()
 
 dff['clusters'].value_counts()
@@ -189,12 +166,12 @@ sns.scatterplot(km.cluster_centers_[:,0], km.cluster_centers_[:,1])
 dff = dff.to_crs(epsg=4326)
 bcn_df = bcn_df.to_crs(epsg=4326)
 
-ax = bcn_df.plot(figsize=(10,7))
-dff.plot(column = 'clusters_km', cmap='tab20b', legend = True, 
-              figsize = (20, 20), categorical=True, edgecolor='black', markersize=100, ax=ax)
+ax = bcn_df.plot(figsize=(25,13))
+dff.plot(column = 'clusters_km', cmap='tab20b', legend = True, figsize = (20, 20), categorical=True, edgecolor='black', markersize=100, ax=ax)
 plt.scatter(km.cluster_centers_[:,0], km.cluster_centers_[:,1], marker='*', s=300, color='cyan', edgecolor='black')
 plt.tight_layout()
 
+km.cluster_centers_
 
 dff.groupby('clusters_km').count()
 
