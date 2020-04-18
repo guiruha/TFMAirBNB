@@ -770,6 +770,348 @@ df.shape
 
 df.to_csv('~/DadesAirBNB/DatosGeneral.csv', index = False)
 
+map_df = df.reset_index().drop_duplicates(subset = ['id'])[['id', 'neighbourhood_group_cleansed', 'latitude', 'longitude']]
+
+map_df.to_csv('~/DadesAirBNB/Localizaciones.csv', index = False)
+
+
+# AÑADIMOS LAS DISTANCIAS AL DATAFRAME ORIGINAL
+
+df = pd.read_csv('~/DadesAirBNB/DatosGeneral.csv')
+distancias = pd.read_csv('~/DadesAirBNB/Distancias.csv')
+
+df.id.unique().shape[0] == distancias.id.count()
+
+df = pd.merge(df, distancias, on = 'id')
+
+df.isnull().sum()[df.isnull().sum()>0]
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(df['dist_metro']), df['LogPricePNight'], alpha = 0.005, x_jitter = True, y_jitter = True)
+plt.show()
+
+# PARA MEJORAR EL PROCESAMIENTO ELIMINAMOS DUPLICADOS
+
+temp = df.drop_duplicates(subset = ['id', 'LogPricePNight'])
+
+# DISTANCIA CON EL METRO
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['dist_metro']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(temp['dist_metro'], temp['LogPricePNight'])
+np.corrcoef(np.log(temp['dist_metro']), temp['LogPricePNight'])
+
+from sklearn.linear_model import LinearRegression
+
+lr = LinearRegression()
+
+lr.fit(np.log(temp['dist_metro']).values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['dist_metro']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(np.log(temp['dist_metro']), B0 + B1*np.log(temp['dist_metro']), color = "maroon")
+plt.show()
+
+np.corrcoef(np.log(df['dist_metro']), df['LogPricePNight']) # Con el dataset total el corrcoef baja un poco
+
+# DISTANCIA CON FERROCARIL CERCANIAS
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['dist_fgc']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(np.log(temp['dist_fgc']), temp['LogPricePNight'])
+
+from sklearn.linear_model import LinearRegression
+
+lr = LinearRegression()
+
+lr.fit(np.log(temp['dist_fgc']).values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['dist_fgc']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(np.log(temp['dist_fgc']), B0 + B1*np.log(temp['dist_fgc']), color = "maroon")
+plt.show()
+
+
+np.corrcoef(np.log(df['dist_fgc']), df['LogPricePNight'])
+
+# DISTANCIA CON RENFE
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['dist_renfe']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(np.log(temp['dist_renfe']), temp['LogPricePNight'])
+
+from sklearn.linear_model import LinearRegression
+
+lr = LinearRegression()
+
+lr.fit(np.log(temp['dist_renfe']).values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['dist_renfe']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(np.log(temp['dist_renfe']), B0 + B1*np.log(temp['dist_renfe']), color = "maroon")
+plt.show()
+
+np.corrcoef(np.log(df['dist_renfe']), df['LogPricePNight'])
+
+# DISTANCIA TREN A EL AEROPUERTO
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['dist_trenaeropuerto']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(np.log(temp['dist_trenaeropuerto']), temp['LogPricePNight'])
+
+from sklearn.linear_model import LinearRegression
+
+lr = LinearRegression()
+
+lr.fit(np.log(temp['dist_trenaeropuerto']).values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['dist_trenaeropuerto']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(np.log(temp['dist_trenaeropuerto']), B0 + B1*np.log(temp['dist_trenaeropuerto']), color = "maroon")
+plt.show()
+
+np.corrcoef(np.log(df['dist_trenaeropuerto']), df['LogPricePNight'])
+
+#  DISTANCIA TRANVIA
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['dist_tramvia']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(np.log(temp['dist_tramvia']), temp['LogPricePNight'])
+
+from sklearn.linear_model import LinearRegression
+
+lr = LinearRegression()
+
+lr.fit(np.log(temp['dist_tramvia']).values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['dist_tramvia']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(np.log(temp['dist_tramvia']), B0 + B1*np.log(temp['dist_tramvia']), color = "maroon")
+plt.show()
+
+np.corrcoef(np.log(df['dist_tramvia']), df['LogPricePNight'])
+
+# DISTANCIA BUS DIURNO
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['dist_bus']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(np.log(temp['dist_bus']), temp['LogPricePNight'])
+
+from sklearn.linear_model import LinearRegression
+
+lr = LinearRegression()
+
+lr.fit(np.log(temp['dist_bus']).values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['dist_tramvia']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(np.log(temp['dist_tramvia']), B0 + B1*np.log(temp['dist_tramvia']), color = "maroon")
+plt.show()
+
+np.corrcoef(np.log(df['dist_bus']), df['LogPricePNight'])
+
+# DISTANCIA BUS AL AEROPUERTO
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['dist_aerobus']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(np.log(temp['dist_aerobus']), temp['LogPricePNight'])
+
+from sklearn.linear_model import LinearRegression
+
+lr = LinearRegression()
+
+lr.fit(np.log(temp['dist_aerobus']).values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['dist_tramvia']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(np.log(temp['dist_aerobus']), B0 + B1*np.log(temp['dist_aerobus']), color = "maroon")
+plt.show()
+
+np.corrcoef(np.log(df['dist_aerobus']), df['LogPricePNight'])
+
+# DISTANCIA A LA CATEDRA DE BARCELONA
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(temp['Catedral de Barcelona_distance'], temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(temp['Catedral de Barcelona_distance'], temp['LogPricePNight'])
+
+from sklearn.linear_model import LinearRegression
+
+lr = LinearRegression()
+
+lr.fit(temp['Catedral de Barcelona_distance'].values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(temp['Catedral de Barcelona_distance'], temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(temp['Catedral de Barcelona_distance'], B0 + B1*temp['Catedral de Barcelona_distance'], color = "maroon")
+plt.show()
+
+np.corrcoef(df['Catedral de Barcelona_distance'], df['LogPricePNight'])
+
+# DISTANCIA A LA SAGRADA FAMILIA
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Sagrada Familia_distance']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(np.log(temp['Sagrada Familia_distance']), temp['LogPricePNight'])
+np.corrcoef(temp['Sagrada Familia_distance'], temp['LogPricePNight'])
+
+from sklearn.linear_model import LinearRegression
+
+lr = LinearRegression()
+
+lr.fit(temp['Sagrada Familia_distance'].values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(temp['Sagrada Familia_distance'], temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(temp['Sagrada Familia_distance'], B0 + B1*temp['Sagrada Familia_distance'], color = "maroon")
+plt.show()
+
+np.corrcoef(df['Sagrada Familia_distance'], df['LogPricePNight'])
+
+# DISTANCIA A MONTJUIC
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Montjuic_distance']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(np.log(temp['Montjuic_distance']), temp['LogPricePNight'])
+np.corrcoef(temp['Montjuic_distance'], temp['LogPricePNight'])
+
+from sklearn.linear_model import LinearRegression
+
+lr = LinearRegression()
+
+lr.fit(temp['Montjuic_distance'].values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(temp['Sagrada Familia_distance'], temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(temp['Sagrada Familia_distance'], B0 + B1*temp['Sagrada Familia_distance'], color = "maroon")
+plt.show()
+
+np.corrcoef(df['Montjuic_distance'], df['LogPricePNight'])
+
+# DISTANCIA PARC GUELL
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Parc Guell_distance']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(np.log(temp['Parc Guell_distance']), temp['LogPricePNight'])
+np.corrcoef(temp['Parc Guell_distance'], temp['LogPricePNight'])
+
+from sklearn.linear_model import LinearRegression
+
+lr = LinearRegression()
+
+lr.fit(np.log(temp['Parc Guell_distance']).values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Parc Guell_distance']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(np.log(temp['Parc Guell_distance']), B0 + B1*np.log(temp['Parc Guell_distance']), color = "maroon")
+plt.show()
+
+np.corrcoef(df['Parc Guell_distance'], df['LogPricePNight'])
+
+# DISTANCIA JARDINES DE GRACIA
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Jardinets de Gràcia_distance']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(np.log(temp['Jardinets de Gràcia_distance']), temp['LogPricePNight'])
+np.corrcoef(temp['Jardinets de Gràcia_distance'], temp['LogPricePNight'])
+
+from sklearn.linear_model import LinearRegression
+
+lr = LinearRegression()
+
+lr.fit(np.log(temp['Parc Guell_distance']).values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Jardinets de Gràcia_distance']), temp['LogPricePNight'], alpha = 0.01, x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(np.log(temp['Jardinets de Gràcia_distance']), B0 + B1*np.log(temp['Jardinets de Gràcia_distance']), color = "maroon")
+plt.show()
+
+np.corrcoef(df['Jardinets de Gràcia_distance'], df['LogPricePNight'])
+
+# DISTANCIA VILA OLIMPICA
+
+# DISTANCIA COLON
+
+# DISTANCIA ARC DL TRIOMF
+
+# DISTANCIA GLORIES
+
+# DISTANCIA HOSPITAL SANT PAU
+
+# DISTANCIA PLAZA CATALUÑA
+
+# DISTANCIA PASEO DE GRACIA
+
+
+
+
+
+
+
+# PART PER REVISAR I ELIMINAR
 # VAIG A FER UN INTENT DE MAPA
 import geopandas as gpd
 from shapely.geometry.polygon import Polygon
@@ -973,6 +1315,6 @@ distances = distances.apply(lambda x: round(x, 2), axis = 1)
 
 df.to_csv('~/DadesAirBNB/DatosModelar.csv', index = False)
 
-distances.to_csv('~/DadesAirBNB/distanciastransporte.csv')
+#distances.to_csv('~/DadesAirBNB/distanciastransporte.csv')
 
 

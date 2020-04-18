@@ -14,11 +14,10 @@ import contextily as ctx
 import matplotlib.pyplot as plt
 plt.style.use('fivethirtyeight')
 
-df = pd.read_csv('~/DadesAirBNB/DatosGeneral.csv')
+map_df = pd.read_csv('~/DadesAirBNB/Localizaciones.csv')
 
 bcn_df = gpd.read_file("/home/guillem/DadesAirBNB/neighbourhoods.geojson")
 
-map_df = df.reset_index().drop_duplicates(subset = ['id'])[['id', 'neighbourhood_group_cleansed', 'latitude', 'longitude']]
 map_df['geometry'] = map_df.apply(lambda x: Point(x.longitude, x.latitude), axis = 1)
 
 map_df = gpd.GeoDataFrame(map_df, geometry = gpd.points_from_xy(map_df.longitude, map_df.latitude), crs = bcn_df.crs)
@@ -80,23 +79,22 @@ dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude', 'Longitude']].values, m
 
 hc = AgglomerativeClustering(n_clusters=11, affinity='cityblock', linkage='single')
 
-clusters = hc.fit_predict(dff[['Longitude_metros', 'Latitude_metros']])
+clusters = hc.fit_predict(dff[['Longitude', 'Latitude']])
 
 print(clusters[:10])
 
-dff['clusters'] = hc.fit_predict(dff[['Longitude_metros', 'Latitude_metros']])
+dff['clusters'] = hc.fit_predict(dff[['Longitude', 'Latitude']])
 
 dff['clusters'] = dff['clusters'].astype('category')
 
 dff.clusters.dtypes
 
+dff = dff.to_crs(epsg=3857)
 ax = dff.plot(column = 'clusters', cmap='Set3', legend = True, figsize = (20, 20), categorical=True, markersize = 400)
 ctx.add_basemap(ax)
 plt.show()
 
 dff.groupby('clusters')['Latitude'].count()
-
-dff.groupby('clusters')['Latitude'].count()[dff.groupby('clusters')['Latitude'].count() == 1]
 
 col_clust = dff.groupby('clusters')['Latitude'].count()[dff.groupby('clusters')['Latitude'].count() > 5].index.tolist()
 
@@ -106,16 +104,18 @@ dff.groupby('clusters')['Latitude'].count()
 
 # Hierarchical clustering
 
-dff['clusters'] = hc.fit_predict(dff[['Longitude_metros', 'Latitude_metros']])
+dff = dff.to_crs(epsg = 4326)
+dff['clusters'] = hc.fit_predict(dff[['Longitude', 'Latitude']])
 
-ax = dff.plot(column = 'clusters', cmap='Set3', legend = True, figsize = (20, 20), categorical=True)
+dff = dff.to_crs(epsg = 3857)
+ax = dff.plot(column = 'clusters', cmap='Set3', legend = True, figsize = (20, 20), categorical=True, markersize = 400)
 ctx.add_basemap(ax)
 plt.show()
 
 dff = dff.to_crs(epsg = 4326)
 hc = AgglomerativeClustering(n_clusters=13, affinity='cityblock', linkage='average')
 
-dff['clusters_hc'] = hc.fit_predict(dff[['Longitude_metros', 'Latitude_metros']])
+dff['clusters_hc'] = hc.fit_predict(dff[['Longitude', 'Latitude']])
 
 dff = dff.to_crs(epsg = 3857)
 ax = dff.plot(column = 'clusters_hc', cmap='tab20b', legend = True, figsize = (20, 20), categorical=True, edgecolor='black', markersize=100)
@@ -135,7 +135,7 @@ n_clusters = list(range(1, 20))
 wcss = []
 for cluster in n_clusters:
     km = KMeans(n_clusters=cluster)
-    km.fit(dff[['Longitude_metros', 'Latitude_metros']])
+    km.fit(dff[['Longitude', 'Latitude']])
     wcss.append(km.inertia_)
 
 ax, fig = plt.subplots(1, 1, figsize=(10,7))
@@ -146,7 +146,7 @@ plt.ylabel('wcss')
 plt.title('Elbow Curve')
 plt.show()
 
-km = KMeans(n_clusters=12, n_jobs=10)
+km = KMeans(n_clusters=12)
 
 dff['clusters_km'] = km.fit_predict(dff[['Longitude', 'Latitude']])
 
@@ -173,18 +173,6 @@ plt.tight_layout()
 
 km.cluster_centers_
 
-dff.groupby('clusters_km').count()
-
-centroids_km = []
-clusters = []
-for i, j in enumerate(km.cluster_centers_):
-    clusters.append(i)
-    centroids_km.append(j)
-
-centroids_km = pd.DataFrame({'cluster': clusters, 'centroids': centroids_km})
-
-centroids_km
-
 clusters = ['Catedral de Barcelona', 'Sagrada Familia', 'Montjuic', 'Parc Guell', 'Jardinets de Gràcia', 
             'Vila Olimpica', 'Colon', 'Arc de Triomf', 'Glories', 'Hospital de Sant Pau', 
             'Pl. Catalunya', 'Pg. de Gràcia']
@@ -199,23 +187,17 @@ centroids_km['Longitud'] = [centroids_km.centroids[i][0] for i in range(centroid
 
 centroids_km['Latitud'] = [centroids_km.centroids[i][1] for i in range(centroids_km.shape[0])]
 
-centroids_km['geometry'] = centroids_km.apply(lambda x: Point(x.Longitud, 
-                                                              x.Latitud), axis = 1)
+centroids_km['geometry'] = centroids_km.apply(lambda x: Point(x.Longitud, x.Latitud), axis = 1)
 
-landmarks = gpd.GeoDataFrame(centroids_km, geometry=gpd.points_from_xy(centroids_km.Longitud, 
-                                                                       centroids_km.Latitud), 
-                             crs=bcn_df.crs)
+landmarks = gpd.GeoDataFrame(centroids_km, geometry=gpd.points_from_xy(centroids_km.Longitud, centroids_km.Latitud), crs=bcn_df.crs)
 
 landmarks = landmarks[['cluster', 'geometry']]
-
 
 landmarks = landmarks.to_crs(epsg=3857)
 map_df = map_df.to_crs(epsg=3857)
 
 for i, landmark in enumerate(landmarks.cluster):
-    map_df['{}_distance'.format(landmark)] = [j.distance(landmarks.geometry[i]) 
-                                              for j in map_df.geometry]
-
+    map_df['{}_distance'.format(landmark)] = [j.distance(landmarks.geometry[i]) for j in map_df.geometry]
 
 # DATASET DELS TRANSPORTS
 
@@ -329,7 +311,7 @@ plt.show()
 
 # DATASET AUTOBUSOS
 
-transportsbus = pd.read_csv("~/DadesAirBNB/ESTACIONS_BUS.csv")
+transportsbus = pd.read_csv("~/DadesAirBNB/Transports/ESTACIONS_BUS.csv")
 
 transportsbus = transportsbus[['NOM_CAPA', 'LONGITUD', 'LATITUD', 'EQUIPAMENT', 'NOM_BARRI']]
 
@@ -371,18 +353,10 @@ aerobus.plot(ax = ax, color = "navy")
 ctx.add_basemap(ax)
 plt.show()
 
-# Distancias calculadas de landmarks y transportes, hacemos join y generamos csv
-map_df.columns
+# Generamos el csv de las distancias para su posterior Join en el script de Exploración
 
-map_df.head()
-
-cols_select = [x for x in map_df.columns if x not in ['neighbourhood_group_cleansed', 'latitude', 
-                                                      'longitude', 'geometry']]
+cols_select = [x for x in map_df.columns if x not in ['neighbourhood_group_cleansed', 'latitude','longitude', 'geometry']]
 
 distances = map_df[cols_select]
 
-df = df.join(distances, on='id', lsuffix='o_')
-
-
-df.to_csv('~/DadesAirBNB/DatosModelar.csv')
-
+distances.to_csv('~/DadesAirBNB/Distancias.csv')
