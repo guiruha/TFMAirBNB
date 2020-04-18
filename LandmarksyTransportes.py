@@ -113,7 +113,7 @@ ctx.add_basemap(ax)
 plt.show()
 
 dff = dff.to_crs(epsg = 4326)
-hc = AgglomerativeClustering(n_clusters=13, affinity='cityblock', linkage='average')
+hc = AgglomerativeClustering(n_clusters=13, affinity='euclidean', linkage='ward')
 
 dff['clusters_hc'] = hc.fit_predict(dff[['Longitude', 'Latitude']])
 
@@ -122,7 +122,22 @@ ax = dff.plot(column = 'clusters_hc', cmap='tab20b', legend = True, figsize = (2
 ctx.add_basemap(ax)
 plt.show()
 
+col_clust = dff.groupby('clusters')['Latitude'].count()[dff.groupby('clusters')['Latitude'].count() < 5].index.tolist()
+
+dff.drop([i for x, i in zip(dff['clusters'], dff.index) if x in col_clust], axis = 0, inplace = True)
+
 dff['clusters'].value_counts()
+
+np.random.seed(1997)
+hc = AgglomerativeClustering(n_clusters=13, affinity='euclidean', linkage='ward')
+
+dff['clusters_hc'] = hc.fit_predict(dff[['Longitude', 'Latitude']])
+
+dff = dff.to_crs(epsg = 3857)
+ax = dff.plot(column = 'clusters_hc', cmap='tab20b', legend = True, figsize = (20, 20), categorical=True, edgecolor='black', markersize=100)
+ctx.add_basemap(ax)
+plt.show()
+
 
 # K-MEANS
 
@@ -146,7 +161,7 @@ plt.ylabel('wcss')
 plt.title('Elbow Curve')
 plt.show()
 
-km = KMeans(n_clusters=12)
+km = KMeans(n_clusters=12, random_state = 1997)
 
 dff['clusters_km'] = km.fit_predict(dff[['Longitude', 'Latitude']])
 
@@ -161,21 +176,18 @@ km.cluster_centers_
 km.cluster_centers_[:,0]
 km.cluster_centers_[:,1]
 
-sns.scatterplot(km.cluster_centers_[:,0], km.cluster_centers_[:,1])
-
 dff = dff.to_crs(epsg=4326)
 bcn_df = bcn_df.to_crs(epsg=4326)
 
 ax = bcn_df.plot(figsize=(25,13))
 dff.plot(column = 'clusters_km', cmap='tab20b', legend = True, figsize = (20, 20), categorical=True, edgecolor='black', markersize=100, ax=ax)
-plt.scatter(km.cluster_centers_[:,0], km.cluster_centers_[:,1], marker='*', s=300, color='cyan', edgecolor='black')
+plt.scatter(km.cluster_centers_[:,0], km.cluster_centers_[:,1], marker='*', s=300, color='yellow', edgecolor='black')
 plt.tight_layout()
 
 km.cluster_centers_
 
-clusters = ['Catedral de Barcelona', 'Sagrada Familia', 'Montjuic', 'Parc Guell', 'Jardinets de Gràcia', 
-            'Vila Olimpica', 'Colon', 'Arc de Triomf', 'Glories', 'Hospital de Sant Pau', 
-            'Pl. Catalunya', 'Pg. de Gràcia']
+clusters = [ 'Arc de Triomf', 'Montjuic', 'Jardinets de Gràcia', 'Parc Guell', 'Sagrada Familia', 'Colon', 
+            'Vila Olimpica', 'Pl. Catalunya', 'Catedral de Barcelona', 'Glories', 'Hospital de Sant Pau', 'Pg. de Gràcia']
 
 centroids = km.cluster_centers_.tolist()
 
