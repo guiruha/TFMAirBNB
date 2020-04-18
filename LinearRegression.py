@@ -21,10 +21,6 @@ dummycols = ["host_response_time", "neighbourhood_group_cleansed", "property_typ
 
 X_raw = pd.get_dummies(df, columns = dummycols)
 
-factorcolumns = [x for x in list(X_raw.dtypes[(X_raw.dtypes == 'uint8')].index) if 0 in X_raw[x].value_counts().index]
-
-X_raw[factorcolumns] = X_raw[factorcolumns].astype('category')
-
 X_raw.drop('id', inplace = True, axis = 1)
 
 corrcolumns = X_raw.dtypes[X_raw.dtypes != 'object'].index[X_raw.dtypes[X_raw.dtypes != 'object'].index.str.contains('rice') == False]
@@ -47,20 +43,48 @@ ax.hlines(y = -0.3, color = "red", linestyle = '-.', xmin = -1, xmax = templot.s
 plt.xticks(rotation = 90)
 plt.show()
 
-sns.barplot?
-np.corrcoef(X_raw['room_type_Private room'], X_raw['LogPricePNight'])
+np.corrcoef(X_raw['room_type_Private room'], X_raw['LogPricePNight'])[0, 1]
 scipy.stats.pointbiserialr(X_raw['room_type_Private room'], X_raw['LogPricePNight'])
 
-X_raw['room_type_Shared room'].value_counts()
+corrcolumns = list(X_raw.dtypes[((X_raw.dtypes == 'float') | (X_raw.dtypes == 'int')) & (X_raw.dtypes.index.str.contains('rice') == False)].index)
+correlations = X_raw[corrcolumns].corr()
 
 colineales = []
-for column in correlations.columns:
-    for row in correlations.index:
+for column in corrcolumns:
+    for row in corrcolumns:
         if (np.abs(correlations.loc[row, column]) > 0.7) & (correlations.loc[row, column] !=  1):
             print(row, 'y', column, 'tienen una correlación de', correlations.loc[row, column])
-            colineales.append(row)
-selection = ['bedrooms', 'beds', 'accommodates', 'review_scores_accuracy', 'review_scores_value', 'review_scores_rating']
+            colineales.append('{} <-> {} == {}'.format(row, column, correlations.loc[row, column]))
+            
+selection = ['bedrooms', 'beds', 'accommodates', 'review_scores_value', 'review_scores_rating']
 for column in selection:
     print(column, 'LogPricePNight', X_raw['LogPricePNight'].corr(X_raw[column]))
 
+X_raw.drop(['beds', 'review_scores_rating'], axis = 1, inplace = True)
+
+corrcolumns = list(X_raw.dtypes[((X_raw.dtypes == 'float') | (X_raw.dtypes == 'int'))].index)
+
+mask = np.zeros_like(X_raw[corrcolumns].corr())
+mask[np.triu_indices_from(mask)] = True
+fig, ax = plt.subplots(1, 1, figsize = (35, 30))
+sns.heatmap(round(X_raw[corrcolumns].corr(), 3), vmin = -1, vmax = 1, center = 0, mask = mask, cmap = "RdBu", ax = ax, annot = True,  annot_kws = {"size": 8})
+plt.show()
+
+corrcolumns = list(X_raw.dtypes[((X_raw.dtypes == 'float') | (X_raw.dtypes == 'int')) & (X_raw.dtypes.index.str.contains('rice') == False)].index)
+
+atributos = [x for x in corrcolumns if np.abs(np.corrcoef(X_raw[x], X_raw['LogPricePNight'])[0, 1]) > 0.20]
+
+X_model = X_raw[atributos]
+y_model = X_raw['LogPricePNight']
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+
+X_train, X_test, y_train, y_test = train_test_split(X_model, y_model, test_size = 0.3)
+
+lr = LinearRegression()
+
+lr.fit(X_train, y_train)
+
+lr.score(X_test, y_test)
 

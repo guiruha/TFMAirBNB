@@ -827,8 +827,6 @@ plt.show()
 
 np.corrcoef(np.log(temp['dist_fgc']), temp['LogPricePNight'])
 
-from sklearn.linear_model import LinearRegression
-
 lr = LinearRegression()
 
 lr.fit(np.log(temp['dist_fgc']).values.reshape(-1, 1), temp['LogPricePNight'].values)
@@ -850,8 +848,6 @@ sns.scatterplot(np.log(temp['dist_renfe']), temp['LogPricePNight'], alpha = 0.01
 plt.show()
 
 np.corrcoef(np.log(temp['dist_renfe']), temp['LogPricePNight'])
-
-from sklearn.linear_model import LinearRegression
 
 lr = LinearRegression()
 
@@ -875,8 +871,6 @@ plt.show()
 
 np.corrcoef(np.log(temp['dist_trenaeropuerto']), temp['LogPricePNight'])
 
-from sklearn.linear_model import LinearRegression
-
 lr = LinearRegression()
 
 lr.fit(np.log(temp['dist_trenaeropuerto']).values.reshape(-1, 1), temp['LogPricePNight'].values)
@@ -898,8 +892,6 @@ sns.scatterplot(np.log(temp['dist_tramvia']), temp['LogPricePNight'], alpha = 0.
 plt.show()
 
 np.corrcoef(np.log(temp['dist_tramvia']), temp['LogPricePNight'])
-
-from sklearn.linear_model import LinearRegression
 
 lr = LinearRegression()
 
@@ -923,8 +915,6 @@ plt.show()
 
 np.corrcoef(np.log(temp['dist_bus']), temp['LogPricePNight'])
 
-from sklearn.linear_model import LinearRegression
-
 lr = LinearRegression()
 
 lr.fit(np.log(temp['dist_bus']).values.reshape(-1, 1), temp['LogPricePNight'].values)
@@ -947,8 +937,6 @@ plt.show()
 
 np.corrcoef(np.log(temp['dist_aerobus']), temp['LogPricePNight'])
 
-from sklearn.linear_model import LinearRegression
-
 lr = LinearRegression()
 
 lr.fit(np.log(temp['dist_aerobus']).values.reshape(-1, 1), temp['LogPricePNight'].values)
@@ -970,8 +958,6 @@ sns.scatterplot(temp['Catedral de Barcelona_distance'], temp['LogPricePNight'], 
 plt.show()
 
 np.corrcoef(temp['Catedral de Barcelona_distance'], temp['LogPricePNight'])
-
-from sklearn.linear_model import LinearRegression
 
 lr = LinearRegression()
 
@@ -996,8 +982,6 @@ plt.show()
 np.corrcoef(np.log(temp['Sagrada Familia_distance']), temp['LogPricePNight'])
 np.corrcoef(temp['Sagrada Familia_distance'], temp['LogPricePNight'])
 
-from sklearn.linear_model import LinearRegression
-
 lr = LinearRegression()
 
 lr.fit(temp['Sagrada Familia_distance'].values.reshape(-1, 1), temp['LogPricePNight'].values)
@@ -1021,8 +1005,6 @@ plt.show()
 
 np.corrcoef(np.log(temp['Montjuic_distance']), temp['LogPricePNight'])
 np.corrcoef(temp['Montjuic_distance'], temp['LogPricePNight'])
-
-from sklearn.linear_model import LinearRegression
 
 lr = LinearRegression()
 

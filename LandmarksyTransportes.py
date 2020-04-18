@@ -371,4 +371,4 @@ cols_select = [x for x in map_df.columns if x not in ['neighbourhood_group_clean
 
 distances = map_df[cols_select]
 
-distances.to_csv('~/DadesAirBNB/Distancias.csv')
+distances.to_csv('~/DadesAirBNB/Distancias.csv', index = False)
