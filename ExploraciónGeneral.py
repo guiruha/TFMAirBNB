@@ -1075,21 +1075,183 @@ np.corrcoef(df['Jardinets de Gràcia_distance'], df['LogPricePNight'])
 
 # DISTANCIA VILA OLIMPICA
 
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Vila Olimpica_distance']), temp['LogPricePNight'], alpha = 0.01, 
+                x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(np.log(temp['Vila Olimpica_distance']), temp['LogPricePNight'])
+np.corrcoef(temp['Vila Olimpica_distance'], temp['LogPricePNight'])
+
+lr = LinearRegression()
+
+lr.fit(np.log(temp['Vila Olimpica_distance']).values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Vila Olimpica_distance']), temp['LogPricePNight'], alpha = 0.01, 
+                x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(np.log(temp['Vila Olimpica_distance']), B0 + B1*np.log(temp['Vila Olimpica_distance']), 
+         color = "maroon")
+plt.show()
+
 # DISTANCIA COLON
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Colon_distance']), temp['LogPricePNight'], alpha = 0.01, 
+                x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(np.log(temp['Colon_distance']), temp['LogPricePNight'])
+np.corrcoef(temp['Colon_distance'], temp['LogPricePNight'])
+
+lr = LinearRegression()
+
+lr.fit(np.log(temp['Colon_distance']).values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Colon_distance']), temp['LogPricePNight'], alpha = 0.01, 
+                x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(np.log(temp['Colon_distance']), B0 + B1*np.log(temp['Colon_distance']), 
+         color = "maroon")
+plt.show()
+
+np.corrcoef(df['Colon_distance'], df['LogPricePNight'])
 
 # DISTANCIA ARC DL TRIOMF
 
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Arc de Triomf_distance']), temp['LogPricePNight'], alpha = 0.01, 
+                x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(np.log(temp['Arc de Triomf_distance']), temp['LogPricePNight'])
+np.corrcoef(temp['Arc de Triomf_distance'], temp['LogPricePNight'])
+
+lr = LinearRegression()
+
+lr.fit(np.log(temp['Arc de Triomf_distance']).values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Arc de Triomf_distance']), temp['LogPricePNight'], alpha = 0.01, 
+                x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(np.log(temp['Arc de Triomf_distance']), B0 + B1*np.log(temp['Arc de Triomf_distance']), 
+         color = "maroon")
+plt.show()
+
+np.corrcoef(df['Arc de Triomf_distance'], df['LogPricePNight'])
+
 # DISTANCIA GLORIES
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Glories_distance']), temp['LogPricePNight'], alpha = 0.01, 
+                x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(np.log(temp['Glories_distance']), temp['LogPricePNight'])
+np.corrcoef(temp['Glories_distance'], temp['LogPricePNight'])
+
+lr = LinearRegression()
+
+lr.fit(np.log(temp['Glories_distance']).values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Glories_distance']), temp['LogPricePNight'], alpha = 0.01, 
+                x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(np.log(temp['Glories_distance']), B0 + B1*np.log(temp['Glories_distance']), 
+         color = "maroon")
+plt.show()
+
+np.corrcoef(df['Glories_distance'], df['LogPricePNight'])
 
 # DISTANCIA HOSPITAL SANT PAU
 
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Hospital de Sant Pau_distance']), temp['LogPricePNight'], alpha = 0.01, 
+                x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(np.log(temp['Hospital de Sant Pau_distance']), temp['LogPricePNight'])
+np.corrcoef(temp['Hospital de Sant Pau_distance'], temp['LogPricePNight'])
+
+lr = LinearRegression()
+
+lr.fit(np.log(temp['Hospital de Sant Pau_distance']).values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Hospital de Sant Pau_distance']), temp['LogPricePNight'], alpha = 0.01, 
+                x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(np.log(temp['Hospital de Sant Pau_distance']), B0 + B1*np.log(temp['Hospital de Sant Pau_distance']), 
+         color = "maroon")
+plt.show()
+
+np.corrcoef(df['Hospital de Sant Pau_distance'], df['LogPricePNight'])
+
 # DISTANCIA PLAZA CATALUÑA
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Pl. Catalunya_distance']), temp['LogPricePNight'], alpha = 0.01, 
+                x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
+
+np.corrcoef(np.log(temp['Pl. Catalunya_distance']), temp['LogPricePNight'])
+np.corrcoef(temp['Pl. Catalunya_distance'], temp['LogPricePNight'])
+
+lr = LinearRegression()
+
+lr.fit(np.log(temp['Pl. Catalunya_distance']).values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Pl. Catalunya_distance']), temp['LogPricePNight'], alpha = 0.01, 
+                x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(np.log(temp['Pl. Catalunya_distance']), B0 + B1*np.log(temp['Pl. Catalunya_distance']), 
+         color = "maroon")
+plt.show()
+
+np.corrcoef(df['Pl. Catalunya_distance'], df['LogPricePNight'])
 
 # DISTANCIA PASEO DE GRACIA
 
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Pg. de Gràcia_distance']), temp['LogPricePNight'], alpha = 0.01, 
+                x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.show()
 
+np.corrcoef(np.log(temp['Pg. de Gràcia_distance']), temp['LogPricePNight'])
+np.corrcoef(temp['Pg. de Gràcia_distance'], temp['LogPricePNight'])
 
+lr = LinearRegression()
 
+lr.fit(np.log(temp['Pg. de Gràcia_distance']).values.reshape(-1, 1), temp['LogPricePNight'].values)
+
+B1 = lr.coef_
+B0 = lr.intercept_
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+sns.scatterplot(np.log(temp['Pg. de Gràcia_distance']), temp['LogPricePNight'], alpha = 0.01, 
+                x_jitter = 0.1, y_jitter = 0.1, color = "navy", marker = 'o')
+plt.plot(np.log(temp['Pg. de Gràcia_distance']), B0 + B1*np.log(temp['Pg. de Gràcia_distance']), 
+         color = "maroon")
+plt.show()
+
+np.corrcoef(df['Pg. de Gràcia_distance'], df['LogPricePNight'])
 
 
 

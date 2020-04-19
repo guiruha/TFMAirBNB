@@ -121,7 +121,30 @@ map_df[map_df.index == map_df['restaurantes_cercanos'].idxmin()].plot(ax = ax, m
 ctx.add_basemap(ax)
 plt.show()
 
+# SALAS MUSICALES
 
+musica = pd.read_csv("~/DadesAirBNB/Turisme/C004_Espais_de_musica_i_copes.csv")
+
+musica = musica.drop_duplicates(subset = ['EQUIPAMENT'])
+
+df_musica = musica[['EQUIPAMENT', 'LATITUD', 'LONGITUD', 'NUM_BARRI']]
+
+df_musica = gpd.GeoDataFrame(rest, geometry = gpd.points_from_xy(rest.LONGITUD, rest.LATITUD), crs = bcn_df.crs)
+
+df_musica = rest.to_crs(epsg = 3857)
+
+map_df['musica_cercanos'] = [sum(i.within(j) for i in rest.geometry) for j in mapdistances.geometry]
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 10))
+map_df.plot(column = 'neighbourhood_group_cleansed', cmap = 'rainbow', ax = ax, legend = True)
+ctx.add_basemap(ax)
+
+fig, ax = plt.subplots(1, 1, figsize = (25, 25))
+rest.plot(ax = ax, color = "navy")
+map_df[map_df.index == map_df['musica_cercanos'].idxmax()].plot(ax = ax, marker = "X", markersize = 500, color = "maroon")
+map_df[map_df.index == map_df['musica_cercanos'].idxmin()].plot(ax = ax, marker = "X", markersize = 500, color = "green")
+ctx.add_basemap(ax)
+plt.show()
 
 
 # Creamos csv de Turismo
