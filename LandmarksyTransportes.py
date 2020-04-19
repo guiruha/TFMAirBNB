@@ -129,7 +129,7 @@ dff.drop([i for x, i in zip(dff['clusters'], dff.index) if x in col_clust], axis
 dff['clusters'].value_counts()
 
 np.random.seed(1997)
-hc = AgglomerativeClustering(n_clusters=13, affinity='euclidean', linkage='ward')
+hc = AgglomerativeClustering(n_clusters=13, affinity='cityblock', linkage='average')
 
 dff['clusters_hc'] = hc.fit_predict(dff[['Longitude', 'Latitude']])
 

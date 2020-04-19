@@ -1253,6 +1253,16 @@ plt.show()
 
 np.corrcoef(df['Pg. de Gràcia_distance'], df['LogPricePNight'])
 
+# AÑADIMOS DATASET DE TURISMO
+
+turismo = pd.read_csv('~/DadesAirBNB/DistanciasTurismo.csv')
+
+df = pd.merge(df, turismo, on = 'id')
+df.isnull().sum()[df.isnull().sum()>0]
+
+# SEGUIR ANALISIS POR AQUÍ
+
+df.to_csv('~/DadesAirBNB/DatosModelar.csv', index = False)
 
 
 # PART PER REVISAR I ELIMINAR

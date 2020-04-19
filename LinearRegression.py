@@ -6,7 +6,6 @@ Created on Mon Apr 13 18:02:04 2020
 @author: guillem
 """
 
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,7 +13,7 @@ import scipy.stats
 import seaborn as sns
 
 df = pd.read_csv("~/DadesAirBNB/DatosModelar.csv")
-                 
+
 df.dtypes[df.dtypes == 'object']
 
 dummycols = ["host_response_time", "neighbourhood_group_cleansed", "property_type", "room_type",  "cancellation_policy"]
@@ -62,7 +61,9 @@ for column in selection:
 
 X_raw.drop(['beds', 'review_scores_rating'], axis = 1, inplace = True)
 
-corrcolumns = list(X_raw.dtypes[((X_raw.dtypes == 'float') | (X_raw.dtypes == 'int'))].index)
+X_raw = X_raw[[x for x in X_raw.columns if x not in ['LogPricePNight']] + ['LogPricePNight']]
+
+corrcolumns = list(X_raw.dtypes[((X_raw.dtypes == 'float') | (X_raw.dtypes == 'int')) & (X_raw.dtypes.index.str.contains('rice') == False)].index)
 
 mask = np.zeros_like(X_raw[corrcolumns].corr())
 mask[np.triu_indices_from(mask)] = True
@@ -70,21 +71,120 @@ fig, ax = plt.subplots(1, 1, figsize = (35, 30))
 sns.heatmap(round(X_raw[corrcolumns].corr(), 3), vmin = -1, vmax = 1, center = 0, mask = mask, cmap = "RdBu", ax = ax, annot = True,  annot_kws = {"size": 8})
 plt.show()
 
-corrcolumns = list(X_raw.dtypes[((X_raw.dtypes == 'float') | (X_raw.dtypes == 'int')) & (X_raw.dtypes.index.str.contains('rice') == False)].index)
+atributos = [x for x in corrcolumns if np.abs(np.corrcoef(X_raw[x], X_raw['LogPricePNight'])[0, 1]) > 0.15]
 
-atributos = [x for x in corrcolumns if np.abs(np.corrcoef(X_raw[x], X_raw['LogPricePNight'])[0, 1]) > 0.20]
+factorcolumns = [x for x in list(X_raw.dtypes[(X_raw.dtypes == 'uint8')].index | X_raw.dtypes[(X_raw.dtypes == 'int')].index) 
+                 if (0 in X_raw[x].value_counts().index)&(x.endswith('cercanos') == False)]
+
+X_raw[factorcolumns] = X_raw[factorcolumns].astype('category')
 
 X_model = X_raw[atributos]
 y_model = X_raw['LogPricePNight']
 
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-
 X_train, X_test, y_train, y_test = train_test_split(X_model, y_model, test_size = 0.3)
+
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+
+numcols = list(X_model.dtypes[((X_model.dtypes == 'float') | (X_model.dtypes == 'int')) & (X_model.dtypes.index.str.contains('rice') == False)].index)
+
+X_train[numcols] = sc.fit_transform(X_train[numcols])
+X_test[numcols] = sc.transform(X_test[numcols])
+
+from sklearn.linear_model import LinearRegression
 
 lr = LinearRegression()
 
 lr.fit(X_train, y_train)
 
 lr.score(X_test, y_test)
+lr.score(X_train, y_train)
 
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
+
+y_pred = lr.predict(X_test)
+
+mean_squared_error(np.exp(y_pred), np.exp(y_test))
+mean_absolute_error(np.exp(y_pred), np.exp(y_test))
+
+# PROBAMOS CON TODAS LAS VARIABLES
+X_raw.drop(['Unnamed: 0', 'Unnamed: 0.1'], axis = 1, inplace = True)
+
+X_model_tot = X_raw[list(X_raw.dtypes[((X_raw.dtypes != 'object')) & (X_raw.dtypes.index.str.contains('rice') == False)].index)]
+
+X_train, X_test, y_train, y_test = train_test_split(X_model_tot, y_model, test_size = 0.3)
+
+numcols = list(X_model_tot.dtypes[(X_model_tot.dtypes == 'float') | (X_model_tot.dtypes == 'int')].index)
+
+X_train[numcols] = sc.fit_transform(X_train[numcols])
+X_test[numcols] = sc.transform(X_test[numcols])
+
+
+lrtotal.coef_
+lrtotal = LinearRegression()
+
+lrtotal.fit(X_train, y_train)
+
+lrtotal.score(X_train, y_train)
+
+lrtotal.score(X_test, y_test)
+
+# APLICAMOS UNA LASSO
+
+from sklearn.linear_model import Lasso
+
+lasso = Lasso(alpha = 0.01)
+
+lasso.fit(X_train, y_train)
+
+lasso.score(X_train, y_train)
+
+lasso.score(X_test, y_test)
+
+lassoatr = []
+for atr, coef in zip(X_model_tot.columns, lasso.coef_):
+    if np.abs(coef) > 0:
+        lassoatr.append(atr)
+
+
+from sklearn.linear_model import LassoCV
+
+lcv = LassoCV()
+
+lcv.fit(X_train, y_train)
+
+lcv.score(X_test, y_test)
+
+lassoatr = []
+for atr, coef in zip(X_model_tot.columns, lcv.coef_):
+    if np.abs(coef) > 0:
+        lassoatr.append(atr)
+
+
+# REGRESIÓN LINEAL CON ATRIBUTOS SELECCIONADOS CON LASSO
+
+X_final = X_model_tot[lassoatr]
+y_final = X_raw['LogPricePNight']
+
+X_train, X_test, y_train, y_test = train_test_split(X_final, y_final, test_size = 0.3)
+
+lrfinal = LinearRegression()
+
+lrfinal.fit(X_train, y_train)
+
+lrfinal.score(X_train, y_train)
+lrfinal.score(X_test, y_test)
+
+y_pred_final = lrfinal.predict(X_test)
+
+mean_squared_error(y_test, y_pred_final)
+mean_absolute_error(y_test, y_pred_final)
+
+listafinal = []
+for atr, coef in zip(X_final.columns, lrfinal.coef_):
+    listafinal.append('El atributo {} tiene un coeficiente de {}'.format(atr, coef))
+
+for i in  listafinal:
+    print(i)

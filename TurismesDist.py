@@ -129,11 +129,11 @@ musica = musica.drop_duplicates(subset = ['EQUIPAMENT'])
 
 df_musica = musica[['EQUIPAMENT', 'LATITUD', 'LONGITUD', 'NUM_BARRI']]
 
-df_musica = gpd.GeoDataFrame(rest, geometry = gpd.points_from_xy(rest.LONGITUD, rest.LATITUD), crs = bcn_df.crs)
+df_musica = gpd.GeoDataFrame(df_musica, geometry = gpd.points_from_xy(df_musica.LONGITUD, df_musica.LATITUD), crs = bcn_df.crs)
 
 df_musica = rest.to_crs(epsg = 3857)
 
-map_df['musica_cercanos'] = [sum(i.within(j) for i in rest.geometry) for j in mapdistances.geometry]
+map_df['musica_cercanos'] = [sum(i.within(j) for i in df_musica.geometry) for j in mapdistances.geometry]
 
 fig, ax = plt.subplots(1, 1, figsize = (15, 10))
 map_df.plot(column = 'neighbourhood_group_cleansed', cmap = 'rainbow', ax = ax, legend = True)
@@ -149,6 +149,6 @@ plt.show()
 
 # Creamos csv de Turismo
 
-turismodist = map_df[x for x in map_df.columns if x not in ['neighbourhood_group_cleansed', 'geometry', 'latitude', 'longitude']]
+turismodist = map_df[[x for x in map_df.columns if x not in ['neighbourhood_group_cleansed', 'geometry', 'latitude', 'longitude']]]
 
 turismodist.to_csv('~/DadesAirBNB/DistanciasTurismo.csv', index = False)
