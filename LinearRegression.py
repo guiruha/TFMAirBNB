@@ -24,17 +24,28 @@ X_raw.drop('id', inplace = True, axis = 1)
 
 corrcolumns = X_raw.dtypes[X_raw.dtypes != 'object'].index[X_raw.dtypes[X_raw.dtypes != 'object'].index.str.contains('rice') == False]
 
-corrs = []
+corrBis = []
+corrPea = []
 
 for column in corrcolumns:
-    corrs.append(scipy.stats.pointbiserialr(X_raw[column], X_raw['LogPricePNight'])[0])
+    corrBis.append(round(scipy.stats.pointbiserialr(X_raw[column], X_raw['LogPricePNight'])[0], 3))
+    corrPea.append(round(np.corrcoef(X_raw[column], X_raw['LogPricePNight'])[0, 1], 3))
+    
+templot = pd.DataFrame({'Atributo': corrcolumns, 'CorrBiserial': corrBis, 'CorrdePearson': corrPea})
 
-templot = pd.DataFrame({'Atributo': corrcolumns, 'CorrCoef': corrs})
-
-templot['colors'] = templot['CorrCoef'].apply(lambda x: 'positivo' if x > 0 else 'negativo')
+templot['colors'] = templot['CorrBiserial'].apply(lambda x: 'positivo' if x > 0 else 'negativo')
 
 fig, ax = plt.subplots(1, 1, figsize = (40, 10))
-sns.barplot('Atributo', 'CorrCoef', data = templot, hue = 'colors', palette = 'Set1')
+sns.barplot('Atributo', 'CorrBiserial', data = templot, hue = 'colors', palette = 'Set1')
+ax.hlines(y = 0.5, color = "blue", linestyle = '--', xmin = -1, xmax = templot.shape[0])
+ax.hlines(y = -0.5, color = "red", linestyle = '--', xmin = -1, xmax = templot.shape[0])
+ax.hlines(y = 0.3, color = "blue", linestyle = '-.', xmin = -1, xmax = templot.shape[0])
+ax.hlines(y = -0.3, color = "red", linestyle = '-.', xmin = -1, xmax = templot.shape[0])
+plt.xticks(rotation = 90)
+plt.show()
+
+fig, ax = plt.subplots(1, 1, figsize = (40, 10))
+sns.barplot('Atributo', 'CorrdePearson', data = templot, hue = 'colors', palette = 'Set1')
 ax.hlines(y = 0.5, color = "blue", linestyle = '--', xmin = -1, xmax = templot.shape[0])
 ax.hlines(y = -0.5, color = "red", linestyle = '--', xmin = -1, xmax = templot.shape[0])
 ax.hlines(y = 0.3, color = "blue", linestyle = '-.', xmin = -1, xmax = templot.shape[0])
@@ -43,7 +54,7 @@ plt.xticks(rotation = 90)
 plt.show()
 
 np.corrcoef(X_raw['room_type_Private room'], X_raw['LogPricePNight'])[0, 1]
-scipy.stats.pointbiserialr(X_raw['room_type_Private room'], X_raw['LogPricePNight'])
+scipy.stats.pointbiserialr(X_raw['room_type_Private room'], X_raw['LogPricePNight'])[0]
 
 corrcolumns = list(X_raw.dtypes[((X_raw.dtypes == 'float') | (X_raw.dtypes == 'int')) & (X_raw.dtypes.index.str.contains('rice') == False)].index)
 correlations = X_raw[corrcolumns].corr()
@@ -82,7 +93,7 @@ X_model = X_raw[atributos]
 y_model = X_raw['LogPricePNight']
 
 from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X_model, y_model, test_size = 0.3)
+X_train, X_test, y_train, y_test = train_test_split(X_model, y_model, test_size = 0.3, random_state = 1997)
 
 from sklearn.preprocessing import StandardScaler
 sc = StandardScaler()
@@ -121,8 +132,6 @@ numcols = list(X_model_tot.dtypes[(X_model_tot.dtypes == 'float') | (X_model_tot
 X_train[numcols] = sc.fit_transform(X_train[numcols])
 X_test[numcols] = sc.transform(X_test[numcols])
 
-
-lrtotal.coef_
 lrtotal = LinearRegression()
 
 lrtotal.fit(X_train, y_train)
@@ -147,21 +156,6 @@ lassoatr = []
 for atr, coef in zip(X_model_tot.columns, lasso.coef_):
     if np.abs(coef) > 0:
         lassoatr.append(atr)
-
-
-from sklearn.linear_model import LassoCV
-
-lcv = LassoCV()
-
-lcv.fit(X_train, y_train)
-
-lcv.score(X_test, y_test)
-
-lassoatr = []
-for atr, coef in zip(X_model_tot.columns, lcv.coef_):
-    if np.abs(coef) > 0:
-        lassoatr.append(atr)
-
 
 # REGRESIÓN LINEAL CON ATRIBUTOS SELECCIONADOS CON LASSO
 
@@ -188,3 +182,9 @@ for atr, coef in zip(X_final.columns, lrfinal.coef_):
 
 for i in  listafinal:
     print(i)
+
+from sklearn.metrics import r2_score
+
+print('El modelo final, utilizando {} atributos, ha conseguido un R-Cuadrado de {} % con un MSE de {}'\
+      .format(X_final.shape[1], round(r2_score(y_test, y_pred_final)*100, 2), mean_squared_error(np.exp(y_test), np.exp(y_pred_final))))
+
