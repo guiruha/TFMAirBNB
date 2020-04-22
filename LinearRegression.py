@@ -173,6 +173,8 @@ lrfinal.score(X_test, y_test)
 
 y_pred_final = lrfinal.predict(X_test)
 
+from sklearn
+
 mean_squared_error(y_test, y_pred_final)
 mean_absolute_error(y_test, y_pred_final)
 
