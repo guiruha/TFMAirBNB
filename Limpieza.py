@@ -1,83 +1,29 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Mar 25 19:20:07 2020
+Created on Fri Apr 24 18:32:42 2020
 
 @author: guillem
 """
 
 
-archives = !ls | grep '.csv'
-archives
-
-
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 
-df = pd.read_csv(archives[0])
 
-for archive in range(1, len(archives)):
-    df = df.append(pd.read_csv(archives[i]))
+df = pd.read_csv('~/DadesAirBNB/Listings/April2017.csv')
+df = df.append(pd.read_csv('~/DadesAirBNB/Listings/April2018.csv'), ignore_index = True)
+df = df.append(pd.read_csv('~/DadesAirBNB/Listings/April2019.csv'), ignore_index = True)
+df = df.append(pd.read_csv('~/DadesAirBNB/Listings/March2020.csv'), ignore_index = True)
 
+df = df.drop_duplicates('id')
 
 df.drop(df.columns[df.columns.str.endswith('url')], axis = 1, inplace = True)
 
-
 nulls = df.isnull().sum() / df.shape[0]
 nulls = nulls[nulls>0.05]
-
-fig, ax = plt.subplots(1, 1, figsize = (15, 10))
-sns.barplot(x = nulls.index, y = nulls)
-plt.xticks(rotation = 90)
-ax.hlines(xmin = 0, xmax = len(nulls), y = 0.4, color = "orange", linestyle = '--', label = "40%")
-ax.hlines(xmin = 0, xmax = len(nulls), y = 0.5, color = "blue", linestyle = '-.', label = "50%")
-ax.hlines(xmin = 0, xmax = len(nulls), y = 0.9, color = "red", linestyle = '-.', label = "90%")
-plt.legend()
-plt.title("Nulls por variable")
-ax.set_xlabel("Variable")
-ax.set_ylabel("% de Nulls")
-
-
-fig, ax = plt.subplots(1, 1, figsize = (15, 10))
-sns.barplot(x = nulls[nulls>.5].index, y = nulls[nulls>.5])
-plt.xticks(rotation = 90)
-ax.hlines(xmin = 0, xmax = len(nulls[nulls>.5]), y = 0.4, color = "orange", linestyle = '--', label = "40%")
-ax.hlines(xmin = 0, xmax = len(nulls[nulls>.5]), y = 0.5, color = "blue", linestyle = '-.', label = "50%")
-ax.hlines(xmin = 0, xmax = len(nulls[nulls>.5]), y = 0.9, color = "red", linestyle = '-.', label = "90%")
-plt.legend()
-plt.title("Nulls por variable")
-ax.set_xlabel("Variable")
-ax.set_ylabel("% de Nulls")
 
 df.drop(nulls[nulls>0.6].index, axis = 1, inplace = True)
-
-nulls = df.isnull().sum() / df.shape[0]
-nulls = nulls[nulls>0.05]
-
-fig, ax = plt.subplots(1, 1, figsize = (15, 10))
-sns.barplot(x = nulls.index, y = nulls)
-plt.xticks(rotation = 90)
-ax.hlines(xmin = 0, xmax = len(nulls), y = 0.4, color = "orange", linestyle = '--', label = "40%")
-ax.hlines(xmin = 0, xmax = len(nulls), y = 0.5, color = "blue", linestyle = '-.', label = "50%")
-ax.hlines(xmin = 0, xmax = len(nulls), y = 0.9, color = "red", linestyle = '-.', label = "90%")
-plt.legend()
-plt.title("Nulls por variable")
-ax.set_xlabel("Variable")
-ax.set_ylabel("% de Nulls")
-
-df['city'].value_counts()
-
-df['state'].value_counts()
-
-df['country'].value_counts()
-
-df.loc[df['state'] == 'Connecticut'][['city', 'neighbourhood']]
-
-df.loc[df['city']=="L'Hospitalet de Llobregat"]['neighbourhood'].value_counts()
-
-df.loc[df['city']=="."]['neighbourhood'].value_counts()
 
 dropC = ['city', 'state', 'zipcode', 'country', 'country_code']
 df.drop(dropC, axis = 1, inplace = True)
@@ -86,7 +32,6 @@ maxmincols = [x for x in df.columns if (x.startswith('maximum') | x.startswith('
 maxmincols
 
 maxmin = df[maxmincols]
-maxmin.isnull().sum()/maxmin.shape[0]
 
 for col in [x for x in maxmin.columns if 'minimum' in x]:
     print('La columna {} coincide con la de minimum_nigths un {:.2f}%'
@@ -101,3 +46,113 @@ print(len(maxmincols), len(DropC))
 df.drop(DropC, axis = 1, inplace = True)
 
 neighbourhoods = df[['neighbourhood', 'neighbourhood_cleansed', 'neighbourhood_group_cleansed']]
+
+host_keys = [x for x in df.columns if x.startswith('host')]
+
+df['host_emailverified'] = df['host_verifications'].apply(lambda x: 1 if 'email' in x else 0)
+df['host_phoneverified'] = df['host_verifications'].apply(lambda x: 1 if 'phone' in x else 0)
+df['host_hasjumio'] = df['host_verifications'].apply(lambda x: 1 if 'jumio' in x else 0)
+df['host_reviewverified'] = df['host_verifications'].apply(lambda x: 1 if 'review' in x else 0)
+df['host_selfieverified'] = df['host_verifications'].apply(lambda x: 1 if 'selfie' in x else 0)
+
+dropC = ['host_name','host_about', 'host_neighbourhood', 'host_listings_count', 'host_verifications']
+df.drop(dropC, axis = 1, inplace = True)
+
+df.drop('experiences_offered', axis = 1, inplace = True)
+
+df['host_response_time'].fillna('undetermined', inplace = True)
+
+df['host_response_rate'] = df['host_response_rate'].str.replace('%', '')
+
+df.drop('host_response_rate', axis = 1, inplace = True)
+
+variablesdicotomicas = ['host_is_superhost', 'host_has_profile_pic', 'host_identity_verified']
+for variable in variablesdicotomicas:
+    df[variable] = df[variable].apply(lambda x: 1 if x == 't' else 0)
+    
+dropC = ['market', 'street', 'smart_location']
+df.drop(dropC, axis = 1, inplace = True)
+
+for column in ['bathrooms', 'bedrooms', 'beds']:
+    df[column].fillna(df[column].median(), inplace = True)
+    
+df['price'] = df['price'].str.replace('$', '').str.replace(',','').astype('float')
+
+columnselection = ['Air conditioning', 'Family/kid friendly', 'Host greets you', 'Laptop friendly workspace', 'Paid parking off premises', 
+                  'Patio or balcony', 'Luggage dropoff allowed', 'Long term stays allowed', 'Smoking allowed', 'Step-free access',
+                  'Paid parking on premises']
+for column in columnselection:
+    df[column] = df['amenities'].apply(lambda x: 1 if column in x else 0)
+df.drop('amenities', axis = 1, inplace = True)
+
+for column in ['security_deposit', 'cleaning_fee', 'extra_people']:
+    df[column] = df[column].str.replace('$', '').str.replace(',','').astype('float')
+    df[column].fillna(0, inplace = True)
+
+dropC = ['has_availability', 'availability_30', 'availability_60', 'availability_90']
+df.drop(dropC, axis = 1, inplace = True)
+
+cancelpol = {'strict_14_with_grace_period': 'strict_less30', 'flexible':'flexible', 'moderate':'moderate', 'super_strict_30':'strict_30orMore',
+           'super_strict_60':'strict_30orMore', 'strict':'strict_less30'}
+df['cancellation_policy'] = df['cancellation_policy'].map(cancelpol)
+
+df.dropna(subset = ['last_review'], inplace = True)
+
+for column in df.columns[df.columns.str.startswith('review')]:
+    df.dropna(subset = [column], inplace = True)
+
+dropC = ['calendar_updated', 'calendar_last_scraped', 'host_location', 'last_review', 'last_scraped', 
+         'neighbourhood', 'neighbourhood_cleansed']
+df.drop(dropC, axis = 1, inplace = True)
+
+df.dropna(subset = ['host_since'], inplace = True)
+
+new_cat = {'Apartment':'apartment', 'Service apartment': 'hotel', 'Loft': 'apartment', 'House':'house', 'Condominium':'house',
+          'Bed and breakfast':'hostel', 'Guest suite':'hotel', 'Hostel':'hostel', 'Boutique hotel':'hotel', 'Boat':'boat', 'Guest House':'hostel',
+          'Hotel':'hotel', 'Townhouse':'house', 'Aparthotel':'hotel', 'Casa particular (Cuba)':'house', 'Villa':'villa', 'Chalet':'house', 
+          'Houseboat':'boat', 'Resort':'hotel'}
+
+df['property_type'] = df['property_type'].map(new_cat).fillna('other')
+
+df.drop('scrape_id', axis = 1, inplace = True)
+df.columns
+
+df.drop(df.columns[df.columns.str.startswith('calculated')], axis = 1, inplace = True)
+
+dicotmicol = ['instant_bookable', 'is_business_travel_ready', 'is_location_exact', 'require_guest_phone_verification',
+    'require_guest_profile_picture', 'requires_license']
+for column in dicotmicol:
+    df[column] = df[column].apply(lambda x: 1 if x=='t' else 0)
+
+DropC = ['host_id', 'first_review']
+df.drop(DropC, axis = 1, inplace = True)
+
+cal = pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_April2016.csv")
+cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_April2017.csv"), ignore_index = True)
+cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_October2017.csv"), ignore_index = True)
+cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_April2018.csv"), ignore_index = True)
+cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_October2018.csv"), ignore_index = True)
+cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_April2019.csv"), ignore_index = True)
+cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_October2019.csv"), ignore_index = True)
+cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_March2020.csv"), ignore_index = True)
+
+
+cal['date'] = pd.to_datetime(cal['date'])
+
+cal = cal[(cal['date'].dt.day == 1) | (cal['date'].dt.day == 7)| (cal['date'].dt.day == 13)| (cal['date'].dt.day == 19)| (cal['date'].dt.day == 25)| (cal['date'].dt.day == 30)]
+
+cal = cal[['listing_id', 'date', 'price', 'available']]
+
+cal.columns  = ['id', 'date', 'goodprice', 'available']
+
+cal = cal.drop_duplicates(subset = ['date', 'goodprice', 'id'])
+
+cal['goodprice'] = cal['goodprice'].str.replace('$', '').str.replace(',','').astype('float')
+
+DF = pd.merge(df, cal, how = 'inner', on = 'id')
+
+DF.drop_duplicates(subset = ['date', 'id', 'goodprice'], inplace = True)
+
+DF.drop(['requires_license', 'price'], axis = 1, inplace = True)
+
+DF.to_csv('~/DadesAirBNB/DatosLimpios.csv', index = False)

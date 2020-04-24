@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 
 
-df = pd.read_csv('~/DadesAirBNB/Listings/April2019.csv')
+df = pd.read_csv('~/DadesAirBNB/Listings/April2018.csv')
 df = df.append(pd.read_csv('~/DadesAirBNB/Listings/October2018.csv'), ignore_index = True)
 
 df.drop(df.columns[df.columns.str.endswith('url')], axis = 1, inplace = True)
@@ -119,10 +119,10 @@ dicotmicol = ['instant_bookable', 'is_business_travel_ready', 'is_location_exact
 for column in dicotmicol:
     df[column] = df[column].apply(lambda x: 1 if x=='t' else 0)
 
-DropC = ['host_id', 'first_review', 'license', 'number_of_reviews_ltm']
+DropC = ['host_id', 'first_review']
 df.drop(DropC, axis = 1, inplace = True)
 
-cal = pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_April2019.csv")
+cal = pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_April2018.csv")
 cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_October2018.csv"), ignore_index = True)
 
 cal['date'] = pd.to_datetime(cal['date'])
@@ -141,7 +141,9 @@ DF = pd.merge(df, cal, how = 'inner', on = 'id')
 
 DF.drop_duplicates(subset = ['date', 'id', 'goodprice'], inplace = True)
 
-DF.to_csv('~/DadesAirBNB/df2019.csv')
+DF.drop(['requires_license', 'price'], axis = 1, inplace = True)
+
+DF.to_csv('~/DadesAirBNB/df2018.csv', index = False)
 
 # DECOMENTA PER COMPROBAR QUE LA REPARTICIÓ HA SIGUT EQUITATIVA
 #DF.groupby('date')['goodprice'].count()

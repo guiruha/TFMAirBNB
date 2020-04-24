@@ -6,8 +6,6 @@ Created on Thu Apr  2 19:35:15 2020
 @author: guillem
 """
 
-cd ~/DadesAirBNB
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,15 +13,10 @@ import seaborn as sns
 import scipy
 plt.style.use('fivethirtyeight')
 
-archives = !ls | grep 'df'
 
-df = pd.read_csv(archives[0])
-
-for i in range(1, len(archives)):
-    df = df.append(pd.read_csv(archives[i]))
-    
+df = pd.read_csv('/home/guillem/DadesAirBNB/DatosLimpios.csv') 
+   
 df.shape
-df.drop(['Unnamed: 0', 'requires_license', 'price'], axis = 1, inplace = True)
 df['date'] = pd.to_datetime(df['date'])
 df['Year'] = df['date'].dt.year
 df['Month'] = df['date'].dt.month    
@@ -33,6 +26,7 @@ df = df.sort_values('date')
 
 
 pricenulls = (df[df['goodprice'].isnull()]['date'].value_counts()/df['date'].value_counts()).sort_values(ascending = False)
+
 df[df['goodprice'].isnull()]['available'].value_counts()
 
 df.dropna(subset = ['goodprice'], axis = 0, inplace = True)
@@ -48,8 +42,7 @@ df.isnull().sum()[df.isnull().sum()>0]/df.shape[0]
 
 agrupacion = df.groupby('date')['goodprice'].describe()
 
-df = df[(df['Year']>2017)&(df['Year']<2021)]
-
+df = df[(df['Year']>2016)&(df['Year']<2020)]
 
 df['PricePNight'] = [price/minnight if (price > 300)&(minnight > 1) else price for price, minnight in zip(df['goodprice'], df['minimum_nights'])]
 
@@ -1260,7 +1253,39 @@ turismo = pd.read_csv('~/DadesAirBNB/DistanciasTurismo.csv')
 df = pd.merge(df, turismo, on = 'id')
 df.isnull().sum()[df.isnull().sum()>0]
 
-# SEGUIR ANALISIS POR AQUÍ
+# AÑADIMOS DATASET DEL TIEMPO
+
+meteo = pd.read_csv('~/DadesAirBNB/Meteo/Meteo.csv')
+
+meteo = meteo[['DATA_LECTURA', 'TM', 'PPT24H']]
+
+meteo['DATA_LECTURA'] = pd.to_datetime(meteo['DATA_LECTURA'])
+
+meteo = meteo[[x in [2017, 2018, 2019] for x in meteo['DATA_LECTURA'].dt.year]].set_index('DATA_LECTURA')
+
+df = df.join(meteo, on = df.index)
+
+# TEMPERATURA MEDIA
+
+fig, ax = plt.subplots(2, 1, figsize = (15, 10))
+sns.distplot(df['TM'], bins = 30, ax = ax[0])
+sns.scatterplot(df['TM'], df['PricePNight'],  ax = ax[1], x_jitter = 0.05, y_jitter = 0.05, alpha = 0.2, marker = 'o')
+plt.show()
+
+np.corrcoef(df['TM'], df['LogPricePNight'])
+
+# PRECIPITACIONES
+
+df['PPT24H'].idxmax()
+
+fig, ax = plt.subplots(2, 1, figsize = (15, 10))
+ax[0].hist(df['PPT24H'])
+sns.scatterplot(df['PPT24H'], df['LogPricePNight'], ax = ax[1], x_jitter = 0.05, y_jitter = 0.05, alpha = 0.2, marker = 'o')
+plt.show()
+
+np.corrcoef(df['LogPricePNight'], df['PPT24H'])
+
+# CREAMOS EL CSV FINAL PARA MODELAR
 
 df.to_csv('~/DadesAirBNB/DatosModelar.csv', index = False)
 

@@ -9,9 +9,10 @@ Created on Wed Mar 25 19:20:07 2020
 import pandas as pd
 import numpy as np
 
-
-df = pd.read_csv('~/DadesAirBNB/Listings/March2020.csv')
+df = pd.read_csv('~/DadesAirBNB/Listings/April2019.csv')
 df = df.append(pd.read_csv('~/DadesAirBNB/Listings/October2019.csv'))
+df = df.append(pd.read_csv('~/DadesAirBNB/Listings/March2020.csv'))
+
 
 df.drop(df.columns[df.columns.str.endswith('url')], axis = 1, inplace = True)
 
@@ -97,7 +98,7 @@ for column in df.columns[df.columns.str.startswith('review')]:
     df.dropna(subset = [column], inplace = True)
 
 dropC = ['calendar_updated', 'calendar_last_scraped', 'host_location', 'last_review', 'last_scraped', 
-         'neighbourhood', 'neighbourhood_cleansed', 'host_acceptance_rate']
+         'neighbourhood', 'neighbourhood_cleansed']
 df.drop(dropC, axis = 1, inplace = True)
 
 df.dropna(subset = ['host_since'], inplace = True)
@@ -122,8 +123,10 @@ for column in dicotmicol:
 DropC = ['host_id', 'first_review', 'license', 'number_of_reviews_ltm']
 df.drop(DropC, axis = 1, inplace = True)
 
-cal = pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_March2020.csv")
+cal = pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_April2019.csv")
 cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_October2019.csv"), ignore_index = True)
+cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_March2020.csv"))
+
 
 cal['date'] = pd.to_datetime(cal['date'])
 
@@ -141,7 +144,9 @@ DF = pd.merge(df, cal, how = 'inner', on = 'id')
 
 DF.drop_duplicates(subset = ['date', 'id', 'goodprice'], inplace = True)
 
-DF.to_csv('~/DadesAirBNB/df2020.csv')
+DF.drop(['requires_license', 'price'], axis = 1, inplace = True)
+
+DF.to_csv('~/DadesAirBNB/df2019.csv',  index = False)
 
 
 # DECOMENTA PER COMPROBAR QUE LA REPARTICIÓ HA SIGUT EQUITATIVA

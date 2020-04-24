@@ -68,27 +68,53 @@ r2_score(y_test, y_pred)
 
 # Guardo el modelo para mañana
 import pickle
-filename = '~/DadesAirBNB/ModeloXGBoost.sav'
+filename = '/home/guillem/DadesAirBNB/ModeloXGBoost.sav'
 pickle.dump(xgbreg, open(filename, 'wb'))
-xgbmodel =pickle.load(open(filename, 'rb'))
+
+xgbmodel = pickle.load(open(filename, 'rb'))
 
 y_pred_train = xgbmodel.predict(X_train)
+y_pred_test = xgbmodel.predict(X_test)
 
 r2_score(y_train, y_pred_train)
-r2_score(y_test, y_pred)
+r2_score(y_test, y_pred_test)
 
-features = pd.DataFrame({'Atributos':X_test.columns.tolist(), 'Peso':xgbmodel.feature_importances_.tolist()})
 
-features = features.sort_values(by = 'Peso', ascending = False)
-features
+# COARSE TO FINE TUNNING
 
-fig, ax = plt.subplots(1, 1, figsize = (25, 20))
-sns.barplot(features['Peso'], features['Atributos'])
-plt.show()
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import GridSearchCV
 
+rparameters = {'colsample_bytree': [0.5, 0.7, 0.9], 'learning_rate': [0.05, 0.07, 0.1, 0.15], 'n_estimators': [500, 700, 1000, 1200], 
+              'reg_alpha': [0.01, 0.05, 0.1], 'reg_lambda':[0.01, 0.05, 0.1]}
+
+xgbcv = xgb.XGBRegressor(n_jobs = 4, seed = 1997)
+
+RandomSearch = RandomizedSearchCV(xgbcv, param_distributions = rparameters, n_iter = 10, scoring = 'r2')
+
+RandomSearch.fit(X_train, y_train)
+
+RandomSearch.best_params_
+
+result = pd.DataFrame({'Atributos': X_train.columns, 'Coeficiente': xgbmodel.feature_importances_})
+
+result.sort_values(by = 'Coeficiente', ascending = False)[0:15]
+
+"""
+gparameters = {'colsample_bytree': [0.5, 0.7, 0.9], 'learning_rate': [0.05, 0.07, 0.1, 0.15], 'n_estimators': [500, 700, 1000, 1200], 
+              'reg_alpha': [0.01, 0.05, 0.1], 'reg_lambda':[0.01, 0.05, 0.1]}
+GridSearch = GridSearchCV(xgbcv, param_grid = gparameters, n_jobs = 4, scoring = 'r2')
+
+GridSearch.fit(X_train, y_train)
+
+finalparameters = GridSearch.best_params_
+
+xgbfinal = xgb.XGBRegressor(**finalparameters)
+
+# BAYESIANO
 def objective(parametros):
     parametros = {'num_boost_round': hp.quniform('num_boost_round', 20, 60, 2), 'eta': hp.quniform('eta', 0.1, 0.5, 0.1),
                   'max_depth': hp.quniform('max_depth', 2, 10, 2)}
     xgbreg = xgb.XGBRegressor() 
 
-
+"""
