@@ -146,7 +146,6 @@ map_df[map_df.index == map_df['musica_cercanos'].idxmin()].plot(ax = ax, marker 
 ctx.add_basemap(ax)
 plt.show()
 
-
 # Creamos csv de Turismo
 
 turismodist = map_df[[x for x in map_df.columns if x not in ['neighbourhood_group_cleansed', 'geometry', 'latitude', 'longitude']]]

@@ -34,8 +34,6 @@ dff.columns = ['Latitude', 'Longitude']
 
 dff.head()
 
-## ??? dff = dff.reset_index()[['Latitude', 'Longitude']]
-
 dff['geometry'] = dff.apply(lambda x: Point(x.Longitude, x.Latitude), axis = 1)
 
 dff = gpd.GeoDataFrame(dff, geometry = gpd.points_from_xy(dff.Longitude, dff.Latitude), crs = bcn_df.crs)
@@ -69,11 +67,12 @@ from collections import namedtuple
 #dff.head()
 
 ax, fig = plt.subplots(1, 1, figsize=(15,10))
-dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude', 'Longitude']].values, method='complete', metric='euclidean'))
+dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude', 'Longitude']].values, 
+                            method='complete', metric='euclidean'))
 
 ax, fig = plt.subplots(1, 1, figsize=(15,10))
-dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude', 'Longitude']].values, method='complete', metric='cityblock'))
-
+dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude', 'Longitude']].values, method='complete', metric='cityblock')
+                            
 ax, fig = plt.subplots(1, 1, figsize=(15,10))
 dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude', 'Longitude']].values, method='average', metric='cityblock'))
 

@@ -15,7 +15,6 @@ plt.style.use('fivethirtyeight')
 
 
 df = pd.read_csv('/home/guillem/DadesAirBNB/DatosLimpios.csv') 
-   
 df.shape
 df['date'] = pd.to_datetime(df['date'])
 df['Year'] = df['date'].dt.year
@@ -23,7 +22,6 @@ df['Month'] = df['date'].dt.month
 df['Day'] = df['date'].dt.day 
 df['DayOfWeek'] = df['date'].dt.weekday
 df = df.sort_values('date')
-
 
 pricenulls = (df[df['goodprice'].isnull()]['date'].value_counts()/df['date'].value_counts()).sort_values(ascending = False)
 
@@ -106,15 +104,14 @@ plt.tight_layout()
 
 df.groupby(df.index)['PricePNight'].describe()[df.groupby(df.index)['PricePNight'].mean() == df.groupby(df.index)['PricePNight'].mean().max()]
 
-
 fig, ax = plt.subplots(1, 1, figsize = (20, 13))
-plt.plot(df[df.resample('M')['PricePNight'].mean().index, df[df.resample('M')['PricePNight'].mean())
+plt.plot(df.resample('M')['PricePNight'].mean().index, df.resample('M')['PricePNight'].mean())
 plt.xticks(rotation = 45)
 plt.tight_layout()
 
 fig, ax = plt.subplots(1, 1, figsize = (50, 13))
 plt.plot(df.resample('W')['PricePNight'].mean().index, df.resample('W')['PricePNight'].mean())
-plt.xticks(df[df.resample('W')['PricePNight'].mean().index, rotation = 45)
+plt.xticks(df.resample('W')['PricePNight'].mean().index, rotation = 45)
 plt.tight_layout()
 
 fig, ax = plt.subplots(1, 1, figsize = (40, 15))
@@ -135,7 +132,7 @@ plt.tight_layout()
 # RESPONSE TIME !!! (DUMMY) !!!
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
-sns.barplot(df['host_response_time'].value_counts().index, df['host_response_time'].value_counts()/df.shape[0], ax = ax[0])
+sns.barplot(df['host_response_time'].value_counts().index, df['host_response_time'].value_counts(normalize = True), ax = ax[0])
 sns.pointplot(df['host_response_time'], df['PricePNight'], ax = ax[1])
 sns.boxplot(df['host_response_time'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
@@ -145,7 +142,7 @@ dummys = ['host_response_time']
 # HOST IS SUPERHOST
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
-sns.barplot(df['host_is_superhost'].value_counts().index, df['host_is_superhost'].value_counts()/df.shape[0], ax = ax[0])
+sns.barplot(df['host_is_superhost'].value_counts().index, df['host_is_superhost'].value_counts(normalize = True), ax = ax[0])
 sns.pointplot(df['host_is_superhost'], df['PricePNight'], ax = ax[1])
 sns.boxplot(df['host_is_superhost'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
@@ -154,19 +151,37 @@ plt.show()
 df.drop('host_is_superhost', axis = 1, inplace = True)
 
 # HOST TOTAL LISTINGS COUNT (FER REGRESIÓ)
+df['host_total_listings_count'].value_counts(normalize = True).sort_index()
+df['host_total_listings_count'].value_counts().sort_index()
+
+df = df[df['host_total_listings_count'] != 0]
 
 fig, ax = plt.subplots(1, 2, figsize = (20, 15))
 sns.distplot(df['host_total_listings_count'], ax = ax[0])
-sns.distplot(np.log(df['host_total_listings_count'].apply(lambda x: 0.01 if x == 0 else x)), ax = ax[1])
+sns.distplot(np.log(df['host_total_listings_count']), ax = ax[1], bins = 10)
 plt.show()
 
-sns.regplot(df['host_total_listings_count'], df['LogPricePNight'])
+from sklearn.linear_model import LinearRegression
+lr = LinearRegression()
+lr.fit(df[['host_total_listings_count']], df['LogPricePNight']).predict(df[['host_total_listings_count']])
 
+fig, ax = plt.subplots(1, 1, figsize = (20, 15))
+sns.scatterplot(np.log(df['host_total_listings_count']), df['LogPricePNight'],alpha = 0.005, size = 1, x_jitter = 20, color = "navy", marker = 'o')
+plt.plot(np.log(df['host_total_listings_count']), 
+         lr.fit(np.log(df[['host_total_listings_count']]), df['LogPricePNight']).predict(np.log(df[['host_total_listings_count']])),
+         color = 'maroon')
+plt.show()
+
+np.corrcoef(np.log(df['host_total_listings_count']), df['LogPricePNight'])
+
+np.corrcoef(df['host_total_listings_count'], df['LogPricePNight'])
+
+df['Loghost_total_listings_count'] = np.log(df['host_total_listings_count'])
 
 # PROFILE PIC
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
-sns.barplot(df['host_has_profile_pic'].value_counts().index, df['host_has_profile_pic'].value_counts()/df.shape[0], ax = ax[0])
+sns.barplot(df['host_has_profile_pic'].value_counts().index, df['host_has_profile_pic'].value_counts(normalize = True), ax = ax[0])
 sns.pointplot(df['host_has_profile_pic'], df['PricePNight'], ax = ax[1])
 sns.boxplot(df['host_has_profile_pic'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
@@ -177,21 +192,18 @@ df.drop('host_has_profile_pic', axis = 1, inplace = True)
 # IDENTITY VERIFIED
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
-sns.barplot(df['host_identity_verified'].value_counts().index, df['host_identity_verified'].value_counts()/df.shape[0], ax = ax[0])
+sns.barplot(df['host_identity_verified'].value_counts().index, df['host_identity_verified'].value_counts(normalize = True), ax = ax[0])
 sns.pointplot(df['host_identity_verified'], df['PricePNight'], ax = ax[1])
 sns.boxplot(df['host_identity_verified'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
 plt.show()
 
-df.drop('host_identity_verified', axis = 1, inplace = True)
-
 # NEIGHBOURHOOD GROUP CLEANSED
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
-sns.barplot(df['neighbourhood_group_cleansed'].value_counts().index, df['neighbourhood_group_cleansed'].value_counts()/df.shape[0], ax = ax[0])
+sns.barplot(df['neighbourhood_group_cleansed'].value_counts().index, df['neighbourhood_group_cleansed'].value_counts(normalize = True), ax = ax[0])
 sns.pointplot(df['neighbourhood_group_cleansed'], df['PricePNight'], ax = ax[1])
-sns.boxplot(df['neighbourhood_group_cleansed'], df['LogPricePNight'], ax = ax[2])
-plt.xticks(rotation = 45)
+sns.boxplot(df['neighbourhood_group_cleansed'], df['LogPricePNight'], ax = ax[])
 plt.show()
 
 dummys.append('neighbourhood_group_cleansed')
@@ -215,8 +227,10 @@ plt.xticks(rotation = 45)
 plt.show()
 
 df['property_type'].value_counts(normalize = True)
+df['property_type'].value_counts()
 
-df['property_type'] = df['property_type'].apply(lambda x: 'other' if x != 'apartment' else 'apartment')
+# MAL (CAMBIAR)
+#df['property_type'] = df['property_type'].apply(lambda x: 'other' if x != 'apartment' else 'apartment')
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
 sns.barplot(df['property_type'].value_counts().index, df['property_type'].value_counts()/df.shape[0], ax = ax[0])
@@ -224,6 +238,8 @@ sns.pointplot(df['property_type'], df['PricePNight'], ax = ax[1])
 sns.boxplot(df['property_type'], df['LogPricePNight'], ax = ax[2])
 plt.xticks(rotation = 45)
 plt.show()
+
+df['property_type'].value_counts(normalize = True)
 
 # ROOM TYPE
 
@@ -754,13 +770,9 @@ plt.show()
 
 np.corrcoef(df['Paid parking on premises'], df['LogPricePNight'])
 
-# HOST ACCEPTANCE RATE
+# FINALIZAMOS POR AHORA DATOS GENERAL
 
-df['host_acceptance_rate'].str.replace('%', '').fillna('other').value_counts(normalize = True)
-df.drop('host_acceptance_rate', axis = 1, inplace = True)
-
-df.shape
-
+df.reset_index(inplace = True)
 df.to_csv('~/DadesAirBNB/DatosGeneral.csv', index = False)
 
 map_df = df.reset_index().drop_duplicates(subset = ['id'])[['id', 'neighbourhood_group_cleansed', 'latitude', 'longitude']]
@@ -772,7 +784,7 @@ map_df.to_csv('~/DadesAirBNB/Localizaciones.csv', index = False)
 
 df = pd.read_csv('~/DadesAirBNB/DatosGeneral.csv')
 distancias = pd.read_csv('~/DadesAirBNB/Distancias.csv')
-
+distancias.id
 df.id.unique().shape[0] == distancias.id.count()
 
 df = pd.merge(df, distancias, on = 'id')
@@ -1263,7 +1275,7 @@ meteo['DATA_LECTURA'] = pd.to_datetime(meteo['DATA_LECTURA'])
 
 meteo = meteo[[x in [2017, 2018, 2019] for x in meteo['DATA_LECTURA'].dt.year]].set_index('DATA_LECTURA')
 
-df = df.join(meteo, on = df.index)
+df = df.join(meteo,)
 
 # TEMPERATURA MEDIA
 

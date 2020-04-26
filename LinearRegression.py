@@ -18,18 +18,21 @@ df.dtypes[df.dtypes == 'object']
 
 dummycols = ["host_response_time", "neighbourhood_group_cleansed", "property_type", "room_type",  "cancellation_policy"]
 
-X_raw = pd.get_dummies(df, columns = dummycols)
+df = pd.get_dummies(df, columns = dummycols)
 
-X_raw.drop('id', inplace = True, axis = 1)
+df.drop('id', inplace = True, axis = 1)
 
-corrcolumns = X_raw.dtypes[X_raw.dtypes != 'object'].index[X_raw.dtypes[X_raw.dtypes != 'object'].index.str.contains('rice') == False]
+corrcolumns = df.dtypes[df.dtypes != 'object'].index[df.dtypes[df.dtypes != 'object'].index.str.contains('rice') == False]
 
 corrBis = []
 corrPea = []
 
+df[['date', 'TM']]
+
 for column in corrcolumns:
-    corrBis.append(round(scipy.stats.pointbiserialr(X_raw[column], X_raw['LogPricePNight'])[0], 3))
-    corrPea.append(round(np.corrcoef(X_raw[column], X_raw['LogPricePNight'])[0, 1], 3))
+    print(column)
+    corrBis.append(round(scipy.stats.pointbiserialr(df[column], df['LogPricePNight'])[0], 3))
+    corrPea.append(round(np.corrcoef(df[column], df['LogPricePNight'])[0, 1], 3))
     
 templot = pd.DataFrame({'Atributo': corrcolumns, 'CorrBiserial': corrBis, 'CorrdePearson': corrPea})
 
