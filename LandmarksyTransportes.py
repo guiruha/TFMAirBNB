@@ -14,7 +14,7 @@ import contextily as ctx
 import matplotlib.pyplot as plt
 plt.style.use('fivethirtyeight')
 
-map_df = pd.read_csv('~/DadesAirBNB/Localizaciones.csv')
+map_df = pd.read_pickle('~/DadesAirBNB/Localizaciones.pkl')
 
 bcn_df = gpd.read_file("/home/guillem/DadesAirBNB/neighbourhoods.geojson")
 
@@ -24,7 +24,7 @@ map_df = gpd.GeoDataFrame(map_df, geometry = gpd.points_from_xy(map_df.longitude
 
 # LANDMARKS
 
-f = loadtxt("/home/guillem/DadesAirBNB/Flkr/Flickr_landmarks_geotags.txt", comments="#", delimiter=" ", unpack=False)
+f = np.loadtxt("/home/guillem/DadesAirBNB/Flkr/Flickr_landmarks_geotags.txt", comments="#", delimiter=" ", unpack=False)
 
 dff = pd.DataFrame(f)
 
@@ -55,25 +55,14 @@ import scipy.cluster.hierarchy as sch
 from sklearn.cluster import AgglomerativeClustering
 from collections import namedtuple
 
-# ESTA PART NO FA FALTA
-#Point = namedtuple("Point", "x y")
-
-#dff.geometry.head()
-#dff.geometry.x #Longitude
-#dff.geometry.y #Latitude
-
-#dff['Latitude_metros'] = dff.geometry.y
-#dff['Longitude_metros'] = dff.geometry.x
-#dff.head()
-
-ax, fig = plt.subplots(1, 1, figsize=(15,10))
+fig, ax = plt.subplots(1, 1, figsize=(15,10))
 dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude', 'Longitude']].values, 
                             method='complete', metric='euclidean'))
 
-ax, fig = plt.subplots(1, 1, figsize=(15,10))
-dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude', 'Longitude']].values, method='complete', metric='cityblock')
+fig, ax = plt.subplots(1, 1, figsize=(15,10))
+dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude', 'Longitude']].values, method='complete', metric='cityblock'))
                             
-ax, fig = plt.subplots(1, 1, figsize=(15,10))
+fig, ax = plt.subplots(1, 1, figsize=(15,10))
 dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude', 'Longitude']].values, method='average', metric='cityblock'))
 
 hc = AgglomerativeClustering(n_clusters=11, affinity='cityblock', linkage='single')
@@ -212,7 +201,7 @@ for i, landmark in enumerate(landmarks.cluster):
 
 # DATASET DELS TRANSPORTS
 
-transport = pd.read_csv("~/DadesAirBNB/Transports/METRO.csv")
+transport = pd.read_pickle("~/DadesAirBNB/Transports/METRO.pkl")
 
 transport.columns
 
@@ -322,7 +311,7 @@ plt.show()
 
 # DATASET AUTOBUSOS
 
-transportsbus = pd.read_csv("~/DadesAirBNB/Transports/ESTACIONS_BUS.csv")
+transportsbus = pd.read_pickle("~/DadesAirBNB/Transports/ESTACIONS_BUS.pkl")
 
 transportsbus = transportsbus[['NOM_CAPA', 'LONGITUD', 'LATITUD', 'EQUIPAMENT', 'NOM_BARRI']]
 
@@ -370,4 +359,5 @@ cols_select = [x for x in map_df.columns if x not in ['neighbourhood_group_clean
 
 distances = map_df[cols_select]
 
+distances.to_pickle('~/DadesAirBNB/Distancias.pkl')
 distances.to_csv('~/DadesAirBNB/Distancias.csv', index = False)

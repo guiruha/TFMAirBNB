@@ -11,10 +11,10 @@ import pandas as pd
 import numpy as np
 
 
-df = pd.read_csv('~/DadesAirBNB/Listings/April2017.csv')
-df = df.append(pd.read_csv('~/DadesAirBNB/Listings/April2018.csv'), ignore_index = True)
-df = df.append(pd.read_csv('~/DadesAirBNB/Listings/April2019.csv'), ignore_index = True)
-df = df.append(pd.read_csv('~/DadesAirBNB/Listings/March2020.csv'), ignore_index = True)
+df = pd.read_pickle('~/DadesAirBNB/Listings/April2017.pkl')
+df = df.append(pd.read_pickle('~/DadesAirBNB/Listings/April2018.pkl'), ignore_index = True)
+df = df.append(pd.read_pickle('~/DadesAirBNB/Listings/April2019.pkl'), ignore_index = True)
+df = df.append(pd.read_pickle('~/DadesAirBNB/Listings/March2020.pkl'), ignore_index = True)
 
 df = df.drop_duplicates('id')
 
@@ -127,19 +127,19 @@ for column in dicotmicol:
 DropC = ['host_id', 'first_review']
 df.drop(DropC, axis = 1, inplace = True)
 
-cal = pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_April2016.csv")
-cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_April2017.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_October2017.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_April2018.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_October2018.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_April2019.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_October2019.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_March2020.csv"), ignore_index = True)
+cal = pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_April2016.pkl")
+cal = cal.append(pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_April2017.pkl"), ignore_index = True)
+cal = cal.append(pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_October2017.pkl"), ignore_index = True)
+cal = cal.append(pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_April2018.pkl"), ignore_index = True)
+cal = cal.append(pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_October2018.pkl"), ignore_index = True)
+cal = cal.append(pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_April2019.pkl"), ignore_index = True)
+cal = cal.append(pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_October2019.pkl"), ignore_index = True)
+cal = cal.append(pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_March2020.pkl"), ignore_index = True)
 
 
 cal['date'] = pd.to_datetime(cal['date'])
 
-cal = cal[(cal['date'].dt.day == 1) | (cal['date'].dt.day == 7)| (cal['date'].dt.day == 13)| (cal['date'].dt.day == 19)| (cal['date'].dt.day == 25)| (cal['date'].dt.day == 30)]
+cal = cal[(cal['date'].dt.day == 1) | (cal['date'].dt.day == 5)| (cal['date'].dt.day == 9)| (cal['date'].dt.day == 13)| (cal['date'].dt.day == 17)| (cal['date'].dt.day == 21)| (cal['date'].dt.day == 25)| (cal['date'].dt.day == 28)]
 
 cal = cal[['listing_id', 'date', 'price', 'available']]
 
@@ -156,3 +156,4 @@ DF.drop_duplicates(subset = ['date', 'id', 'goodprice'], inplace = True)
 DF.drop(['requires_license', 'price'], axis = 1, inplace = True)
 
 DF.to_csv('~/DadesAirBNB/DatosLimpios.csv', index = False)
+DF.to_pickle('~/DadesAirBNB/DatosLimpios.pkl')
