@@ -19,7 +19,7 @@ bcn_df = gpd.read_file("/home/guillem/DadesAirBNB/neighbourhoods.geojson")
 
 #  MUSEOS
 
-mus_bib = pd.read_csv("~/DadesAirBNB/Turisme/C001_Biblioteques_i_museus.csv")
+mus_bib = pd.read_pickle("~/DadesAirBNB/Turisme/C001_Biblioteques_i_museus.pkl")
 
 dfmus_bib = mus_bib[['EQUIPAMENT', 'NUM_BARRI','LONGITUD', 'LATITUD']]
 
@@ -59,7 +59,7 @@ map_df['museos_cercanos']
 
 # TEATRE
 
-dft_visual = pd.read_csv("~/DadesAirBNB/Turisme/C002_Cinemes_teatres_auditoris.csv")
+dft_visual = pd.read_pickle("~/DadesAirBNB/Turisme/C002_Cinemes_teatres_auditoris.pkl")
 
 dft_visual['LATITUD'] = dft_visual['LATITUD'].astype('str').apply(lambda x: x[:2]+'.'+ x[2:]).astype('float')
 dft_visual['LONGITUD'] = dft_visual['LONGITUD'].astype('str').apply(lambda x: x[0]+'.'+x[1:]).astype('float')
@@ -96,7 +96,7 @@ map_df['auditorios_cercanos'] = [sum(i.within(j) for i in auditorio.geometry) fo
 
 # RESTAURANTES
 
-restaurantes = pd.read_csv("~/DadesAirBNB/Turisme/H001_Restaurants.csv")
+restaurantes = pd.read_pickle("~/DadesAirBNB/Turisme/H001_Restaurants.pkl")
 
 restaurantes = restaurantes.drop_duplicates(subset = ['EQUIPAMENT'])
 
@@ -123,7 +123,7 @@ plt.show()
 
 # SALAS MUSICALES
 
-musica = pd.read_csv("~/DadesAirBNB/Turisme/C004_Espais_de_musica_i_copes.csv")
+musica = pd.read_pickle("~/DadesAirBNB/Turisme/C004_Espais_de_musica_i_copes.pkl")
 
 musica = musica.drop_duplicates(subset = ['EQUIPAMENT'])
 
@@ -146,9 +146,9 @@ map_df[map_df.index == map_df['musica_cercanos'].idxmin()].plot(ax = ax, marker 
 ctx.add_basemap(ax)
 plt.show()
 
-
 # Creamos csv de Turismo
 
 turismodist = map_df[[x for x in map_df.columns if x not in ['neighbourhood_group_cleansed', 'geometry', 'latitude', 'longitude']]]
 
+turismodist.to_pickle('~/DadesAirBNB/DistanciasTurismo.pkl')
 turismodist.to_csv('~/DadesAirBNB/DistanciasTurismo.csv', index = False)
