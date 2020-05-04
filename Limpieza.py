@@ -3,9 +3,9 @@
 """
 Created on Fri Apr 24 18:32:42 2020
 
-@author: guillem
+@author: Guillem Rochina y Helena Saigi
 """
-
+cd ~/DadesAirBNB
 
 import pandas as pd
 import numpy as np
@@ -127,14 +127,14 @@ for column in dicotmicol:
 DropC = ['host_id', 'first_review']
 df.drop(DropC, axis = 1, inplace = True)
 
-cal = pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_April2016.csv")
-cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_April2017.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_October2017.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_April2018.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_October2018.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_April2019.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_October2019.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("/home/guillem/DadesAirBNB/Calendar/Calendar_March2020.csv"), ignore_index = True)
+cal = pd.read_csv("~/DadesAirBNB/Calendar/Calendar_November2016.csv")
+cal = cal.append(pd.read_csv("~/DadesAirBNB/Calendar/Calendar_April2017.csv"), ignore_index = True)
+cal = cal.append(pd.read_csv("~/DadesAirBNB/Calendar/Calendar_October2017.csv"), ignore_index = True)
+cal = cal.append(pd.read_csv("~/DadesAirBNB/Calendar/Calendar_April2018.csv"), ignore_index = True)
+cal = cal.append(pd.read_csv("~/DadesAirBNB/Calendar/Calendar_October2018.csv"), ignore_index = True)
+cal = cal.append(pd.read_csv("~/DadesAirBNB/Calendar/Calendar_April2019.csv"), ignore_index = True)
+cal = cal.append(pd.read_csv("~/DadesAirBNB/Calendar/Calendar_October2019.csv"), ignore_index = True)
+cal = cal.append(pd.read_csv("~/DadesAirBNB/Calendar/Calendar_March2020.csv"), ignore_index = True)
 
 
 cal['date'] = pd.to_datetime(cal['date'])

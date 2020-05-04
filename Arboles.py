@@ -3,9 +3,10 @@
 """
 Created on Wed Apr 22 18:03:49 2020
 
-@author: guillem
+@author: Guillem Rochina y Helena Saigi
 """
 
+cd ~/DadesAirBNB
 
 # RANDOM FOREST REGRESSOR
 
@@ -24,10 +25,22 @@ df = pd.get_dummies(df, columns = dummycols)
 
 df = df[df.columns[df.dtypes != 'object']]
 
-df.drop(['id', 'Unnamed: 0', 'goodprice', 'Unnamed: 0.1', 'PricePNight'], axis = 1, inplace = True)
+df.columns
+
+df.isnull().sum()[df.isnull().sum()>0]
+
+df.drop('TM', axis=1, inplace=True)
+df.drop('PPT24H', axis=1, inplace=True)
+df.drop('goodprice', axis=1, inplace=True)
+df.drop('PricePNight', axis=1, inplace=True)
+df.drop('Unnamed: 0', axis=1, inplace=True)
+df.drop('Unnamed: 0.1', axis=1, inplace=True)
+df.columns
 
 X = df[df.columns[df.columns.str.contains('LogPricePNight') == False]]
 y = df['LogPricePNight']
+
+X.columns
 
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 1997)
@@ -68,13 +81,13 @@ r2_score(y_test, y_pred)
 
 # Guardo el modelo para mañana
 import pickle
-filename = '/home/guillem/DadesAirBNB/ModeloXGBoost.sav'
+filename = '~/users/helenasaigi/DadesAirBNB/ModeloXGBoost.sav'
 pickle.dump(xgbreg, open(filename, 'wb'))
 
 xgbmodel = pickle.load(open(filename, 'rb'))
 
-y_pred_train = xgbmodel.predict(X_train)
-y_pred_test = xgbmodel.predict(X_test)
+y_pred_train = xgbreg.predict(X_train)
+y_pred_test = xgbreg.predict(X_test)
 
 r2_score(y_train, y_pred_train)
 r2_score(y_test, y_pred_test)

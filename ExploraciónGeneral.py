@@ -3,8 +3,9 @@
 """
 Created on Thu Apr  2 19:35:15 2020
 
-@author: guillem
+@author: Guillem Rochina y Helena Saigi
 """
+cd ~/DadesAirBNB
 
 import pandas as pd
 import numpy as np
@@ -14,7 +15,7 @@ import scipy
 plt.style.use('fivethirtyeight')
 
 
-df = pd.read_csv('/home/guillem/DadesAirBNB/DatosLimpios.csv') 
+df = pd.read_csv('~/DadesAirBNB/DatosLimpios.csv') 
    
 df.shape
 df['date'] = pd.to_datetime(df['date'])
@@ -72,7 +73,7 @@ plt.tight_layout()
 df['PricePNight'].describe()
 
 df['LogPricePNight'] = np.log(df['PricePNight'])
-#df.drop(['goodprice'], axis = 1, inplace = True)
+df.drop(['goodprice'], axis = 1, inplace = True)
 
 df['PricePNight'].describe()
 
@@ -108,13 +109,13 @@ df.groupby(df.index)['PricePNight'].describe()[df.groupby(df.index)['PricePNight
 
 
 fig, ax = plt.subplots(1, 1, figsize = (20, 13))
-plt.plot(df[df.resample('M')['PricePNight'].mean().index, df[df.resample('M')['PricePNight'].mean())
+plt.plot(df.resample('M')['PricePNight'].mean().index, df.resample('M')['PricePNight'].mean())
 plt.xticks(rotation = 45)
 plt.tight_layout()
 
 fig, ax = plt.subplots(1, 1, figsize = (50, 13))
 plt.plot(df.resample('W')['PricePNight'].mean().index, df.resample('W')['PricePNight'].mean())
-plt.xticks(df[df.resample('W')['PricePNight'].mean().index, rotation = 45)
+plt.xticks(rotation = 45)
 plt.tight_layout()
 
 fig, ax = plt.subplots(1, 1, figsize = (40, 15))
@@ -1260,8 +1261,13 @@ meteo = pd.read_csv('~/DadesAirBNB/Meteo/Meteo.csv')
 meteo = meteo[['DATA_LECTURA', 'TM', 'PPT24H']]
 
 meteo['DATA_LECTURA'] = pd.to_datetime(meteo['DATA_LECTURA'])
+df.index = pd.to_datetime(df.index)
+
 
 meteo = meteo[[x in [2017, 2018, 2019] for x in meteo['DATA_LECTURA'].dt.year]].set_index('DATA_LECTURA')
+
+type(df.index)
+type(meteo.index)
 
 df = df.join(meteo, on = df.index)
 
@@ -1289,6 +1295,10 @@ np.corrcoef(df['LogPricePNight'], df['PPT24H'])
 
 df.to_csv('~/DadesAirBNB/DatosModelar.csv', index = False)
 
+df.PPT24H.isnull().sum()
+df.TM.isnull().sum()
+
+df.shape
 
 # PART PER REVISAR I ELIMINAR
 # VAIG A FER UN INTENT DE MAPA
