@@ -3,9 +3,8 @@
 """
 Created on Thu Apr  2 19:35:15 2020
 
-@author: Guillem Rochina y Helena Saigi
+@author: guillem
 """
-cd ~/DadesAirBNB
 
 import pandas as pd
 import numpy as np
@@ -15,38 +14,15 @@ import scipy
 plt.style.use('fivethirtyeight')
 
 
-<<<<<<< HEAD
-df = pd.read_csv('~/DadesAirBNB/DatosLimpios.csv') 
-   
-=======
 df = pd.read_pickle('/home/guillem/DadesAirBNB/DatosLimpios.pkl') 
->>>>>>> 7ef347ea0576856c2d39718b8a1ebd11e4dbbd51
+df.columns
 df.shape
-df['date'] = pd.to_datetime(df['date'])
-df['Year'] = df['date'].dt.year
-df['Month'] = df['date'].dt.month    
-df['Day'] = df['date'].dt.day 
-df['DayOfWeek'] = df['date'].dt.weekday
-df = df.sort_values('date')
 
-pricenulls = (df[df['goodprice'].isnull()]['date'].value_counts()/df['date'].value_counts()).sort_values(ascending = False)
+df.isnull().sum()[df.isnull().sum()>0]
 
-df[df['goodprice'].isnull()]['available'].value_counts()
+df.groupby(['year', 'month'])['id'].count()
 
-df.dropna(subset = ['goodprice'], axis = 0, inplace = True)
-
-df.groupby(['id', 'date','goodprice'])['goodprice'].count()[df.groupby(['id', 'date','goodprice'])['goodprice'].count()>1]
-df.groupby(['id', 'DayOfWeek', 'goodprice'])['goodprice'].count()[df.groupby(['id','DayOfWeek', 'goodprice'])['goodprice'].count()>1]
-df.groupby(['id', 'DayOfWeek', 'date','goodprice'])['goodprice'].count()[df.groupby(['id', 'DayOfWeek', 'date','goodprice'])['goodprice'].count()>1]
-
-df.drop_duplicates(subset = ['date', 'id'], inplace = True)
-
-df.groupby(['Year', 'Month'])['id'].count()
-df.isnull().sum()[df.isnull().sum()>0]/df.shape[0]
-
-agrupacion = df.groupby('date')['goodprice'].describe()
-
-df = df[(df['Year']>2016)&(df['Year']<2020)]
+df = df[(df['year']>2016)&(df['year']<2020)]
 
 df['PricePNight'] = [price/minnight if (price > 300)&(minnight > 1) else price for price, minnight in zip(df['goodprice'], df['minimum_nights'])]
 
@@ -78,7 +54,7 @@ plt.tight_layout()
 df['PricePNight'].describe()
 
 df['LogPricePNight'] = np.log(df['PricePNight'])
-df.drop(['goodprice'], axis = 1, inplace = True)
+#df.drop(['goodprice'], axis = 1, inplace = True)
 
 df['PricePNight'].describe()
 
@@ -103,10 +79,8 @@ else:
 
 # NO SE APROXIMA A UNA NORMAL SEGONS ESTOS TEST
 
-df.set_index('date', inplace = True)
-
 fig, ax = plt.subplots(1, 1, figsize = (40, 15))
-sns.pointplot(df.index.date, df['PricePNight'], ax = ax)
+sns.pointplot(df['month'], df['PricePNight'], ax = ax)
 plt.xticks(rotation = 90)
 plt.tight_layout()
 
@@ -124,11 +98,7 @@ plt.tight_layout()
 
 fig, ax = plt.subplots(1, 1, figsize = (50, 13))
 plt.plot(df.resample('W')['PricePNight'].mean().index, df.resample('W')['PricePNight'].mean())
-<<<<<<< HEAD
-plt.xticks(rotation = 45)
-=======
 plt.xticks(df.resample('W')['PricePNight'].mean().index, rotation = 45)
->>>>>>> 7ef347ea0576856c2d39718b8a1ebd11e4dbbd51
 plt.tight_layout()
 
 # Detectamos más outliers
@@ -197,7 +167,7 @@ plt.show()
 
 np.corrcoef(np.log(df['host_total_listings_count']), df['LogPricePNight'])
 
-np.corrcoef(df['host_total_listings_count'], df['LogPricePNight'])
+np.corrcoef(df['host_listings_count'], df['LogPricePNight'])
 
 df['Loghost_total_listings_count'] = np.log(df['host_total_listings_count'])
 
@@ -253,7 +223,6 @@ df['property_type'].value_counts(normalize = True)
 df['property_type'].value_counts()
 
 # MAL (CAMBIAR)
-df['property_type'] = df['property_type'].apply(lambda x: 'other' if x != 'apartment' else 'apartment')
 
 fig, ax = plt.subplots(3, 1, figsize = (20, 20))
 sns.barplot(df['property_type'].value_counts().index, df['property_type'].value_counts()/df.shape[0], ax = ax[0])
@@ -1303,20 +1272,12 @@ meteo = pd.read_csv('~/DadesAirBNB/Meteo/Meteo.csv')
 meteo = meteo[['DATA_LECTURA', 'TM', 'PPT24H']]
 
 meteo['DATA_LECTURA'] = pd.to_datetime(meteo['DATA_LECTURA'])
-df.index = pd.to_datetime(df.index)
-
 
 meteo = meteo[[x in [2017, 2018, 2019] for x in meteo['DATA_LECTURA'].dt.year]].set_index('DATA_LECTURA')
 
-<<<<<<< HEAD
-type(df.index)
-type(meteo.index)
-
-=======
 df['date'] = pd.to_datetime(df['date'])
 
 df.set_index('date', inplace = True)
->>>>>>> 7ef347ea0576856c2d39718b8a1ebd11e4dbbd51
 df = df.join(meteo, on = df.index)
 df.reset_index(inplace = True)
 
@@ -1345,14 +1306,6 @@ np.corrcoef(df['LogPricePNight'], df['PPT24H'])
 df.to_pickle('~/DadesAirBNB/DatosModelar.pkl')
 df.to_csv('~/DadesAirBNB/DatosModelar.csv', index = False)
 
-<<<<<<< HEAD
-df.PPT24H.isnull().sum()
-df.TM.isnull().sum()
-
-df.shape
-
-=======
->>>>>>> 7ef347ea0576856c2d39718b8a1ebd11e4dbbd51
 # PART PER REVISAR I ELIMINAR
 # VAIG A FER UN INTENT DE MAPA
 import geopandas as gpd

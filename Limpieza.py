@@ -3,12 +3,14 @@
 """
 Created on Fri Apr 24 18:32:42 2020
 
-@author: Guillem Rochina y Helena Saigi
+@author: guillem
 """
-cd ~/DadesAirBNB
 
+# Importamos librerías
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 df = pd.read_pickle('~/DadesAirBNB/Listings/April2017.pkl')
@@ -16,127 +18,122 @@ df = df.append(pd.read_pickle('~/DadesAirBNB/Listings/April2018.pkl'), ignore_in
 df = df.append(pd.read_pickle('~/DadesAirBNB/Listings/April2019.pkl'), ignore_index = True)
 df = df.append(pd.read_pickle('~/DadesAirBNB/Listings/March2020.pkl'), ignore_index = True)
 
-df = df.drop_duplicates('id')
+# Eliminamos la columnas con urls y los duplicados
 
 df.drop(df.columns[df.columns.str.endswith('url')], axis = 1, inplace = True)
+df = df.drop_duplicates('id')
+
+# Eliminamos las columnas con más de un 60% de nulls
 
 nulls = df.isnull().sum() / df.shape[0]
 nulls = nulls[nulls>0.05]
-
 df.drop(nulls[nulls>0.6].index, axis = 1, inplace = True)
 
-dropC = ['city', 'state', 'zipcode', 'country', 'country_code']
-df.drop(dropC, axis = 1, inplace = True)
+# Eliminamos las columnas respecto al scraping o información no importante sobre el host
 
-maxmincols = [x for x in df.columns if (x.startswith('maximum') | x.startswith('minimum'))]
-maxmincols
-
-maxmin = df[maxmincols]
-
-for col in [x for x in maxmin.columns if 'minimum' in x]:
-    print('La columna {} coincide con la de minimum_nigths un {:.2f}%'
-          .format(col, ((maxmin.loc[:]['minimum_nights'] == maxmin.loc[:][col]).sum()/maxmin.shape[0])*100))
-print('\n','='*50, '\n')
-for col in [x for x in maxmin.columns if 'maximum' in x]:
-    print('La columna {} coincide con la de minimum_nigths un {:.2f}%'
-          .format(col, ((maxmin.loc[:]['maximum_nights'] == maxmin.loc[:][col]).sum()/maxmin.shape[0])*100))
-    
-DropC = [x for x in maxmincols if x not in ['minimum_nights', 'maximum_nights']]
-print(len(maxmincols), len(DropC))
+DropC = ['scrape_id', 'last_scraped', 'host_name', 'host_location', 'host_about',
+         'host_neighbourhood', 'calendar_updated', 'calendar_last_scraped'] 
+# Aunque parezca redundante hacer esto, ayuda a una mejor lectura del código.
 df.drop(DropC, axis = 1, inplace = True)
+    
+# Eliminamos las columnas oportunas del análisis
+# Si buscas la explicación la hallarás en el Google Colab o PDF del repositorio
 
-neighbourhoods = df[['neighbourhood', 'neighbourhood_cleansed', 'neighbourhood_group_cleansed']]
+df.drop(['experiences_offered'], axis = 1, inplace = True)
 
-host_keys = [x for x in df.columns if x.startswith('host')]
+df['host_response_time'].fillna('undetermined', inplace = True)
+
+df.drop('host_response_rate', axis = 1, inplace = True)
+
+df['host_is_superhost'] = df['host_is_superhost'].apply(lambda x: 1 if x == 't' else 0)
 
 df['host_emailverified'] = df['host_verifications'].apply(lambda x: 1 if 'email' in x else 0)
 df['host_phoneverified'] = df['host_verifications'].apply(lambda x: 1 if 'phone' in x else 0)
 df['host_hasjumio'] = df['host_verifications'].apply(lambda x: 1 if 'jumio' in x else 0)
 df['host_reviewverified'] = df['host_verifications'].apply(lambda x: 1 if 'review' in x else 0)
 df['host_selfieverified'] = df['host_verifications'].apply(lambda x: 1 if 'selfie' in x else 0)
+df['host_idverified'] = df['host_verifications'].apply(lambda x: 1 if 'government_id' in x else 0)
 
-dropC = ['host_name','host_about', 'host_neighbourhood', 'host_listings_count', 'host_verifications']
-df.drop(dropC, axis = 1, inplace = True)
+df.drop(['host_verifications'], axis = 1, inplace = True)
 
-df.drop('experiences_offered', axis = 1, inplace = True)
+df['host_has_profile_pic'] = df['host_has_profile_pic'].apply(lambda x: 1 if x == 't' else 0)
+df['host_identity_verified'] = df['host_identity_verified'].apply(lambda x: 1 if x == 't' else 0)
 
-df['host_response_time'].fillna('undetermined', inplace = True)
-
-df['host_response_rate'] = df['host_response_rate'].str.replace('%', '')
-
-df.drop('host_response_rate', axis = 1, inplace = True)
-
-variablesdicotomicas = ['host_is_superhost', 'host_has_profile_pic', 'host_identity_verified']
-for variable in variablesdicotomicas:
-    df[variable] = df[variable].apply(lambda x: 1 if x == 't' else 0)
-    
-dropC = ['market', 'street', 'smart_location']
-df.drop(dropC, axis = 1, inplace = True)
-
-for column in ['bathrooms', 'bedrooms', 'beds']:
-    df[column].fillna(df[column].median(), inplace = True)
-    
-df['price'] = df['price'].str.replace('$', '').str.replace(',','').astype('float')
-
-columnselection = ['Air conditioning', 'Family/kid friendly', 'Host greets you', 'Laptop friendly workspace', 'Paid parking off premises', 
-                  'Patio or balcony', 'Luggage dropoff allowed', 'Long term stays allowed', 'Smoking allowed', 'Step-free access',
-                  'Paid parking on premises']
-for column in columnselection:
-    df[column] = df['amenities'].apply(lambda x: 1 if column in x else 0)
-df.drop('amenities', axis = 1, inplace = True)
-
-for column in ['security_deposit', 'cleaning_fee', 'extra_people']:
-    df[column] = df[column].str.replace('$', '').str.replace(',','').astype('float')
-    df[column].fillna(0, inplace = True)
-
-dropC = ['has_availability', 'availability_30', 'availability_60', 'availability_90']
-df.drop(dropC, axis = 1, inplace = True)
-
-cancelpol = {'strict_14_with_grace_period': 'strict_less30', 'flexible':'flexible', 'moderate':'moderate', 'super_strict_30':'strict_30orMore',
-           'super_strict_60':'strict_30orMore', 'strict':'strict_less30'}
-df['cancellation_policy'] = df['cancellation_policy'].map(cancelpol)
-
-df.dropna(subset = ['last_review'], inplace = True)
-
-for column in df.columns[df.columns.str.startswith('review')]:
-    df.dropna(subset = [column], inplace = True)
-
-dropC = ['calendar_updated', 'calendar_last_scraped', 'host_location', 'last_review', 'last_scraped', 
-         'neighbourhood', 'neighbourhood_cleansed']
-df.drop(dropC, axis = 1, inplace = True)
-
-df.dropna(subset = ['host_since'], inplace = True)
-
-new_cat = {'Apartment':'apartment', 'Service apartment': 'hotel', 'Loft': 'apartment', 'House':'house', 'Condominium':'house',
-          'Bed and breakfast':'hostel', 'Guest suite':'hotel', 'Hostel':'hostel', 'Boutique hotel':'hotel', 'Boat':'boat', 'Guest House':'hostel',
-          'Hotel':'hotel', 'Townhouse':'house', 'Aparthotel':'hotel', 'Casa particular (Cuba)':'house', 'Villa':'villa', 'Chalet':'house', 
-          'Houseboat':'boat', 'Resort':'hotel'}
-
-df['property_type'] = df['property_type'].map(new_cat).fillna('other')
-
-df.drop('scrape_id', axis = 1, inplace = True)
-df.columns
-
-df.drop(df.columns[df.columns.str.startswith('calculated')], axis = 1, inplace = True)
-
-dicotmicol = ['instant_bookable', 'is_business_travel_ready', 'is_location_exact', 'require_guest_phone_verification',
-    'require_guest_profile_picture', 'requires_license']
-for column in dicotmicol:
-    df[column] = df[column].apply(lambda x: 1 if x=='t' else 0)
-
-DropC = ['host_id', 'first_review']
+DropC = ['street', 'neighbourhood', 'neighbourhood_cleansed']
 df.drop(DropC, axis = 1, inplace = True)
 
-<<<<<<< HEAD
-cal = pd.read_csv("~/DadesAirBNB/Calendar/Calendar_November2016.csv")
-cal = cal.append(pd.read_csv("~/DadesAirBNB/Calendar/Calendar_April2017.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("~/DadesAirBNB/Calendar/Calendar_October2017.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("~/DadesAirBNB/Calendar/Calendar_April2018.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("~/DadesAirBNB/Calendar/Calendar_October2018.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("~/DadesAirBNB/Calendar/Calendar_April2019.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("~/DadesAirBNB/Calendar/Calendar_October2019.csv"), ignore_index = True)
-cal = cal.append(pd.read_csv("~/DadesAirBNB/Calendar/Calendar_March2020.csv"), ignore_index = True)
-=======
+DropC = ['city', 'state', 'zipcode', 'market', 'smart_location', 'country_code', 'country']
+df.drop(DropC, axis = 1, inplace = True)
+
+df['is_location_exact'] = df['is_location_exact'].apply(lambda x: 1 if x == 't' else 0)
+
+tempdict = {'Loft':'Apartment', 'Condominium':'House', 'Serviced apartment': 'Apartment', 
+            'Bed & Breakfast':'Hotel', 'Guest suite': 'Hotel', 'Hostel': 'Hotel', 
+            'Dorm': 'Hotel', 'Casa particular (Cuba)':'House', 'Aparthotel': 'Hotel',
+            'Townhouse': 'House', 'Villa': 'House', 'Vaction home': 'House', 'Chalet': 'House', 
+            'Dome house': 'House', 'Tiny house': 'House', 'Casa Particular': 'House', 
+            'Apartment': 'Apartment', 'Hotel':'Hotel', 'House':'House'}
+
+df['property_type'] = df['property_type'].map(tempdict).fillna('Other')
+
+df.drop(['bed_type'], axis = 1, inplace = True)
+
+columnselection = ['Air conditioning', 'Family/kid friendly', 'Host greets you', 
+                   'Laptop friendly workspace', 'Paid parking off premises', 
+                  'Patio or balcony', 'Luggage dropoff allowed', 'Long term stays allowed', 
+                  'Smoking allowed', 'Step-free access', 'Pets allowed', '24-hour check-in']
+
+for column in columnselection:
+    df[column] = df['amenities'].apply(lambda x: 1 if column in x else 0)
+df['Elevator'] = df['amenities'].apply(lambda x: 1 if ('Elevator' in x or 'Elevator in building' in x) else 0)
+df.drop('amenities', axis = 1, inplace = True)
+
+df['price'] = df['price'].str.replace('$', '').str.replace(',', '').astype('float')
+df['security_deposit'] = df['security_deposit'].str.replace('$', '').str.replace(',','').fillna(0).astype('float')
+df['cleaning_fee'] = df['cleaning_fee'].str.replace('$', '').str.replace(',','').fillna(0).astype('float')
+df['extra_people'] = df['extra_people'].str.replace('$', '').str.replace(',','').fillna(0).astype('float')
+
+df.drop(['has_availability'], axis = 1, inplace = True)
+
+df.drop(['first_review', 'last_review'], axis = 1, inplace = True)
+
+tempdict = {'strict_14_with_grace_period': 'strict_less30', 'flexible':'flexible', 
+            'moderate':'moderate', 'luxury_moderate': 'moderate', 'super_strict_30':'strict_30orMore', 
+            'super_strict_60':'strict_30orMore', 'strict':'strict_less30'}
+
+df['cancellation_policy'] = df['cancellation_policy'].map(tempdict)
+
+df.drop(['require_guest_profile_picture'], axis = 1, inplace = True)
+
+df.drop(['require_guest_phone_verification'], axis = 1, inplace = True)
+
+df.drop(['is_business_travel_ready'], axis = 1, inplace = True)
+
+df.drop(['host_id'], axis = 1, inplace = True)
+
+df.drop(['host_total_listings_count'], axis = 1, inplace = True)
+df.drop(['calculated_host_listings_count'], axis = 1, inplace = True)
+df.dropna(subset = ['host_listings_count'], inplace = True)
+
+df['bathrooms_imput'] = df['bathrooms'].isnull().astype('int')
+df['bathrooms'].fillna(df['bathrooms'].median(), inplace = True)
+
+df['bedrooms_imput'] = df['bedrooms'].isnull().astype('int')
+df['bedrooms'].fillna(df['bedrooms'].median(), inplace = True)
+
+df['beds_imput'] = df['beds'].isnull().astype('int')
+df['beds'].fillna(df['beds'].median(), inplace = True)
+
+df.drop(['availability_30', 'availability_60', 'availability_90'], axis = 1, inplace = True)
+
+df.drop(['reviews_per_month'], axis = 1, inplace = True)
+
+df.drop(['review_scores_accuracy', 'review_scores_cleanliness', 'review_scores_checkin', 
+         'review_scores_communication', 'review_scores_location', 'review_scores_value'], 
+        axis = 1, inplace = True)
+
+df['review_scores_rating'] = df['review_scores_rating'].apply(lambda x: 'Excellent' if x >= 90 else ('NotExcellent' if x < 90 else 'Unavailable'))
+
 cal = pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_April2016.pkl")
 cal = cal.append(pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_April2017.pkl"), ignore_index = True)
 cal = cal.append(pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_October2017.pkl"), ignore_index = True)
@@ -145,26 +142,37 @@ cal = cal.append(pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_Oct
 cal = cal.append(pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_April2019.pkl"), ignore_index = True)
 cal = cal.append(pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_October2019.pkl"), ignore_index = True)
 cal = cal.append(pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_March2020.pkl"), ignore_index = True)
->>>>>>> 7ef347ea0576856c2d39718b8a1ebd11e4dbbd51
 
-
+cal = cal[['listing_id', 'date', 'price']]
 cal['date'] = pd.to_datetime(cal['date'])
 
-cal = cal[(cal['date'].dt.day == 1) | (cal['date'].dt.day == 5)| (cal['date'].dt.day == 9)| (cal['date'].dt.day == 13)| (cal['date'].dt.day == 17)| (cal['date'].dt.day == 21)| (cal['date'].dt.day == 25)| (cal['date'].dt.day == 28)]
+cal['month_year'] = cal['date'].dt.to_period('M')
+cal['year'] = cal['date'].dt.year
+cal['month'] = cal['date'].dt.month
 
-cal = cal[['listing_id', 'date', 'price', 'available']]
+cal['price'] = cal['price'].str.replace('$', '').str.replace(',', '').astype('float')
 
-cal.columns  = ['id', 'date', 'goodprice', 'available']
+cal = cal.groupby(['month_year', 'year', 'month', 'listing_id']).mean().reset_index()
+cal.columns = ['month_year', 'year', 'month', 'id', 'price_calendar']
 
-cal = cal.drop_duplicates(subset = ['date', 'goodprice', 'id'])
+dfclean = pd.merge(df, cal, how = 'inner', on = 'id')
 
-cal['goodprice'] = cal['goodprice'].str.replace('$', '').str.replace(',','').astype('float')
+dfclean['price_calendar'] = dfclean['price_calendar'].fillna(0)
 
-DF = pd.merge(df, cal, how = 'inner', on = 'id')
+def imputer(x):
+  """Comprueba si la columna de price_calendar tiene un 0 y en ese caso
+  añade el valor de price, en otro caso el valor de price_calendar no
+  es alterado."""
+  if x[0] == 0:
+    return x[0] + x[1]
+  else:
+    return x[0]
 
-DF.drop_duplicates(subset = ['date', 'id', 'goodprice'], inplace = True)
+dfclean['goodprice'] = dfclean[['price_calendar', 'price']].apply(imputer, axis = 1)
 
-DF.drop(['requires_license', 'price'], axis = 1, inplace = True)
+dfclean.drop(['price', 'price_calendar'], axis = 1, inplace = True)
 
-DF.to_csv('~/DadesAirBNB/DatosLimpios.csv', index = False)
-DF.to_pickle('~/DadesAirBNB/DatosLimpios.pkl')
+print('Nos hemos quedado con un dataframe de {} filas y {} columnas\n Procedemos a guardarlo en un archivo'.format(dfclean.shape[0], dfclean.shape[1]))
+
+#dfclean.to_csv('~/DadesAirBNB/DatosLimpios.csv', index = False)
+dfclean.to_pickle('~/DadesAirBNB/DatosLimpios.pkl')
