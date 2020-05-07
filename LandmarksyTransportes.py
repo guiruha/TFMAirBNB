@@ -3,7 +3,7 @@
 """
 Created on Thu Apr 16 18:14:10 2020
 
-@author: guillem & helena
+@author: Guillem Rochina y Helena Saigí
 """
 import pandas as pd
 import numpy as np

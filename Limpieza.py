@@ -3,7 +3,7 @@
 """
 Created on Fri Apr 24 18:32:42 2020
 
-@author: guillem
+@author: Guillem Rochina y Helena Saigí
 """
 
 # Importamos librerías
