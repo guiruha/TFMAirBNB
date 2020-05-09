@@ -12,224 +12,253 @@ import geopandas as gpd
 from shapely.geometry import Point
 import contextily as ctx
 import matplotlib.pyplot as plt
+import scipy
+import scipy.cluster.hierarchy as sch
+from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import KMeans
 plt.style.use('fivethirtyeight')
 
 map_df = pd.read_pickle('~/DadesAirBNB/Localizaciones.pkl')
 
 bcn_df = gpd.read_file("/home/guillem/DadesAirBNB/neighbourhoods.geojson")
 
-map_df['geometry'] = map_df.apply(lambda x: Point(x.longitude, x.latitude), axis = 1)
-
 map_df = gpd.GeoDataFrame(map_df, geometry = gpd.points_from_xy(map_df.longitude, map_df.latitude), crs = bcn_df.crs)
 
-# LANDMARKS
+# LANDMARKS DATASET DE FLIKR
 
 f = np.loadtxt("/home/guillem/DadesAirBNB/Flkr/Flickr_landmarks_geotags.txt", comments="#", delimiter=" ", unpack=False)
 
-dff = pd.DataFrame(f)
+flickr = pd.DataFrame(f)
 
-dff
+flickr.columns = ['Latitude', 'Longitude']
 
-dff.columns = ['Latitude', 'Longitude']
+flickr = gpd.GeoDataFrame(flickr, geometry = gpd.points_from_xy(flickr.Longitude, flickr.Latitude), crs = bcn_df.crs)
 
-dff.head()
+# VISUALIZACIÓN GENERAL
 
-dff['geometry'] = dff.apply(lambda x: Point(x.Longitude, x.Latitude), axis = 1)
-
-dff = gpd.GeoDataFrame(dff, geometry = gpd.points_from_xy(dff.Longitude, dff.Latitude), crs = bcn_df.crs)
-
-plt.scatter(dff['Latitude'], dff['Longitude'])
-plt.show()
-
-dff = dff.to_crs(epsg=3857)
-ax = dff.plot(cmap = "YlOrRd", legend = True, figsize = (20, 20), alpha = 0.7, scheme = 'maximumbreaks')
+flickr = flickr.to_crs(epsg=3857)
+fig, ax = plt.subplots(1, 1, figsize = (15, 13))
+flickr.plot(color = "Red", ax = ax)
 ctx.add_basemap(ax)
-plt.show()
+plt.title('Landmarks más importantes de BCN', fontsize = 20)
+ax.axis('off')
+plt.tight_layout()
 
-ax = dff.plot(cmap = "YlOrRd", legend = True, figsize = (20, 20), alpha = 0.7, scheme = 'maximumbreaks')
-ctx.add_basemap(ax)
-plt.show()
+# DENDROGRAMA SINGLE Y EUCLÍDEA
 
-import scipy
-import scipy.cluster.hierarchy as sch
-from sklearn.cluster import AgglomerativeClustering
-from collections import namedtuple
+fig, ax = plt.subplots(1, 1, figsize=(15,15))
+dendrogram = sch.dendrogram(sch.linkage(flickr[['Latitude', 'Longitude']].values, 
+                            method='single', metric='euclidean'))
+_= ax.set_title('Dendrograma de distancias con método single y distancia euclídea', fontsize = 20)
+_= ax.set_ylabel('Distancia (en Miles de Metros)')
+_= ax.set_xticks([])
 
-fig, ax = plt.subplots(1, 1, figsize=(15,10))
-dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude', 'Longitude']].values, 
-                            method='complete', metric='euclidean'))
+# DENDROGRAMA SINGLE Y MANHATTAN
 
-fig, ax = plt.subplots(1, 1, figsize=(15,10))
-dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude', 'Longitude']].values, method='complete', metric='cityblock'))
-                            
-fig, ax = plt.subplots(1, 1, figsize=(15,10))
-dendrogram = sch.dendrogram(sch.linkage(dff[['Latitude', 'Longitude']].values, method='average', metric='cityblock'))
+fig, ax = plt.subplots(1, 1, figsize=(15,15))
+dendrogram = sch.dendrogram(sch.linkage(flickr[['Latitude', 'Longitude']].values, 
+                            method='single', metric='cityblock'))
+_= ax.set_title('Dendrograma de distancias con método single y distancia de manhattan', fontsize = 20)
+_= ax.set_ylabel('Distancia (en Miles de Metros)')
+_= ax.set_xticks([])
 
-hc = AgglomerativeClustering(n_clusters=11, affinity='cityblock', linkage='single')
+# DENDROGRAMA AVERAGE Y MANHATTAN
+   
+fig, ax = plt.subplots(1, 1, figsize=(15,15))
+dendrogram = sch.dendrogram(sch.linkage(flickr[['Latitude', 'Longitude']].values, 
+                            method='average', metric='cityblock'))
+_= ax.set_title('Dendrograma de distancias con método de la media y distancia de manhattan', fontsize = 20)
+_= ax.set_ylabel('Distancia (en Miles de Metros)')
+_= ax.set_xticks([])
 
-clusters = hc.fit_predict(dff[['Longitude', 'Latitude']])
+# PRIMER CLUSTERING AGLOMERATIVO
+
+np.random.seed(1997)
+hc = AgglomerativeClustering(n_clusters=12, affinity='cityblock', linkage='single')
+clusters = hc.fit_predict(flickr[['Longitude', 'Latitude']])
 
 print(clusters[:10])
 
-dff['clusters'] = hc.fit_predict(dff[['Longitude', 'Latitude']])
+flickr['clusters_hc'] = hc.fit_predict(flickr[['Longitude', 'Latitude']])
+flickr['clusters_hc'] = flickr['clusters_hc'].astype('category')
 
-dff['clusters'] = dff['clusters'].astype('category')
+# MAPAS DE CLUSTERS CON CLUSTERING JERÁRQUICO
 
-dff.clusters.dtypes
-
-dff = dff.to_crs(epsg=3857)
-ax = dff.plot(column = 'clusters', cmap='Set3', legend = True, figsize = (20, 20), categorical=True, markersize = 400)
+ax = flickr.plot(column = 'clusters_hc', cmap='rainbow', legend = True, figsize = (15, 13), 
+             categorical=True, edgecolor='black', markersize=500)
 ctx.add_basemap(ax)
-plt.show()
+plt.title('CLUSTERIZACIÓN DE LOS LANDMARKS A TRAVÉS DE CLUSTERING JERÁRQUICO', fontsize = 20)
+ax.axis('off')
+plt.tight_layout()
 
-dff.groupby('clusters')['Latitude'].count()
+# CLUSTERS QUE SOBRAN
 
-col_clust = dff.groupby('clusters')['Latitude'].count()[dff.groupby('clusters')['Latitude'].count() > 5].index.tolist()
+col_clust = flickr.groupby('clusters_hc')['Latitude'].count()[flickr.groupby('clusters_hc')['Latitude'].count() < 10].index.tolist()
+col_clust
 
-dff = dff.iloc[[i for i, x in zip(dff.index, dff['clusters']) if x in col_clust]]
+# ELIMINACIÓN DE LOS CLÚSTERS QUE SOBRAN
+flickr.drop([i for x, i in zip(flickr['clusters_hc'], flickr.index) if x in col_clust], axis = 0, inplace = True)
+flickr['clusters_hc'].value_counts()
 
-dff.groupby('clusters')['Latitude'].count()
+# DENDROGRAMA WARD Y EUCLÍDEA
 
-# Hierarchical clustering
+fig, ax = plt.subplots(1, 1, figsize=(15,15))
+dendrogram = sch.dendrogram(sch.linkage(flickr[['Latitude', 'Longitude']].values, 
+                            method='ward', metric='euclidean'))
+_= ax.set_title('Dendrograma de distancias con método del ward y distancia de euclidea', fontsize = 20)
+_= ax.set_ylabel('Distancia (en Miles de Metros)')
+_= ax.set_xticks([])
 
-dff = dff.to_crs(epsg = 4326)
-dff['clusters'] = hc.fit_predict(dff[['Longitude', 'Latitude']])
+# CLUSTERING JERÁRQUICO FINAL
 
-dff = dff.to_crs(epsg = 3857)
-ax = dff.plot(column = 'clusters', cmap='Set3', legend = True, figsize = (20, 20), categorical=True, markersize = 400)
+hc = AgglomerativeClustering(n_clusters=11, affinity='euclidean', linkage='ward')
+flickr['clusters_hc'] = hc.fit_predict(flickr[['Longitude', 'Latitude']])
+flickr['clusters_hc'] = flickr['clusters_hc'].astype('category')
+
+# MAPA CLUSTERING JERÁRQUICO FINAL
+
+ax = flickr.plot(column = 'clusters_hc', cmap='rainbow', legend = True, figsize = (15, 13), 
+             categorical=True, edgecolor='black', markersize=500)
 ctx.add_basemap(ax)
-plt.show()
-
-dff = dff.to_crs(epsg = 4326)
-hc = AgglomerativeClustering(n_clusters=13, affinity='euclidean', linkage='ward')
-
-dff['clusters_hc'] = hc.fit_predict(dff[['Longitude', 'Latitude']])
-
-dff = dff.to_crs(epsg = 3857)
-ax = dff.plot(column = 'clusters_hc', cmap='tab20b', legend = True, figsize = (20, 20), categorical=True, edgecolor='black', markersize=100)
-ctx.add_basemap(ax)
-plt.show()
-
-col_clust = dff.groupby('clusters')['Latitude'].count()[dff.groupby('clusters')['Latitude'].count() < 5].index.tolist()
-
-dff.drop([i for x, i in zip(dff['clusters'], dff.index) if x in col_clust], axis = 0, inplace = True)
-
-dff['clusters'].value_counts()
-
-np.random.seed(1997)
-hc = AgglomerativeClustering(n_clusters=13, affinity='cityblock', linkage='average')
-
-dff['clusters_hc'] = hc.fit_predict(dff[['Longitude', 'Latitude']])
-
-dff = dff.to_crs(epsg = 3857)
-ax = dff.plot(column = 'clusters_hc', cmap='tab20b', legend = True, figsize = (20, 20), categorical=True, edgecolor='black', markersize=100)
-ctx.add_basemap(ax)
-plt.show()
-
+plt.title('Clusterización de los landmarks a través del Clustering Jerárquico', fontsize = 20)
+ax.axis('off')
+plt.tight_layout()
 
 # K-MEANS
-
-from sklearn.cluster import KMeans
 
 km = KMeans()
 km.get_params()
 n_clusters = list(range(1, 20))
 
+# MÉTODO DEL CODO (IRRELEVANTE PARA NUESTRO CASO)
+
 wcss = []
 for cluster in n_clusters:
     km = KMeans(n_clusters=cluster)
-    km.fit(dff[['Longitude', 'Latitude']])
+    km.fit(flickr[['Longitude', 'Latitude']])
     wcss.append(km.inertia_)
 
 ax, fig = plt.subplots(1, 1, figsize=(10,7))
 plt.plot(n_clusters,wcss)
 plt.xticks(n_clusters)
-plt.xlabel('Number of Clusters')
-plt.ylabel('wcss')
-plt.title('Elbow Curve')
+plt.xlabel('Numero de Clusters')
+plt.ylabel('WCSS')
+plt.title('Método del Codo')
 plt.show()
 
-km = KMeans(n_clusters=12, random_state = 1997)
+# K-MEANS FINAL
 
-dff['clusters_km'] = km.fit_predict(dff[['Longitude', 'Latitude']])
+km = KMeans(n_clusters=11, random_state = 1997)
+flickr['clusters_km'] = km.fit_predict(flickr[['Longitude', 'Latitude']])
 
-dff[['clusters_hc', 'clusters_km']]
+# MAPA KMEANS FINAL
 
-dff['clusters_hc'].value_counts()
-
-dff['clusters_km'].value_counts()
-
-km.cluster_centers_
-
-km.cluster_centers_[:,0]
-km.cluster_centers_[:,1]
-
-dff = dff.to_crs(epsg=4326)
-bcn_df = bcn_df.to_crs(epsg=4326)
-
-ax = bcn_df.plot(figsize=(25,13))
-dff.plot(column = 'clusters_km', cmap='tab20b', legend = True, figsize = (20, 20), categorical=True, edgecolor='black', markersize=100, ax=ax)
-plt.scatter(km.cluster_centers_[:,0], km.cluster_centers_[:,1], marker='*', s=300, color='yellow', edgecolor='black')
+ax = flickr.plot(column = 'clusters_km', cmap='rainbow', legend = True, figsize = (15, 13), 
+             categorical=True, edgecolor='black', markersize=500)
+ctx.add_basemap(ax)
+plt.title('CLUSTERIZACIÓN DE LOS LANDMARKS A TRAVÉS DE K-MEANS', fontsize = 20)
+ax.axis('off')
 plt.tight_layout()
 
-km.cluster_centers_
+# CENTROIDES
 
-clusters = [ 'Arc de Triomf', 'Montjuic', 'Jardinets de Gràcia', 'Parc Guell', 'Sagrada Familia', 'Colon', 
-            'Vila Olimpica', 'Pl. Catalunya', 'Catedral de Barcelona', 'Glories', 'Hospital de Sant Pau', 'Pg. de Gràcia']
+print('Los centroides de los clusters ajustados se encuentran en las coordenadas:\n {}'.format(km.cluster_centers_))
+print('\nCon Longitudes de: \n{}'.format(km.cluster_centers_[:,0]))
+print('\nY Latitudes de: \n{}'.format(km.cluster_centers_[:,1]))
 
-centroids = km.cluster_centers_.tolist()
+# MAPA DE CENTROIDES Y CLUSTERS
+
+flickr = flickr.to_crs(epsg=4326)
+bcn_df = bcn_df.to_crs(epsg=4326)
+ax = bcn_df.plot(figsize=(25,13))
+flickr.plot(column = 'clusters_km', cmap='tab20b', legend = True, figsize = (20, 20), categorical=True, edgecolor='black', markersize=500, ax=ax)
+plt.scatter(km.cluster_centers_[:,0], km.cluster_centers_[:,1], marker='*', s=700, color='yellow', edgecolor='black')
+ax.set_xlim([2.12, 2.23])
+ax.set_ylim([41.36, 41.43])
+plt.title('Visualización de clusters y sus centroides', fontsize = 20)
+plt.xlabel('LATITUD')
+plt.ylabel('LONGITUD')
+ax.axis('off')
+plt.tight_layout()
+
+# CREACIÓN DE DATAFRAME DE CENTROIDES
+
+clusters = ['Catedral de Barcelona', 'Parc Güell', 'Sagrada Familia', 'Montjuic', 'Pg. de Gràcia', 'Vila Olimpica',
+            'Colon', 'Arc de Triomf', 'Glories', 'Hospital de Sant Pau', 'Pl. Catalunya']
+centroids = km.cluster_centers_.tolist() # Los clusters cambian no importa la semilla que le pongas
+# Por ello los nombres de los clúster pueden no ser correctos.
 
 centroids_km = pd.DataFrame({'cluster': clusters, 'centroids': centroids})
 
-centroids_km
+# GEODATAFRAME DE CENTROIDES (LANDMARKS)
 
 centroids_km['Longitud'] = [centroids_km.centroids[i][0] for i in range(centroids_km.shape[0])]
-
 centroids_km['Latitud'] = [centroids_km.centroids[i][1] for i in range(centroids_km.shape[0])]
-
-centroids_km['geometry'] = centroids_km.apply(lambda x: Point(x.Longitud, x.Latitud), axis = 1)
-
 landmarks = gpd.GeoDataFrame(centroids_km, geometry=gpd.points_from_xy(centroids_km.Longitud, centroids_km.Latitud), crs=bcn_df.crs)
-
 landmarks = landmarks[['cluster', 'geometry']]
 
 landmarks = landmarks.to_crs(epsg=3857)
 map_df = map_df.to_crs(epsg=3857)
 
+# MAPA DE LANDMARKS Y CENTROIDES
+ax = map_df.plot(marker = "X", markersize = 10, color = "navy",  figsize = (25, 13))
+landmarks.plot(column = 'cluster', cmap = 'rainbow', legend = True, 
+             categorical=True, edgecolor='black', marker = '*', markersize=1000, ax = ax)
+ctx.add_basemap(ax)
+plt.title('Visualización de los centroides y los alojamientos', fontsize = 20)
+ax.axis('off')
+plt.tight_layout()
+
+# CREACIÓN DE LAS COLUMNAS DE DISTANCIAS
+
 for i, landmark in enumerate(landmarks.cluster):
     map_df['{}_distance'.format(landmark)] = [j.distance(landmarks.geometry[i]) for j in map_df.geometry]
 
-# DATASET DELS TRANSPORTS
+fig, ax = plt.subplots(1, 3, figsize = (30, 13))
+map_df.sort_values(by = 'Sagrada Familia_distance').head(20).plot(ax = ax[0], marker = ".", markersize = 300, color = "maroon")
+landmarks.plot(ax = ax[0],  marker = "*", markersize = 200, color = "gold")
+map_df.sort_values(by = 'Colon_distance').head(20).plot(ax = ax[1], marker = ".", markersize = 300, color = "maroon")
+landmarks.plot(ax = ax[1],  marker = "*", markersize = 200, color = "gold")
+map_df.sort_values(by = 'Arc de Triomf_distance').head(20).plot(ax = ax[2], marker = ".", markersize = 300, color = "maroon")
+landmarks.plot(ax = ax[2],  marker = "*", markersize = 200, color = "gold")
+ctx.add_basemap(ax[0])
+ctx.add_basemap(ax[1])
+ctx.add_basemap(ax[2])
+ax[0].set_title('Alojamientos más cercanos a Sagrada Familia')
+ax[1].set_title('Alojamientos más cercanos a Estatua de Colón')
+ax[2].set_title('Alojamientos más cercanos a Arc del Triomf')
+ax[0].axis('off')
+ax[1].axis('off')
+ax[2].axis('off')
+plt.show()
+
+# DATASETS DE TRANSPORTES
 
 transport = pd.read_pickle("~/DadesAirBNB/Transports/METRO.pkl")
-
-transport.columns
-
 transport = transport[['NOM_CAPA', 'LONGITUD', 'LATITUD', 'EQUIPAMENT', 'NOM_BARRI']]
 
 # METRO
 transport['NOM_CAPA'].value_counts()
 metro = transport[transport['NOM_CAPA'] == 'Metro i línies urbanes FGC']
 
-metro['geometry'] = metro.apply(lambda x: Point(x.LONGITUD, x.LATITUD), axis = 1)
-
-metro = gpd.GeoDataFrame(metro, geometry = metro.geometry, crs = bcn_df.crs)
+metro = gpd.GeoDataFrame(metro, geometry = gpd.points_from_xy(metro.LONGITUD, metro.LATITUD), crs = bcn_df.crs)
 
 metro = metro.to_crs(epsg = 3857)
 map_df = map_df.to_crs(epsg = 3857)
 
+# CÁLCULO DE DISTANCIAS A PARADAS DE METRO
 
-map_df['dist_metro'] = [min(i.distance(j) for j in metro.geometry) for i in map_df.geometry]
+map_df['dist_metro'] = map_df['geometry'].apply(lambda x: min(x.distance(j) for j in metro.geometry))
 
-map_df[map_df.index == map_df['dist_metro'].idxmax()][['geometry', 'dist_metro']]
+# MAPA DE DISTANCIAS AL METRO
 
-for i in metro.geometry:
-    print(map_df[map_df.index == map_df['dist_metro'].idxmax()].geometry.distance(i))
-
-fig, ax = plt.subplots(1, 1, figsize = (25, 25))
-map_df[map_df.index == map_df['dist_metro'].idxmax()].plot(ax = ax, marker = "X", markersize = 500, color = "maroon")
-map_df[map_df.index == map_df['dist_metro'].idxmin()].plot(ax = ax, marker = "X", markersize = 500, color = "green")
-metro.plot(ax = ax, color = "navy")
+fig, ax = plt.subplots(1, 1, figsize = (15, 15))
+map_df.sort_values(by = 'dist_metro').head(100).plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos cercanos al metro')
+map_df.sort_values(by = 'dist_metro', ascending=False).head(100).plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos lejanos al metro')
+metro.plot(ax = ax, color = "navy", label = 'Paradas de Metro')
+plt.legend(fontsize = 20, loc = "lower right")
+plt.title('Cercanía a paradas de metro', fontsize = 20)
+ax.axis('off')
 ctx.add_basemap(ax)
 plt.show()
 
@@ -237,58 +266,71 @@ plt.show()
 
 fgc = transport[transport['NOM_CAPA'] == 'Ferrocarrils Generalitat (FGC)']
 
-fgc['geometry'] = fgc.apply(lambda x: Point(x.LONGITUD, x.LATITUD), axis = 1)
-fgc = gpd.GeoDataFrame(fgc, geometry = fgc.geometry, crs = bcn_df.crs)
+fgc = gpd.GeoDataFrame(fgc, geometry = gpd.points_from_xy(fgc.LONGITUD, fgc.LATITUD), crs = bcn_df.crs)
 fgc = fgc.to_crs(epsg = 3857)
 
-map_df['dist_fgc'] = [min(i.distance(j) for j in fgc.geometry) for i in map_df.geometry]
+# CÁLCULO DE DISTANCIAS A PARADAS FGC
+
+map_df['dist_fgc'] = map_df['geometry'].apply(lambda x: min(x.distance(j) for j in fgc.geometry))
 
 map_df[map_df.index == map_df['dist_fgc'].idxmax()][['geometry', 'dist_fgc']]
 
-fig, ax = plt.subplots(1, 1, figsize = (25, 25))
-map_df[map_df.index == map_df['dist_fgc'].idxmax()].plot(ax = ax, marker = "X", markersize = 500, color = "maroon")
-map_df[map_df.index == map_df['dist_fgc'].idxmin()].plot(ax = ax, marker = "X", markersize = 500, color = "green")
-fgc.plot(ax = ax, color = "navy")
+# MAPA DE DISTANAS A PARADAS DE FGC
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 15))
+map_df.sort_values(by = 'dist_fgc').head(100).plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos lejanos a los Ferrocarriles')
+map_df.sort_values(by = 'dist_fgc', ascending=False).head(100).plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos lejanos a los Ferrocarriles')
+fgc.plot(ax = ax, color = "navy", label = 'Paradas de Ferrocarriles (FGC)')
+plt.legend(fontsize = 20, loc = "lower right")
+plt.title('Cercanía a paradas de Ferrocarril', fontsize = 20)
+ax.axis('off')
 ctx.add_basemap(ax)
 plt.show()
 
-map_df[map_df.index == map_df['dist_metro'].idxmax()][['geometry', 'dist_metro', 'dist_fgc']]
-
 # RENFE
 
-renfe = transport[transport['NOM_CAPA'] == 'RENFE']
+renfe = transport[(transport['EQUIPAMENT'] == 'RENFE - DE FRANÇA-')|(transport['EQUIPAMENT'] == 'RENFE - SANTS ESTACIÓ-')]
 
-renfe['geometry'] = renfe.apply(lambda x: Point(x.LONGITUD, x.LATITUD), axis = 1)
-renfe = gpd.GeoDataFrame(renfe, geometry = renfe.geometry, crs = bcn_df.crs)
+renfe = gpd.GeoDataFrame(renfe, geometry = gpd.points_from_xy(renfe.LONGITUD, renfe.LATITUD), crs = bcn_df.crs)
 renfe = renfe.to_crs(epsg = 3857)
 
+# CÁLCULO DISTANCIAS A ESTACIONES DE RENFE
 map_df['dist_renfe'] = [min(i.distance(j) for j in renfe.geometry) for i in map_df.geometry]
 
 map_df[map_df.index == map_df['dist_renfe'].idxmax()][['geometry', 'dist_renfe']]
 
-fig, ax = plt.subplots(1, 1, figsize = (25, 25))
-map_df[map_df.index == map_df['dist_renfe'].idxmax()].plot(ax = ax, marker = "X", markersize = 500, color = "maroon")
-map_df[map_df.index == map_df['dist_renfe'].idxmin()].plot(ax = ax, marker = "X", markersize = 500, color = "green")
-renfe.plot(ax = ax, color = "navy")
+# MAPA DE DISTANCIAS A PARADAS DE RENFE
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 15))
+map_df.sort_values(by = 'dist_renfe').head(100).plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos cercanos a RENFE')
+map_df.sort_values(by = 'dist_renfe', ascending=False).head(100).plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos lejanos a RENFE')
+renfe.plot(ax = ax, color = "navy", label = 'Paradas de RENFE')
+plt.legend(fontsize = 20, loc = "upper left")
+plt.title('Cercanía a paradas de RENFE', fontsize = 20)
+ax.axis('off')
 ctx.add_basemap(ax)
 plt.show()
-
-map_df[map_df.index == map_df['dist_metro'].idxmax()][['geometry', 'dist_metro', 'dist_fgc', 'dist_renfe']]
 
 # TREN AEROPUERTO
 
 trenaer = transport[transport['NOM_CAPA'] == "Tren a l'aeroport"]
 
-trenaer['geometry'] = trenaer.apply(lambda x: Point(x.LONGITUD, x.LATITUD), axis = 1)
-trenaer = gpd.GeoDataFrame(trenaer, geometry = trenaer.geometry, crs = bcn_df.crs)
+trenaer = gpd.GeoDataFrame(trenaer, geometry = gpd.points_from_xy(trenaer.LONGITUD, trenaer.LATITUD), crs = bcn_df.crs)
 trenaer = trenaer.to_crs(epsg = 3857)
 
-map_df['dist_trenaeropuerto'] = [min(i.distance(j) for j in trenaer.geometry) for i in map_df.geometry]
+# CÁLCULO DE DISTANCIAS A PARADAS DE TREN AEROPUERTO
 
-fig, ax = plt.subplots(1, 1, figsize = (25, 25))
-map_df[map_df.index == map_df['dist_trenaeropuerto'].idxmax()].plot(ax = ax, marker = "X", markersize = 500, color = "maroon")
-map_df[map_df.index == map_df['dist_trenaeropuerto'].idxmin()].plot(ax = ax, marker = "X", markersize = 500, color = "green")
-trenaer.plot(ax = ax, color = "navy")
+map_df['dist_trenaeropuerto'] = map_df['geometry'].apply(lambda x: min(x.distance(j) for j in trenaer.geometry))
+
+# MAPA DE DISTANCIAS AL TREN AL AEROPUERTO
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 15))
+map_df.sort_values(by = 'dist_trenaeropuerto').head(100).plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos cercanos al Tren del Aeropuerto')
+map_df.sort_values(by = 'dist_trenaeropuerto', ascending=False).head(100).plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos lejanos al Tren del Aeropuerto')
+trenaer.plot(ax = ax, color = "navy", label = 'Paradas de Tren al Aeropuerto')
+plt.legend(fontsize = 20, loc = "lower right")
+plt.title('Cercanía a paradas del Tren al Aeropuerto', fontsize = 20)
+ax.axis('off')
 ctx.add_basemap(ax)
 plt.show()
 
@@ -296,43 +338,50 @@ plt.show()
 
 tramvia = transport[transport['NOM_CAPA'] == 'Tramvia']
 
-tramvia['geometry'] = tramvia.apply(lambda x: Point(x.LONGITUD, x.LATITUD), axis = 1)
-tramvia = gpd.GeoDataFrame(tramvia, geometry = tramvia.geometry, crs = bcn_df.crs)
+tramvia = gpd.GeoDataFrame(tramvia, geometry = gpd.points_from_xy(tramvia.LONGITUD, tramvia.LATITUD), crs = bcn_df.crs)
 tramvia = tramvia.to_crs(epsg = 3857)
 
-map_df['dist_tramvia'] = [min(i.distance(j) for j in tramvia.geometry) for i in map_df.geometry]
+# CÁLCULO DE DISTANCIAS A PARADAS DE TRAMVIA
 
-fig, ax = plt.subplots(1, 1, figsize = (25, 25))
-map_df[map_df.index == map_df['dist_tramvia'].idxmax()].plot(ax = ax, marker = "X", markersize = 500, color = "maroon")
-map_df[map_df.index == map_df['dist_tramvia'].idxmin()].plot(ax = ax, marker = "X", markersize = 500, color = "green")
-tramvia.plot(ax = ax, color = "navy")
+map_df['dist_tramvia'] = map_df['geometry'].apply(lambda x: min(x.distance(j) for j in tramvia.geometry))
+
+# MAPA DE DISTANCIAS A PARADAS DE TRAMVIA
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 15))
+map_df.sort_values(by = 'dist_tramvia').head(100).plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos cercanos al Tramvia')
+map_df.sort_values(by = 'dist_tramvia', ascending=False).head(100).plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos lejanos al Tramvia')
+tramvia.plot(ax = ax, color = "navy", label = 'Paradas de Tramvia')
+plt.legend(fontsize = 20, loc = "lower right")
+plt.title('Cercanía a paradas de Tramvia', fontsize = 20)
+ax.axis('off')
 ctx.add_basemap(ax)
 plt.show()
 
 # DATASET AUTOBUSOS
 
 transportsbus = pd.read_pickle("~/DadesAirBNB/Transports/ESTACIONS_BUS.pkl")
-
 transportsbus = transportsbus[['NOM_CAPA', 'LONGITUD', 'LATITUD', 'EQUIPAMENT', 'NOM_BARRI']]
 
-transportsbus['NOM_CAPA'].value_counts()
 
 # BUS DIURN
 
 bus = transportsbus[transportsbus['NOM_CAPA'] == 'Autobusos diürns']
 
-bus['geometry'] = bus.apply(lambda x: Point(x.LONGITUD, x.LATITUD), axis = 1)
-bus = gpd.GeoDataFrame(bus, geometry = bus.geometry, crs = bcn_df.crs)
+bus = gpd.GeoDataFrame(bus, geometry = gpd.points_from_xy(bus.LONGITUD, bus.LATITUD), crs = bcn_df.crs)
 bus = bus.to_crs(epsg = 3857)
 
-map_df['dist_bus'] = [min(i.distance(j) for j in bus.geometry) for i in map_df.geometry]
+# CÁLCULO DE DISTANCIAS A PARADAS DE BUS
 
-map_df['dist_bus']
+map_df['dist_bus'] = map_df['geometry'].apply(lambda x: min(x.distance(j) for j in bus.geometry))
 
-fig, ax = plt.subplots(1, 1, figsize = (25, 25))
-map_df[map_df.index == map_df['dist_bus'].idxmax()].plot(ax = ax, marker = "X", markersize = 500, color = "maroon")
-map_df[map_df.index == map_df['dist_bus'].idxmin()].plot(ax = ax, marker = "X", markersize = 500, color = "green")
-bus.plot(ax = ax, color = "navy")
+# MAPA DE DISTANCIAS A PARADAS DE BUS
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 15))
+map_df.sort_values(by = 'dist_bus').head(100).plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos cercanos al Bus')
+map_df.sort_values(by = 'dist_bus', ascending=False).head(100).plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos lejanos al Bus')
+bus.plot(ax = ax, color = "navy", markersize = 15, label = 'Paradas de Bus')
+plt.legend(fontsize = 20, loc = "lower right")
+plt.title('Cercanía a paradas de Autobús', fontsize = 20)
 ctx.add_basemap(ax)
 plt.show()
 
@@ -340,16 +389,21 @@ plt.show()
 
 aerobus = transportsbus[transportsbus['NOM_CAPA'] == "Autobus a l'aeroport"]
 
-aerobus['geometry'] = aerobus.apply(lambda x: Point(x.LONGITUD, x.LATITUD), axis = 1)
-aerobus = gpd.GeoDataFrame(aerobus, geometry = aerobus.geometry, crs = bcn_df.crs)
+aerobus = gpd.GeoDataFrame(aerobus, geometry = gpd.points_from_xy(aerobus.LONGITUD, aerobus.LATITUD), crs = bcn_df.crs)
 aerobus = aerobus.to_crs(epsg = 3857)
 
-map_df['dist_aerobus'] = [min(i.distance(j) for j in aerobus.geometry) for i in map_df.geometry]
+# CÁLCULO DE DISTANCIAS A PARADAS DE BUS AL AEROPUERTO
 
-fig, ax = plt.subplots(1, 1, figsize = (25, 25))
-map_df[map_df.index == map_df['dist_aerobus'].idxmax()].plot(ax = ax, marker = "X", markersize = 500, color = "maroon")
-map_df[map_df.index == map_df['dist_aerobus'].idxmin()].plot(ax = ax, marker = "X", markersize = 500, color = "green")
-aerobus.plot(ax = ax, color = "navy")
+map_df['dist_aerobus'] = map_df['geometry'].apply(lambda x: min(x.distance(j) for j in aerobus.geometry))
+
+# MAPA DE DISTANCIAS A PARADAS DEL BUS AL AEROPUERTO
+
+fig, ax = plt.subplots(1, 1, figsize = (15, 15))
+map_df.sort_values(by = 'dist_aerobus').head(100).plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos cercanos al Bus del Aeropuerto')
+map_df.sort_values(by = 'dist_aerobus', ascending=False).head(100).plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos lejanos al Bus del Aeropuerto')
+aerobus.plot(ax = ax, color = "navy", label = 'Paradas de bus al aeropuerto')
+plt.legend(fontsize = 20, loc = "upper left")
+plt.title('Cercanía a paradas de Bus al Aeropuerto', fontsize = 20)
 ctx.add_basemap(ax)
 plt.show()
 
