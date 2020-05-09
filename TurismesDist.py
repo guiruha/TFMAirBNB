@@ -51,8 +51,8 @@ plt.show()
 
 # CREAMOS LAS GEOMETRIAS CON BUFFER
 
-mapdistances = map_df.copy()
-mapdistances['geometry'] = mapdistances['geometry'].buffer(distance)
+mapbuffer = map_df.copy()
+mapbuffer['geometry'] = mapdistances['geometry'].buffer(distance)
 
 # CÁLCULAMOS MUSESOS CERCANOS
 
@@ -69,7 +69,7 @@ visual['LONGITUD'] = visual['LONGITUD'].astype('str').apply(lambda x: x[0]+'.'+x
 
 visual = visual.drop_duplicates(subset = ['EQUIPAMENT'])[['EQUIPAMENT', 'SECCIO','NUM_BARRI', 'LONGITUD', 'LATITUD']]
 
-teatro = dft_visual[dft_visual.SECCIO.str.contains('Teatre')]
+teatro = visual[visual.SECCIO.str.contains('Teatre')]
 
 teatro = gpd.GeoDataFrame(teatro, geometry = gpd.points_from_xy(teatro.LONGITUD, teatro.LATITUD), crs = bcn_df.crs)
 
@@ -92,7 +92,7 @@ map_df['teatros_cercanos'] = mapbuffer['geometry'].apply(lambda x: sum(x.distanc
 
 # CINE
 
-cine = dft_visual[dft_visual.SECCIO.str.contains('Cinema')]
+cine = visual[visual.SECCIO.str.contains('Cinema')]
 
 cine = gpd.GeoDataFrame(cine, geometry = gpd.points_from_xy(cine.LONGITUD, cine.LATITUD), crs = bcn_df.crs)
 cine = cine.to_crs(epsg = 3857)
@@ -114,7 +114,7 @@ map_df['cines_cercanos'] = mapbuffer['geometry'].apply(lambda x: sum(x.distance(
 
 # AUDITORIOS
 
-auditorio = dft_visual[dft_visual.SECCIO.str.contains('Auditori')]
+auditorio = visual[visual.SECCIO.str.contains('Auditori')]
 
 auditorio = gpd.GeoDataFrame(auditorio, geometry = gpd.points_from_xy(auditorio.LONGITUD, auditorio.LATITUD), crs = bcn_df.crs)
 auditorio = auditorio.to_crs(epsg = 3857)
