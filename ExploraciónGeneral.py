@@ -14,7 +14,7 @@ import scipy
 plt.style.use('fivethirtyeight')
 
 
-df = pd.read_pickle('/home/guillem/DadesAirBNB/DatosLimpios.pkl') 
+df = pd.read_csv('/home/guillem/DadesAirBNB/DatosLimpios.csv') 
 df.columns
 df.shape
 
@@ -89,7 +89,7 @@ df.groupby(df.index)['PricePNight'].describe()[df.groupby(df.index)['PricePNight
 df['PricePNight'].idxmax()
 df.loc['2017-10-28'][['id', 'PricePNight']].sort_values(by = 'PricePNight', ascending = False)[:10]
 
-df = df[(df['goodprice']<1000)]
+df = df[(df['goodprice']<1200)]
 
 fig, ax = plt.subplots(1, 1, figsize = (20, 13))
 plt.plot(df.resample('M')['PricePNight'].mean().index, df.resample('M')['PricePNight'].mean())
@@ -101,11 +101,7 @@ plt.plot(df.resample('W')['PricePNight'].mean().index, df.resample('W')['PricePN
 plt.xticks(df.resample('W')['PricePNight'].mean().index, rotation = 45)
 plt.tight_layout()
 
-# Detectamos más outliers
-df.loc['2019-02'][['id', 'PricePNight', 'minimum_nights', 'goodprice']]\
-    .sort_values(by = 'PricePNight', ascending = False)[:20]
-
-df = df[(df['goodprice']<500)]
+df = df[(df['goodprice']<1200)]
 
 fig, ax = plt.subplots(1, 1, figsize = (40, 15))
 sns.pointplot(df.index.date, df['LogPricePNight'])

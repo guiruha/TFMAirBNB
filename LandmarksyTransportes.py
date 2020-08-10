@@ -183,8 +183,8 @@ plt.tight_layout()
 
 # CREACIÓN DE DATAFRAME DE CENTROIDES
 
-clusters = ['Catedral de Barcelona', 'Parc Güell', 'Sagrada Familia', 'Montjuic', 'Pg. de Gràcia', 'Vila Olimpica',
-            'Colon', 'Arc de Triomf', 'Glories', 'Hospital de Sant Pau', 'Pl. Catalunya']
+clusters = ['Landmark_1', 'Landmark_2', 'Landmark_3', 'Landmark_4', 'Landmark_5', 'Landmark_6', 'Landmark_7',
+            'Landmark_8', 'Landmark_9', 'Landmark_10', 'Landmark_11']
 centroids = km.cluster_centers_.tolist() # Los clusters cambian no importa la semilla que le pongas
 # Por ello los nombres de los clúster pueden no ser correctos.
 
@@ -195,7 +195,7 @@ centroids_km = pd.DataFrame({'cluster': clusters, 'centroids': centroids})
 centroids_km['Longitud'] = [centroids_km.centroids[i][0] for i in range(centroids_km.shape[0])]
 centroids_km['Latitud'] = [centroids_km.centroids[i][1] for i in range(centroids_km.shape[0])]
 landmarks = gpd.GeoDataFrame(centroids_km, geometry=gpd.points_from_xy(centroids_km.Longitud, centroids_km.Latitud), crs=bcn_df.crs)
-landmarks = landmarks[['cluster', 'geometry']]
+
 
 landmarks = landmarks.to_crs(epsg=3857)
 map_df = map_df.to_crs(epsg=3857)
@@ -211,15 +211,27 @@ plt.tight_layout()
 
 # CREACIÓN DE LAS COLUMNAS DE DISTANCIAS
 
-for i, landmark in enumerate(landmarks.cluster):
-    map_df['{}_distance'.format(landmark)] = [j.distance(landmarks.geometry[i]) for j in map_df.geometry]
+def haversine_distance(lat1, lon1, lat2, lon2):
+   r = 6372800
+   phi1 = np.radians(lat1)
+   phi2 = np.radians(lat2)
+   delta_phi = np.radians(lat1 - lat2)
+   delta_lambda = np.radians(lon1 - lon2)
+   a = np.sin(delta_phi / 2)**2 + np.cos(phi1) * np.cos(phi2) *   np.sin(delta_lambda / 2)**2
+   res = 2 * r * (np.arcsin(np.sqrt(a)))
+   return np.round(res, 2)
+
+for landlat, landlon, name in zip(landmarks.Latitud, landmarks.Longitud, landmarks.cluster):
+    print(name)
+    map_df['{}_distance'.format(name)] = [haversine_distance(landlat, landlon, listlat, listlon) \
+                                          for listlat, listlon in zip(map_df.latitude, map_df.longitude)]
 
 fig, ax = plt.subplots(1, 3, figsize = (30, 13))
-map_df.sort_values(by = 'Sagrada Familia_distance').head(20).plot(ax = ax[0], marker = ".", markersize = 300, color = "maroon")
+map_df.sort_values(by = 'Landmark_1_distance').head(20).plot(ax = ax[0], marker = ".", markersize = 300, color = "maroon")
 landmarks.plot(ax = ax[0],  marker = "*", markersize = 200, color = "gold")
-map_df.sort_values(by = 'Colon_distance').head(20).plot(ax = ax[1], marker = ".", markersize = 300, color = "maroon")
+map_df.sort_values(by = 'Landmark_5_distance').head(20).plot(ax = ax[1], marker = ".", markersize = 300, color = "maroon")
 landmarks.plot(ax = ax[1],  marker = "*", markersize = 200, color = "gold")
-map_df.sort_values(by = 'Arc de Triomf_distance').head(20).plot(ax = ax[2], marker = ".", markersize = 300, color = "maroon")
+map_df.sort_values(by = 'Landmark_10_distance').head(20).plot(ax = ax[2], marker = ".", markersize = 300, color = "maroon")
 landmarks.plot(ax = ax[2],  marker = "*", markersize = 200, color = "gold")
 ctx.add_basemap(ax[0])
 ctx.add_basemap(ax[1])
@@ -246,18 +258,27 @@ metro = gpd.GeoDataFrame(metro, geometry = gpd.points_from_xy(metro.LONGITUD, me
 metro = metro.to_crs(epsg = 3857)
 map_df = map_df.to_crs(epsg = 3857)
 
+np.random.seed(207)
+distance = 300
+mapbuffer = map_df.copy()
+mapbuffer['geometry'] = mapbuffer['geometry'].buffer(distance)
+
 # CÁLCULO DE DISTANCIAS A PARADAS DE METRO
 
-map_df['dist_metro'] = map_df['geometry'].apply(lambda x: min(x.distance(j) for j in metro.geometry))
+map_df['metros_cercanos'] = [sum(i.within(j) for i in metro.geometry) for j in mapbuffer.geometry]
 
 # MAPA DE DISTANCIAS AL METRO
 
 fig, ax = plt.subplots(1, 1, figsize = (15, 15))
-map_df.sort_values(by = 'dist_metro').head(100).plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos cercanos al metro')
-map_df.sort_values(by = 'dist_metro', ascending=False).head(100).plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos lejanos al metro')
+map_df.sort_values(by = 'metros_cercanos', ascending = False).head(5000).sample(100)\
+                  .plot(ax = ax, marker = "X", markersize = 200, color = "green", 
+                        label = 'Alojamientos con mayor número de paradas cercanas')
+map_df.sort_values(by = 'metros_cercanos').head(5000).sample(100)\
+                  .plot(ax = ax, marker = "X", markersize = 200, color = "maroon", 
+                        label = 'Alojamientos con menor número de paradas cercanas')
 metro.plot(ax = ax, color = "navy", label = 'Paradas de Metro')
 plt.legend(fontsize = 20, loc = "lower right")
-plt.title('Cercanía a paradas de metro', fontsize = 20)
+plt.title('Alojamiento con más paradas de metro cercanas', fontsize = 20)
 ax.axis('off')
 ctx.add_basemap(ax)
 plt.show()
@@ -271,18 +292,18 @@ fgc = fgc.to_crs(epsg = 3857)
 
 # CÁLCULO DE DISTANCIAS A PARADAS FGC
 
-map_df['dist_fgc'] = map_df['geometry'].apply(lambda x: min(x.distance(j) for j in fgc.geometry))
-
-map_df[map_df.index == map_df['dist_fgc'].idxmax()][['geometry', 'dist_fgc']]
+map_df['fgc_cercanos'] = [sum(i.within(j) for i in fgc.geometry) for j in mapbuffer.geometry]
 
 # MAPA DE DISTANAS A PARADAS DE FGC
 
 fig, ax = plt.subplots(1, 1, figsize = (15, 15))
-map_df.sort_values(by = 'dist_fgc').head(100).plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos lejanos a los Ferrocarriles')
-map_df.sort_values(by = 'dist_fgc', ascending=False).head(100).plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos lejanos a los Ferrocarriles')
+map_df.sort_values(by = 'fgc_cercanos', ascending = False).head(1000).sample(100)\
+                  .plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos con mayor número de paradas cercanas')
+map_df.sort_values(by = 'fgc_cercanos').head(1000).sample(100)\
+                  .plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos con menor número de paradas cercanas')
 fgc.plot(ax = ax, color = "navy", label = 'Paradas de Ferrocarriles (FGC)')
 plt.legend(fontsize = 20, loc = "lower right")
-plt.title('Cercanía a paradas de Ferrocarril', fontsize = 20)
+plt.title('Alojamiento con más paradas de Ferrocarril cercanas', fontsize = 20)
 ax.axis('off')
 ctx.add_basemap(ax)
 plt.show()
@@ -295,18 +316,18 @@ renfe = gpd.GeoDataFrame(renfe, geometry = gpd.points_from_xy(renfe.LONGITUD, re
 renfe = renfe.to_crs(epsg = 3857)
 
 # CÁLCULO DISTANCIAS A ESTACIONES DE RENFE
-map_df['dist_renfe'] = [min(i.distance(j) for j in renfe.geometry) for i in map_df.geometry]
-
-map_df[map_df.index == map_df['dist_renfe'].idxmax()][['geometry', 'dist_renfe']]
+map_df['renfe_cercanos'] = [sum(i.within(j) for i in renfe.geometry) for j in mapbuffer.geometry]
 
 # MAPA DE DISTANCIAS A PARADAS DE RENFE
 
 fig, ax = plt.subplots(1, 1, figsize = (15, 15))
-map_df.sort_values(by = 'dist_renfe').head(100).plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos cercanos a RENFE')
-map_df.sort_values(by = 'dist_renfe', ascending=False).head(100).plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos lejanos a RENFE')
+map_df.sort_values(by = 'renfe_cercanos', ascending=False).head(100)\
+                  .plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos con mayor número de paradas cercanas')
+map_df.sort_values(by = 'renfe_cercanos').head(1000).sample(100)\
+                  .plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos con mayor número de paradas cercanas')
 renfe.plot(ax = ax, color = "navy", label = 'Paradas de RENFE')
 plt.legend(fontsize = 20, loc = "upper left")
-plt.title('Cercanía a paradas de RENFE', fontsize = 20)
+plt.title('Alojamientos cercanos la estación de RENFE', fontsize = 20)
 ax.axis('off')
 ctx.add_basemap(ax)
 plt.show()
@@ -320,16 +341,18 @@ trenaer = trenaer.to_crs(epsg = 3857)
 
 # CÁLCULO DE DISTANCIAS A PARADAS DE TREN AEROPUERTO
 
-map_df['dist_trenaeropuerto'] = map_df['geometry'].apply(lambda x: min(x.distance(j) for j in trenaer.geometry))
+map_df['trenaer_cercanos'] = [sum(i.within(j) for i in trenaer.geometry) for j in mapbuffer.geometry]
 
 # MAPA DE DISTANCIAS AL TREN AL AEROPUERTO
 
 fig, ax = plt.subplots(1, 1, figsize = (15, 15))
-map_df.sort_values(by = 'dist_trenaeropuerto').head(100).plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos cercanos al Tren del Aeropuerto')
-map_df.sort_values(by = 'dist_trenaeropuerto', ascending=False).head(100).plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos lejanos al Tren del Aeropuerto')
+map_df.sort_values(by = 'trenaer_cercanos', ascending = False).head(500).sample(100)\
+                  .plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos con mayor número de paradas cercanas')
+map_df.sort_values(by = 'trenaer_cercanos').head(300).sample(100)\
+                  .plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos con menor número de paradas cercanas')
 trenaer.plot(ax = ax, color = "navy", label = 'Paradas de Tren al Aeropuerto')
 plt.legend(fontsize = 20, loc = "lower right")
-plt.title('Cercanía a paradas del Tren al Aeropuerto', fontsize = 20)
+plt.title('Alojamientos con más estaciones cercanas de Tren al Aeropuerto', fontsize = 20)
 ax.axis('off')
 ctx.add_basemap(ax)
 plt.show()
@@ -343,16 +366,18 @@ tramvia = tramvia.to_crs(epsg = 3857)
 
 # CÁLCULO DE DISTANCIAS A PARADAS DE TRAMVIA
 
-map_df['dist_tramvia'] = map_df['geometry'].apply(lambda x: min(x.distance(j) for j in tramvia.geometry))
+map_df['tranvia_cercanos'] = [sum(i.within(j) for i in tramvia.geometry) for j in mapbuffer.geometry]
 
 # MAPA DE DISTANCIAS A PARADAS DE TRAMVIA
 
 fig, ax = plt.subplots(1, 1, figsize = (15, 15))
-map_df.sort_values(by = 'dist_tramvia').head(100).plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos cercanos al Tramvia')
-map_df.sort_values(by = 'dist_tramvia', ascending=False).head(100).plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos lejanos al Tramvia')
-tramvia.plot(ax = ax, color = "navy", label = 'Paradas de Tramvia')
+map_df.sort_values(by = 'tranvia_cercanos', ascending=False).head(1000).sample(100)\
+                  .plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos con mayor número de paradas cercanas')
+map_df.sort_values(by = 'tranvia_cercanos').head(1000).sample(100)\
+                  .plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos con menor número de paradas cercanas')
+tramvia.plot(ax = ax, color = "navy", label = 'Paradas de Tranvía')
 plt.legend(fontsize = 20, loc = "lower right")
-plt.title('Cercanía a paradas de Tramvia', fontsize = 20)
+plt.title('Alojamientos con más estaciones cercanas de Tranvía', fontsize = 20)
 ax.axis('off')
 ctx.add_basemap(ax)
 plt.show()
@@ -372,16 +397,18 @@ bus = bus.to_crs(epsg = 3857)
 
 # CÁLCULO DE DISTANCIAS A PARADAS DE BUS
 
-map_df['dist_bus'] = map_df['geometry'].apply(lambda x: min(x.distance(j) for j in bus.geometry))
+map_df['bus_cercanos'] = [sum(i.within(j) for i in bus.geometry) for j in mapbuffer.geometry]
 
 # MAPA DE DISTANCIAS A PARADAS DE BUS
 
-fig, ax = plt.subplots(1, 1, figsize = (15, 15))
-map_df.sort_values(by = 'dist_bus').head(100).plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos cercanos al Bus')
-map_df.sort_values(by = 'dist_bus', ascending=False).head(100).plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos lejanos al Bus')
+fig, ax = plt.subplots(1, 1, figsize = (15, 20))
+map_df.sort_values(by = 'bus_cercanos', ascending=False).head(5000).sample(100)\
+                  .plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos con mayor número de paradas cercanas')
+map_df.sort_values(by = 'bus_cercanos').head(5000).sample(100)\
+                  .plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos con menor número de paradas cercanas')
 bus.plot(ax = ax, color = "navy", markersize = 15, label = 'Paradas de Bus')
 plt.legend(fontsize = 20, loc = "lower right")
-plt.title('Cercanía a paradas de Autobús', fontsize = 20)
+plt.title('Alojamientos con más estaciones cercanas de Autobús', fontsize = 20)
 ctx.add_basemap(ax)
 plt.show()
 
@@ -394,16 +421,18 @@ aerobus = aerobus.to_crs(epsg = 3857)
 
 # CÁLCULO DE DISTANCIAS A PARADAS DE BUS AL AEROPUERTO
 
-map_df['dist_aerobus'] = map_df['geometry'].apply(lambda x: min(x.distance(j) for j in aerobus.geometry))
+map_df['aerobus_cercanos'] = [sum(i.within(j) for i in aerobus.geometry) for j in mapbuffer.geometry]
 
 # MAPA DE DISTANCIAS A PARADAS DEL BUS AL AEROPUERTO
 
 fig, ax = plt.subplots(1, 1, figsize = (15, 15))
-map_df.sort_values(by = 'dist_aerobus').head(100).plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos cercanos al Bus del Aeropuerto')
-map_df.sort_values(by = 'dist_aerobus', ascending=False).head(100).plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos lejanos al Bus del Aeropuerto')
+map_df.sort_values(by = 'aerobus_cercanos', ascending=False).head(100).head(5000).sample(100)\
+                  .plot(ax = ax, marker = "X", markersize = 200, color = "green", label = 'Alojamientos con mayor número de paradas cercanas')
+map_df.sort_values(by = 'aerobus_cercanos').head(5000).sample(100)\
+                  .plot(ax = ax, marker = "X", markersize = 200, color = "maroon", label = 'Alojamientos con menor número de paradas cercanas')
 aerobus.plot(ax = ax, color = "navy", label = 'Paradas de bus al aeropuerto')
 plt.legend(fontsize = 20, loc = "upper left")
-plt.title('Cercanía a paradas de Bus al Aeropuerto', fontsize = 20)
+plt.title('Alojamientos con más estaciones cercanas de Autobús', fontsize = 20)
 ctx.add_basemap(ax)
 plt.show()
 
