@@ -166,6 +166,9 @@ cal = cal.append(pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_Apr
 
 cal = cal[['listing_id', 'date', 'price', 'available']]
 
+print('Ignoramos los datos con nulls')
+cal = cal[(cal['price'].notnull())|(cal['available']=='t')]
+
 cal.drop_duplicates(subset = ['date', 'listing_id'], inplace = True)
 
 cal['date'] = pd.to_datetime(cal['date'])
@@ -180,6 +183,10 @@ cal['availability'] = cal['available'].map({'t': 1, 'f': 0})
 
 availability = cal.groupby(['year', 'listing_id'])['availability'].sum()
 
+cal.dropna(subset = ['price'], axis = 0, inplace = True)
+
+print('\nCalculamos la media mensual del precio')
+
 cal['price'] = cal['price'].str.replace('$', '').str.replace(',', '').astype('float')
 
 cal = cal.groupby(['month_year', 'year', 'month', 'listing_id'])['price'].mean().reset_index()
@@ -190,23 +197,9 @@ cal.columns = ['month_year', 'year', 'month', 'id', 'price_calendar', 'year_avai
 
 dfclean = pd.merge(df, cal, how = 'inner', on = 'id')
 
-dfclean['price_calendar'] = dfclean['price_calendar'].fillna(0)
-
-print('\nRealizamos una "imputación" de los precios faltantes')
-def imputer(x):
-  """Comprueba si la columna de price_calendar tiene un 0 y en ese caso
-  añade el valor de price, en otro caso el valor de price_calendar no
-  es alterado."""
-  if x[0] == 0:
-    return x[0] + x[1]
-  else:
-    return x[0]
-
-dfclean['goodprice'] = dfclean[['price_calendar', 'price']].apply(imputer, axis = 1)
-
-dfclean = dfclean[dfclean['goodprice']>0]
-
+dfclean['goodprice'] = dfclean['price_calendar']
 dfclean.drop(['price', 'price_calendar'], axis = 1, inplace = True)
+dfclean = dfclean[dfclean['goodprice']>0]
 
 print('\nNos hemos quedado con un dataframe de {} filas y {} columnas'.format(dfclean.shape[0], dfclean.shape[1]))
 
