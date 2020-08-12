@@ -17,12 +17,16 @@ df = df.append(pd.read_pickle('~/DadesAirBNB/Listings/April2018.pkl'), ignore_in
 df = df.append(pd.read_pickle('~/DadesAirBNB/Listings/April2019.pkl'), ignore_index = True, sort = True)
 df = df.append(pd.read_pickle('~/DadesAirBNB/Listings/April2020.pkl'), ignore_index = True, sort = True)
 
-# Eliminamos la columnas con urls y los duplicados
+# Eliminamos la columnas con urls y los duplicados, así como las columnas de texto
 
 print('\nEliminamos las columnas con urls y duplicados')
 
 df.drop(df.columns[df.columns.str.endswith('url')], axis = 1, inplace = True)
 df = df.drop_duplicates('id')
+
+DropC = ['name', 'summary', 'space', 'description', 'neighborhood_overview', 'notes', 'transit',
+         'interaction', 'house_rules', 'access', 'jurisdiction_names']
+df.drop(DropC, axis = 1, inplace = True)
 
 # Eliminamos las columnas con más de un 60% de nulls
 
@@ -166,8 +170,8 @@ cal = cal.append(pd.read_pickle("/home/guillem/DadesAirBNB/Calendar/Calendar_Apr
 
 cal = cal[['listing_id', 'date', 'price', 'available']]
 
-print('Ignoramos los datos con nulls')
-cal = cal[(cal['price'].notnull())|(cal['available']=='t')]
+print('\nIgnoramos los datos con nulls')
+cal = cal[(cal['price'].notnull())]
 
 cal.drop_duplicates(subset = ['date', 'listing_id'], inplace = True)
 
@@ -183,11 +187,11 @@ cal['availability'] = cal['available'].map({'t': 1, 'f': 0})
 
 availability = cal.groupby(['year', 'listing_id'])['availability'].sum()
 
-cal.dropna(subset = ['price'], axis = 0, inplace = True)
-
 print('\nCalculamos la media mensual del precio')
 
 cal['price'] = cal['price'].str.replace('$', '').str.replace(',', '').astype('float')
+
+cal = cal[cal['price']<9000]
 
 cal = cal.groupby(['month_year', 'year', 'month', 'listing_id'])['price'].mean().reset_index()
 

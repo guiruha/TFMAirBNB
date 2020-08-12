@@ -117,7 +117,16 @@ La primera Fase de este proyecto consiste en la limpieza y análisis superficial
 
 Un primer barrido de eliminación de columnas suprimió del proceso todas las variables relacionadas con urls, así como descripciones tanto del host como del alojamiento (se planteó el uso de NLP en estas columnas a fin de encontrar nuevos atributos útiles pero finalmente se decidió seguir un camino distinto y enfocar los esfuerzos en otras alternativas). Por otro lado, también fueron eliminadas columnas con más de un **60%** de Nulls dada su relativamente baja importancia y el riesgo a introducir un sesgo grande por medio de la imputación de valores (tanto predichos a través de modelos lineales como medianas o medias).
 
+```python
+nulls = df.isnull().sum() / df.shape[0]
+nulls[nulls > 0.5]
+```
+
 ![](/imagenes/60Cleaning.png?raw=true)
+
+```python
+df.drop(nulls[nulls>0.6].index, axis = 1, inplace = True)
+```
 
 La limpieza se desarrolla a continuación con el procedimiento habitual: eliminación de columnas poco útiles o bien repetidas, eliminación de filas repetidas o con datos anómalos, imputación de valores etc. Destacamos los procedimientos de limpieza más relevantes y menos comunes a continuación:
 
@@ -125,23 +134,75 @@ La limpieza se desarrolla a continuación con el procedimiento habitual: elimina
 
 Existen columnas categóricas con un gran número de clases muy similares entre sí, es por ello que a fin de reducir las dimensiones de nuestro dataset lo máximo posible, hemos generalizado todos los valores en el menor número de categorías posible. Ejemplo de ello es la variable **cancellation_policy** que ha sido generalizada a cuatro alternativas **(flexible, moderate, strict_less30, strict_30orMore)**.
 
-![](/imagenes/CatCleaning.png?raw=true)
+```python
+df['cancellation_policy'].value_counts()
+```
+![](/imagenes/CatCleaning1.png?raw=true)
+
+
+```python
+tempdict = {'strict_14_with_grace_period': 'strict_less30', 'flexible':'flexible', 'moderate':'moderate', 'luxury_moderate': 'moderate', 'super_strict_30':'strict_30orMore', 'super_strict_60':'strict_30orMore', 'strict':'strict_less30'}
+df['cancellation_policy'] = df['cancellation_policy'].map(tempdict)
+
+df['cancellation_policy'].value_counts()
+```
+
+![](/imagenes/CatCleaning2.png?raw=true)
 
 - **Variables string de precios**
 
 Todas las columnas de precios del dataset se presentan con un símbolo de dólar al principio y con comas a partir de los millares **E.G. $1,200.00**. La limpieza de estas variables ha sido abordada a través del method chaining de varias funciones **replace** ,para la eliminación de los símbolos anteriormente mencionados, y la transformación de tipo string a tipo float (en las columnas que presentaban Null debido a su naturaleza, E.G. existen listings sin tarifa de limpieza y en vez de ser codificado con 0 se presenta como un Null, se ha imputado valores de 0€).
 
-![](/imagenes/ColPrice.png?raw=true) 
+```python
+df[['price', 'security_deposit', 'cleaning_fee', 'extra_people']].sample(5)
+```
+![](/imagenes/ColPrice1.png?raw=true)
+
+```python
+df['price'] = df['price'].str.replace('$', '').str.replace(',', '').astype('float')
+
+df['security_deposit'] = df['security_deposit'].str.replace('$', '').str.replace(',','').fillna(0).astype('float')
+
+df['cleaning_fee'] = df['cleaning_fee'].str.replace('$', '').str.replace(',','').fillna(0).astype('float')
+
+df['extra_people'] = df['extra_people'].str.replace('$', '').str.replace(',','').fillna(0).astype('float')
+
+df[['price', 'security_deposit', 'cleaning_fee', 'extra_people']].sample(5)
+``` 
+![](/imagenes/ColPrice2.png?raw=true)
 
 - **Caso Especial: Amenities**
 
 La columna amenities ha resultado ser un caso especial, ya que cada registro se presenta en forma de lista (con llaves **{}** en vez de corchetes **[]**) y además de ser de tipo string. Por ello, en primer lugar para visualizar lo comunes que son cada uno de los amenities entre todos los alojamientos se utiliza de nuevo el method chaining para tratar con el string y transformarlo realmente en una lista, a continuación mediante un diccionario y una serie de pandas logramos el objetivo de visualizar el porcentaje total de aparición de cada amenity.
 
+```python
+amenities = df['amenities'].str.replace('{', '').str.replace('}', '').str\
+                          .replace('"', '').str.split(",")
+dict_amen= {}
+for lista in amenities:
+    for elemento in lista:
+        if elemento in dict_amen:
+            dict_amen[elemento] += 1
+        else:
+            dict_amen[elemento] = 1
+
+ser_amen = pd.Series(dict_amen, index = dict_amen.keys())
+(ser_amen[ser_amen>df.shape[0]*.10]/df.shape[0]).sort_values(ascending = False)
+```
+
 ![](/imagenes/Amenities.png?raw=true)
 
 Una vez visualizados, se seleccionaron los que por ser no tan comunes y, bajo nuestro criterio, relevantes para un huésped consideramos utiles para la determinación de un precio superior del alojamiento respecto a los que carecen de estos servicios. En concreto seleccionamos el siguiente conjunto a través de la creación de variables dummy:
 
-![](/imagenes/AmenitiesDummy.png?raw=true)
+```python
+columnselection = ['Air conditioning', 'Family/kid friendly', 'Host greets you', 'Laptop friendly workspace', 'Paid parking off premises', 
+                  'Patio or balcony', 'Luggage dropoff allowed', 'Long term stays allowed', 'Smoking allowed', 'Step-free access',
+                  'Pets allowed', '24-hour check-in']
+for column in columnselection:
+    df[column] = df['amenities'].apply(lambda x: 1 if column in x else 0)
+df['Elevator'] = df['amenities'].apply(lambda x: 1 if ('Elevator' in x or 'Elevator in building' in x) else 0)
+df.drop('amenities', axis = 1, inplace = True)
+```
 
 Finalmente, para la última parte de esta sección se procedió al tratamiento de los datasets de **calendar.csv**, calculamos las columnas **price_calendar** y **year_availability** a través de groupbys y finalizamos con el merge de calendar y listings para la creación de **DatosLimpios.csv**.
 
@@ -152,6 +213,58 @@ Finalmente, para la última parte de esta sección se procedió al tratamiento d
 **INPUTS:** DatosLimpios.csv **OUTPUTS:** Localizaciones.csv
 
 Esta primera fase de Exploración General se centra en el análisis, limpieza y transformación de la variable dependiente, en este caso **goodprice** obtenida a partir de las medias mensuales de precios calculadas en la fase de limpieza.
+
+En primer lugar se procedió a investigar los motivos de la existencia de precios superiores a una cota de 2000€ y posteriormente 1200€, ya que excepto algún caso fuera de lo común superar esta barrera de precio por noche supone, bajo nuestro punto de vista, una anomalía producida por un error de registro o bien por un cálculo erróneo o fenómeno que no hemos tenido en cuenta. La investigación dió pié a descubrir un reducido número "outliers" en los que el propio alojamiento carecía de página propia en la web de AirBNB actualmente, o bien eran resultado de un cálculo erróneo del precio por noche (por parte del equipo de Inside AirBNB) a partir de los precios mensuales resultantes de alquilar un mínimo de 31 noches el alojamiento. Es por ello, que al tratarse de menos de un 1% de registros, estos fueron eliminados desde el principio del análisis a fin de evitar problemas futuros.
+
+Resultado de este filtrado de precios obtenemos un histograma a priori visualmente muy semejante a una distribución **LogNormal** $exp(X)\sim LogN(\mu, \sigma^2)$.
+
+![](/imagenes/LogNormal.png?raw=true)
+
+Es por ello que aplicamos un logaritmo natural como medida típica para "normalizar" nuestra variable dependiente. Una comparativa de una distribución normal generada a partir del paquete random nos muestra bastante semejanza a una distribución normal  a pesar de la ligera asimetría positiva.
+
+![](/imagenes/Normal.png?raw=true)
+
+Concretamente, el **coeficiente de asimetría de Fisher** resulta ser de 0.404, como ya puede observarse en el gráfico superior, una pequeña asimetría positiva que nos aleja de una buena aproximación a una distribución normal. Por otra parte el **exceso de kurtosis** es de -0.168 causada principalmente por la cola izquierda, demasiado cercano al valor 0 como para considerarla platicurtica. Finalmente, graficar un QQ-Plot nos demuestra que el problema radica en las colas de la distribución (demasiados pocos registros de precios bajos respecto al grueso y el hecho de establecer un "cut-off" para eliminar mucho outlier nos dificulta que la distribución sea completamente "normal"). Los test **Kolmogorov-Smirnov** y **D'Agostino-Pearson** nos terminan de confirmar nuestras conclusiones.
+
+![](/imagenes/QQPlot.png?raw=true)
+
+Para finalizar el análisis de la variable dependiente, se realizó un estudio de la evolución de los precios a fin de encontrar una posible tendencia o estacionalidad a lo largo de los meses y años. Para ello se procedió a gráficar los precios medios por mes junto a sus intervalos de confianza.
+
+```python
+def intervalosConfianza(agrupacion, variable):
+  """Agrupa los datos del dataset según la columna que indiques y calcula el 
+  intervalo de confianza de la segunda columna que especifiques"""
+
+  intsup = (df.groupby(agrupacion)[variable].mean() + 1.96*(df.groupby(agrupacion)[variable].std()/np.sqrt(df.groupby(agrupacion)[variable].count()))).reset_index()
+  intinf = (df.groupby(agrupacion)[variable].mean() - 1.96*(df.groupby(agrupacion)[variable].std()/np.sqrt(df.groupby(agrupacion)[variable].count()))).reset_index()
+  return intsup, intinf
+
+intsup, intinf = intervalosConfianza('month_year', 'goodprice')
+
+fig, ax = plt.subplots(1, 1, figsize = (25, 8))
+plt.plot(df.groupby('month_year')['goodprice'].mean().index, 
+         df.groupby('month_year')['goodprice'].mean(), 
+         color = 'navy', label = 'Precio Medio')
+plt.fill_between(df.groupby('month_year')['goodprice'].mean().index,
+                 intsup['goodprice'], intinf['goodprice'], 
+                 color = 'red', alpha = 0.6, label = 'Intervalo de confianza')
+ax.legend(edgecolor = 'black', facecolor = 'white', fancybox = True,
+           bbox_to_anchor=(0.17, 0.96), fontsize = 'x-large')
+plt.xticks(df['month_year'].unique(), rotation = 55)
+plt.tight_layout()
+```
+
+![](/imagenes/EvoluciónMensual.png?raw=true)
+
+Un primer vistazo nos muestra una clara estacionalidad de los precios, situandose los más altos en los meses de verano, con algunos picos en lo que suponemos vacaciones de primavera. Curiosamente, la tendencia positiva que encontramos desde 2017 a finales de 2020 se ve eclipsada por un año 2018 con precios especialmente altos en temporada de vacaciones de verano (a pesar de que no hemos encontrado ningún grupo de outliers que empuje los precios hacia arriba). La descomposición estacional de la variable precio nos permite ver claramente esta evolución.
+
+![](/imagenes/Descomposicion.png?raw=true)
+
+A partir de la descomposición estacional podemos ver de forma más evidente como los precios crecen hasta 14€ de media para luego volver a valores ligeramente superiores a 2017 el año siguiente. Además, ailsar la estacionalidad nos permite analizar más detenidamente que los picos más altos se encuentran en los mese de verano (Junio, Julio y Agosto presentan niveles similares) y a partir de los inicidos de Septiembre los precios caen en picado, siempre teniendo en cuenta lo que hemos comentado anteriormente de las vacaciones de primavera.
+
+Por otra parte, los errores parecen ser completamente aleatorios, irregulares y centrados en 0, además de no presentar ningún patrón a priori aparente, por lo que lo que podemos asegurar que los residuos son producto de pequeñas causas impredecibles.
+
+No obstante, de esta última parte del análisis solo podemos destacar la posible importancia de las variables **year** y **month** para la predicción de precios, ya que como pudimos ver en el apartado de limpieza, muchos registros empiezan en el año 2019 y otros desaparecen en los últimos años del dataset. Es más, como se puede observar en los notebooks cada registro presenta un comportamiento completamente distinto a los demás (algunos permanecen constantes, otros dan saltos arbitrarios a gusto del host y algunos si que se ven sujetos a la estacionalidad), por lo que abordar este problema como una serie temporal supondría dar un enfoque con muchas menos posiblidades de éxito que tratar cada registro como una predicción independiente.
 
 ##  Geoexploración
 
