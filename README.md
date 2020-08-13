@@ -216,7 +216,7 @@ Esta primera fase de Exploración General se centra en el análisis, limpieza y 
 
 En primer lugar se procedió a investigar los motivos de la existencia de precios superiores a una cota de 2000€ y posteriormente 1200€, ya que excepto algún caso fuera de lo común superar esta barrera de precio por noche supone, bajo nuestro punto de vista, una anomalía producida por un error de registro o bien por un cálculo erróneo o fenómeno que no hemos tenido en cuenta. La investigación dió pié a descubrir un reducido número "outliers" en los que el propio alojamiento carecía de página propia en la web de AirBNB actualmente, o bien eran resultado de un cálculo erróneo del precio por noche (por parte del equipo de Inside AirBNB) a partir de los precios mensuales resultantes de alquilar un mínimo de 31 noches el alojamiento. Es por ello, que al tratarse de menos de un 1% de registros, estos fueron eliminados desde el principio del análisis a fin de evitar problemas futuros.
 
-Resultado de este filtrado de precios obtenemos un histograma a priori visualmente muy semejante a una distribución **LogNormal** $exp(X)\sim LogN(\mu, \sigma^2)$.
+Resultado de este filtrado de precios obtenemos un histograma a priori visualmente muy semejante a una distribución **LogNormal** ![equation](https://latex.codecogs.com/png.latex?exp(X)\sim&space;LogN(\mu,&space;\sigma^2)).
 
 ![](/imagenes/LogNormal.png?raw=true)
 
@@ -226,7 +226,7 @@ Es por ello que aplicamos un logaritmo natural como medida típica para "normali
 
 Concretamente, el **coeficiente de asimetría de Fisher** resulta ser de 0.404, como ya puede observarse en el gráfico superior, una pequeña asimetría positiva que nos aleja de una buena aproximación a una distribución normal. Por otra parte el **exceso de kurtosis** es de -0.168 causada principalmente por la cola izquierda, demasiado cercano al valor 0 como para considerarla platicurtica. Finalmente, graficar un QQ-Plot nos demuestra que el problema radica en las colas de la distribución (demasiados pocos registros de precios bajos respecto al grueso y el hecho de establecer un "cut-off" para eliminar mucho outlier nos dificulta que la distribución sea completamente "normal"). Los test **Kolmogorov-Smirnov** y **D'Agostino-Pearson** nos terminan de confirmar nuestras conclusiones.
 
-![](/imagenes/QQPlot.png?raw=true)
+![](/imagenes/QQplot.png?raw=true)
 
 Para finalizar el análisis de la variable dependiente, se realizó un estudio de la evolución de los precios a fin de encontrar una posible tendencia o estacionalidad a lo largo de los meses y años. Para ello se procedió a gráficar los precios medios por mes junto a sus intervalos de confianza.
 
@@ -271,6 +271,70 @@ No obstante, de esta última parte del análisis solo podemos destacar la posibl
 [LINK A COLAB]
 
 **INPUTS:** DatosLimpios.csv **OUTPUTS:** Distancias.csv, DistanciasTurismo.csv
+
+La Geoexploración supone un interludio dentro la fase de exploración, una breve desviación que hemos decidido tratar en un notebook distinto debido a que tiene una temática distinta a la que tratamos en la exploración más general. Esta fase del proyecto se divide en dos enfoques distintos centrados en datos geoespaciales, en primer lugar la determinación de localizaciones de **Landmarks** a través del calculo de centroides y el ćalculo de distancias entre landmark y alojamiento, y por otro lado el cálculo, o bien de distancias a paradas de trasnporte cercanas, o bien el número de paradas cercanas a un alojamiento.
+
+- **Centroides a partir de datos de Flickr**
+
+A través de la recopilación de coordenadas de la ciudad de Barcelona donde se han tomado fotos relacionadas con algún monumento o sitio especialmente turístico, procedimos a realizar el cálculo de centroides como punto de referencia para la localización de un landmark. En un principio se presentaba un mapa con la siguiente distribución:
+
+![](/imagenes/Landmarks1.png?raw=true)
+
+A primera vista ya se observaron puntos bastante separados de lo que consideramos un landmark, los cuáles consideramos outliers o localizaciones con muy poco dato como para considerarlo un landmark. Para la eliminación de dichos datos anómalos se decidió probar con **Clustering Jerárquico**, utilizando varios métodos y métricas de distinto tipo, aunque finalmete se optó por utilizar el método **single** (crear clústers a partir de los puntos más cercanos entre sí) y la **distancia de manhattan** o **cityblock**, ![ecuation](https://latex.codecogs.com/png.latex?%5Cinline%20D%28x%2Cy%29%20%3D%20%5Csum_%7Bi%3D1%7D%5En%7Cx_%7Bi%7D-y_%7Bi%7D%7C), dado que discriminaba más fácilmente los puntos más alejados entre sí (y el cálculo de distancias por ciudad se lleva bien con la métrica de cityblock).
+
+![](/imagenes/Dendrograma.png?raw=true)
+
+Una vez eliminados los outliers a través de esta primera clusterización, se comprueba la desaparición de posibles puntos problemáticos a la hora de aplicar el algoritmo de **K-Means** a través del mismo clustering jerárquico utilizando la **distancia euclídea**, ![ecuation](https://latex.codecogs.com/png.latex?%5Cinline%20D%28x%2Cy%29%20%3D%20%5Csqrt%7B%5Csum_%7Bi%3D1%7D%5En%28x_%7Bi%7D-y_%7Bi%7D%29%5E2%7D
+), y el método **ward** (busca minimizar la varianza total dentro de cada clúster), que asemejan los resultados a un k-means. Una vez demostrado que no debería haber problemas en el búsqueda de clusters y centroides se procede a aplicar y ajustar el k medias dando como resultado el siguiente mapa:
+
+![](/imagenes/Kmeans.png?raw=true)
+
+A partir de los centros de cada clúster, creamos un dataframe que recoge cada centroide y se le asigna un número del 1-11 debido a que la aleatoriedad en la asignación del número de clúster nos impide ser consistentes en la asignación de nombres a la agrupación.
+
+```python
+clusters = ['Landmark_1', 'Landmark_2', 'Landmark_3', 'Landmark_4', 'Landmark_5', 'Landmark_6', 'Landmark_7',
+            'Landmark_8', 'Landmark_9', 'Landmark_10', 'Landmark_11']
+centroids = km.cluster_centers_.tolist()
+
+centroids_km = pd.DataFrame({'cluster': clusters, 'centroids': centroids})
+```
+
+![](/imagenes/Landmarks2.png?raw=true)
+
+Finalizando este primer análisis de datos geográficos, cada uno de los centroides es utilizado para calcular las distancias con cada uno de los alojamientos de nuestro dataframe original. Para ello utilizamos la **fórmula del semiverseno** o **Haversine distance**, ![ecuation](https://latex.codecogs.com/png.latex?%5Cinline%20D%20%3D%202%5Ccdot%20r%20%5Ccdot%20arcsin%28%20%5Csqrt%7B%5Cfrac%7B%5Cvarphi_2%20-%20%5Cvarphi_1%7D%7B2%7D%20&plus;%20cos%28%5Cvarphi_1%29cos%28%5Cvarphi_2%29sin%5E2%28%5Cfrac%7B%5Clambda_2%20-%5Clambda_1%7D%7B2%7D%7D%29%20%29), dado que para el cálculo de distancias geográficos en la tierra es más "robusto" y fiable que la distancia euclídea. 
+
+```python
+for landlat, landlon, name in zip(landmarks.Latitud, landmarks.Longitud, landmarks.cluster):
+    print(name)
+    map_df['{}_Haversinedistance'.format(name)] = [haversine_distance(landlat, landlon, listlat, listlon) for listlat, listlon in zip(map_df.latitude, map_df.longitude)]```
+Con esto finalizamos la primera parte de esta geoexploración.
+
+- **Transportes y Sitios de Interés Turísico**
+
+En la segunda fase de análisis geográfico el análisis de divide en dos vertientes:
+ 
+    - Cálculo de distancias a la parada más cercana de cada medio de trasmporte para los listings del dataset.
+
+    - Creación de **buffers** para el cálculo del número de elementos cercanos (principalmente sitios de interés turístico, aunque algún tipo de transporte ha sido incluido en este método) dentro del rango del buffer.
+
+Para el cálculo de distancias utilizamos de nuevo la fórmula del semiverseno, sin embargo realizamos una pequeña modificación para que tan sólo se quede con la distancia más pequeña de todas las paradas.
+
+```python
+map_df['fgc_distance'] = [min(haversine_distance(tlat, tlon, listlat, listlon) for tlat,tlon in zip(fgc.LATITUD, fgc.LONGITUD)) for listlat, listlon in zip(map_df.latitude, map_df.longitude)]
+```
+
+![](/imagenes/TransporteCercanos.png?raw=true)
+
+Para el método del buffer, transformamos las geometrias de todos los listings a fin de crear puntos con un diámetro mucho mayor, basándonos en un criterio distinto en caso de los transportes y los sitios turísticos (300 metros de radio para paradas de transporte y 600 para sitios turísticos). Por cada uno de las localizaciones se realiza el cálculo de booleanos (True/False) a través de la función de geopandas **within**, la cual marca con True los lugares que se encuentran dentro del *área* del alojamiento y con False los que no se encuentran en ella. Posteriormente, estos se suman (asumiendo que los valores True equivalen a 1 y los False a 0).
+
+```python
+map_df['tranvia_cercanos'] = [sum(i.within(j) for i in tramvia.geometry) for j in mapbuffer.geometry]
+
+map_df['museos_cercanos'] = [sum(i.within(j) for i in museos.geometry) for j in mapbuffer.geometry]
+```
+![](/imagenes/ParadasCercanas.png?raw=true)
+
+![](/imagenes/Museos.png?raw=true)
 
 ##  Exploración Parte B
 

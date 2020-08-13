@@ -19,7 +19,7 @@ print('\n Importamos el dataset limpio')
 
 df = pd.read_pickle('/home/guillem/DadesAirBNB/DatosLimpios.pkl') 
 
-df = df[(df['year']>2016)&(df['year']<2020)]
+df = df[(df['year']>2016)&(df['year']<2021)]
 
 print('\nEliminamos precios superiores a {} que suponen un {}% del dataframe'.format(1100, (df[df['goodprice']>1100].shape[0]/df.shape[0])*100))
 
