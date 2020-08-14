@@ -344,17 +344,38 @@ map_df['museos_cercanos'] = [sum(i.within(j) for i in museos.geometry) for j in 
 
 **INPUTS:** DatosLimpios.csv, Distancias.csv, DistanciasTurismo.csv **OUTPUTS:** DatosModelar.csv
 
+
+
 **Variables Numéricas**
+
+Para este primer enfoque abordamos el análisis de las variables númericas a partir de **gráficos de colmena combinados con los histogramas de las distribuciones marginales**. Dado que nuestro baseline se basa en un modelo lineal básico, la **Regresión Lineal Múltiple**, decidimos realizar las transformaciones pertinentes basándonos en la maximización del **Coeficiente de correlación de Pearson**, $\rho_{xy} = \frac{S_{xy}}{S_{x}S_{y}}$, ya sea a partir de features polinómicos, en escala logaritmica, raíces cuadradas o cúbicas etc.
+
+![](/imagenes/Accommodates.png?raw=true)
 
 **Variables Categóricas**
 
+![](/imagenes/BarplotCat.png?raw=true)
+
+![](/imagenes/EvoCat.png?raw=true)
+
 **Variables Dicotómicas**
+
+![](/imagenes/BarplotDic.png?raw=true)
+
+![](/imagenes/EvoDic.png?raw=true)
 
 **Landmarks**
 
+En general las distancias a los landmarks se aproximan o bien a una forma uniforme o normal, acumulando la mayoría de registros en el intervalo de 1000 a 5000 metros. Para este tipo de distancia hemos seguido el mismo proceso que con las anteriores variables numéricas, combinar gráficos de colmena con una regresión y la distribución de sus marginales. Con ello observamos que todos y cada uno de los atributos relacionados con este tipo de distancias presentan en mayor o menor medida, una tendencia negativa, es de suponer ya que la proximidad a un Landmark debería influenciar al alza, en cierta medida, a los precios de un alojamiento turístico. No obstante, observamos que dicha relación lineal es muy débil. Calculada a partir de la **correlación de Pearson** ![ecuation](https://latex.codecogs.com/gif.latex?%5Crho_%7Bxy%7D%20%3D%20%5Cfrac%7BS_%7Bxy%7D%7D%7BS_%7Bx%7DS_%7By%7D%7D) , las distancias más relevantes a penas presentan una correlación lineal del 20%, incluso cuando hemos tratado de encontrar y aplicar transformaciones que aumentaran la relación lineal entre el precio y las distancias. A pesar de ello, dado que estas se tratan en un futuro con un Ánalisis de Componentes Principales o **PCA** en el momento de modelado, se esperaba una serie de combinaciones lineales que nos permitiera eliminar atributos innecesarios sin tener que perder varianza explicada por estos features.
+
+
 **Transportes**
 
+De nuevo los gráficos en colmena revelan unas cuantas distancias o features de paradas cercanas que carecen de importancia, a causa de la gran red de transportes públicos que ofrece Barcelona, especialmente en cuanto a metros y autobuses, por lo que cualquier alojamiento tiene una o varias paradas cercanas y la proximidad o el número de paradas próximas de este tipo de transportes no es relevante a la hora de elegir o no una residencia turística. A pesar de esta cuestión, si que encontramos distancias a transportes con una leve relación lineal negativa respecto a los precios, sobretodo si hablamos de distancia a las paradas de bus al aeropuerto o distancia a las estaciones de Ferrorcarril. Una vez más, hemos intentado encontrar alguna transformación que aplicada a los datos aumentara la relación con el precio, aunque solo se ha encontrado alguna mejora en unos pocos features aplicando una transformación logaritmica.
+
 **Sitios Turísticos**
+
+Curiosamente, la mayoría de atributos relacionados con el número de lugares de interés turístico carecen de importancia en términos de relación lineal, pese a que una última vez más se ha intentado aplicar transformaciones a los datos en busca de alguna señal más fuerte. No obstante, destacamos atributos como **restaurantes cercanos** que a través de una transformación a base logarítmica sí que presentan alguna señal suficiente para ser considerada 'relevante', en este caso se ha procedido a crear nuevos atributos que recogen esta transformación y eliminado los originales a fin de evitar el problema de la colinealidad innecesariamente.
 
 ##  Modelado
 
