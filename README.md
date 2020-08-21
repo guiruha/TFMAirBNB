@@ -354,7 +354,7 @@ map_df['museos_cercanos'] = [sum(i.within(j) for i in museos.geometry) for j in 
 
 **Variables Numéricas**
 
-Para este primer enfoque abordamos el análisis de las variables númericas a partir de **gráficos de colmena combinados con los histogramas de las distribuciones marginales**. Dado que nuestro baseline se basa en un modelo lineal básico, la **Regresión Lineal Múltiple**, decidimos realizar las transformaciones pertinentes basándonos en la maximización del **Coeficiente de correlación de Pearson**, $\rho_{xy} = \frac{S_{xy}}{S_{x}S_{y}}$, ya sea a partir de features polinómicos, en escala logaritmica, raíces cuadradas o cúbicas etc.
+Para este primer enfoque abordamos el análisis de las variables númericas a partir de **gráficos de colmena combinados con los histogramas de las distribuciones marginales**. Dado que nuestro baseline se basa en un modelo lineal básico, la **Regresión Lineal Múltiple**, decidimos realizar las transformaciones pertinentes basándonos en la maximización del **Coeficiente de correlación de Pearson**, ![equation](https://latex.codecogs.com/gif.latex?%5Crho_%7Bxy%7D%20%3D%20%5Cfrac%7BS_%7Bxy%7D%7D%7BS_%7Bx%7DS_%7By%7D%7D), ya sea a partir de features polinómicos, en escala logaritmica, raíces cuadradas o cúbicas etc.
 
 ![](/imagenes/Accommodates.png?raw=true)
 
