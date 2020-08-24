@@ -198,7 +198,7 @@ ser_amen = pd.Series(dict_amen, index = dict_amen.keys())
 
 ![](/imagenes/Amenities.png?raw=true)
 
-Una vez visualizados, se seleccionaron los que por ser no tan comunes y, bajo nuestro criterio, relevantes para un huésped consideramos utiles para la determinación de un precio superior del alojamiento respecto a los que carecen de estos servicios. En concreto seleccionamos el siguiente conjunto a través de la creación de variables dummy:
+Una vez visualizados, se seleccionaron los que por ser no tan comunes y, bajo nuestro criterio, relevantes para un huésped consideramos útiles para la determinación de un precio superior del alojamiento respecto a los que carecen de estos servicios. En concreto seleccionamos el siguiente conjunto a través de la creación de variables dummy:
 
 ```python
 columnselection = ['Air conditioning', 'Family/kid friendly', 'Host greets you', 'Laptop friendly workspace', 'Paid parking off premises', 
@@ -354,7 +354,7 @@ map_df['museos_cercanos'] = [sum(i.within(j) for i in museos.geometry) for j in 
 
 **Variables Numéricas**
 
-Para este primer enfoque abordamos el análisis de las variables númericas a partir de **gráficos de colmena combinados con los histogramas de las distribuciones marginales**. Dado que nuestro baseline se basa en un modelo lineal básico, la **Regresión Lineal Múltiple**, decidimos realizar las transformaciones pertinentes basándonos en la maximización del **Coeficiente de correlación de Pearson**, $\rho_{xy} = \frac{S_{xy}}{S_{x}S_{y}}$, ya sea a partir de features polinómicos, en escala logaritmica, raíces cuadradas o cúbicas etc.
+Para este primer enfoque abordamos el análisis de las variables númericas a partir de **gráficos de colmena combinados con los histogramas de las distribuciones marginales**. Dado que nuestro baseline se basa en un modelo lineal básico, la **Regresión Lineal Múltiple**, decidimos realizar las transformaciones pertinentes basándonos en la maximización del **Coeficiente de correlación de Pearson**, ![equation](https://latex.codecogs.com/gif.latex?\inline&space;\rho_{xy}&space;=&space;\frac{S_{xy}}{S_{x}S_{y}}), ya sea a partir de features polinómicos, en escala logaritmica, raíces cuadradas o cúbicas etc.
 
 ![](/imagenes/Accommodates.png?raw=true)
 
