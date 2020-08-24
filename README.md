@@ -198,7 +198,7 @@ ser_amen = pd.Series(dict_amen, index = dict_amen.keys())
 
 ![](/imagenes/Amenities.png?raw=true)
 
-Una vez visualizados, se seleccionaron los que por ser no tan comunes y, bajo nuestro criterio, relevantes para un huésped consideramos utiles para la determinación de un precio superior del alojamiento respecto a los que carecen de estos servicios. En concreto seleccionamos el siguiente conjunto a través de la creación de variables dummy:
+Una vez visualizados, se seleccionaron los que por ser no tan comunes y, bajo nuestro criterio, relevantes para un huésped consideramos útiles para la determinación de un precio superior del alojamiento respecto a los que carecen de estos servicios. En concreto seleccionamos el siguiente conjunto a través de la creación de variables dummy:
 
 ```python
 columnselection = ['Air conditioning', 'Family/kid friendly', 'Host greets you', 'Laptop friendly workspace', 'Paid parking off premises', 
