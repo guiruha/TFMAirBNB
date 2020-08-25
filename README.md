@@ -266,7 +266,7 @@ Un primer vistazo nos muestra una clara estacionalidad de los precios, situandos
 
 ![](/imagenes/Descomposicion.png?raw=true)
 
-A partir de la descomposición estacional podemos ver de forma más evidente como los precios crecen hasta 14€ de media para luego volver a valores ligeramente superiores a 2017 el año siguiente. Además, aislar la estacionalidad nos permite analizar más detenidamente que los picos más altos se encuentran en los meses de verano (Junio, Julio y Agosto presentan niveles similares) y a partir de los inicidos de Septiembre los precios caen en picado, siempre teniendo en cuenta lo que hemos comentado anteriormente de las vacaciones de primavera.
+A partir de la descomposición estacional podemos ver de forma más evidente como los precios crecen hasta 14€ de media para luego volver a valores ligeramente superiores a 2017 el año siguiente. Además, aislar la estacionalidad nos permite analizar más detenidamente que los picos más altos se encuentran en los meses de verano (Junio, Julio y Agosto presentan niveles similares) y a partir de los inicios de Septiembre los precios caen en picado, siempre teniendo en cuenta lo que hemos comentado anteriormente de las vacaciones de primavera.
 
 Por otra parte, los errores parecen ser completamente aleatorios, irregulares y centrados en 0, además de no presentar ningún patrón a priori aparente, por lo que lo que podemos asegurar que los residuos son producto de pequeñas causas impredecibles.
 
