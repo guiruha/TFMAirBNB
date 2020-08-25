@@ -17,7 +17,7 @@ plt.style.use('fivethirtyeight')
 
 print('\n Importamos el dataset limpio')
 
-df = pd.read_csv('~/TFMAirBNB/archivos/DatosLimpios.zip') 
+df = pd.read_pickle('/home/guillem/DadesAirBNB/DatosLimpios.pkl') 
 
 df = df[(df['year']>2016)&(df['year']<2021)]
 
@@ -95,16 +95,15 @@ print('\nGeneramos los datasets para geoexploración')
 
 map_df = df.reset_index().drop_duplicates(subset = ['id'])[['id', 'neighbourhood_group_cleansed', 'latitude', 'longitude']]
 
-# PARA GENERAR LOS DATASETS
-#map_df.to_pickle('~/DadesAirBNB/Localizaciones.pkl')
-#map_df.to_csv('~/DadesAirBNB/Localizaciones.csv', index = False)
-#map_df.to_csv('~/DadesAirBNB/Localizaciones.zip', index = False)
+map_df.to_pickle('~/DadesAirBNB/Localizaciones.pkl')
+map_df.to_csv('~/DadesAirBNB/Localizaciones.csv', index = False)
+map_df.to_csv('~/DadesAirBNB/Localizaciones.zip', index = False)
 
 
 print('\nImportamos archivos de distancias y transportes y procedemos a su tratamiento')
 
-distancias = pd.read_csv('~/TFMAirBNB/archivos/Distancias.zip')
-turismo = pd.read_csv('~/TFMAirBNB/archivos/DistanciasTurismo.zip')
+distancias = pd.read_pickle('/home/guillem/DadesAirBNB/Distancias.pkl')
+turismo = pd.read_pickle('/home/guillem/DadesAirBNB/DistanciasTurismo.pkl')
 df = pd.merge(df, distancias, on = 'id')
 df = pd.merge(df, turismo, on = 'id')
 

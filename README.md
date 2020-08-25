@@ -108,7 +108,7 @@ En caso de querer seguir los scripts o los notebooks es necesario instalar los s
 En caso de no tener todos instalados recomendamos crear un environment a partir del archivo **TFMenvironment.yml** con el siguiente código:
 
 ```shell
-$ conda env create -f environment.yml
+$ conda env create -f TFMenvironment.yml
 ```
 
 **El proyecto ha sido divido en cuatro partes, y por tanto, aunque no es necesario se recomienda ejecutarlos en ese orden para tener un compresión global.**
@@ -320,10 +320,10 @@ Con esto finalizamos la primera parte de esta geoexploración.
 - **Transportes y Sitios de Interés Turísico**
 
 En la segunda fase de análisis geográfico el análisis de divide en dos vertientes:
- 
-    - Cálculo de distancias a la parada más cercana de cada medio de trasmporte para los listings del dataset.
 
-    - Creación de **buffers** para el cálculo del número de elementos cercanos (principalmente sitios de interés turístico, aunque algún tipo de transporte ha sido incluido en este método) dentro del rango del buffer.
+-- Cálculo de distancias a la parada más cercana de cada medio de trasmporte para los listings del dataset.
+
+-- Creación de **buffers** para el cálculo del número de elementos cercanos (principalmente sitios de interés turístico, aunque algún tipo de transporte ha sido incluido en este método) dentro del rango del buffer.
 
 Para el cálculo de distancias utilizamos de nuevo la fórmula del semiverseno, sin embargo realizamos una pequeña modificación para que tan sólo se quede con la distancia más pequeña de todas las paradas.
 
