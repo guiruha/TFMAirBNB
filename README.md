@@ -408,9 +408,144 @@ Curiosamente, la mayoría de atributos relacionados con el número de lugares de
 
 Una vez estudiadas todas las variables del dataset y su relación con el precio, se procedió a realizar por último un análisis de **correlaciones** entre variables dependientes a fin de encontrar posibles **colinealidaes** que pudieran ser evitadas con la eliminación de dichos atributos.
 
+En primer lugar, se seleccionaron las variables categóricas y dicotómicas analizadas en apartados anteriores para transfromarlas en **variables dummy** para que puedan ser introducidas en el proceso de ajuste y predicción. 
+
+```python
+dummycols = ['host_response_time', 'neighbourhood_group_cleansed', 'property_type', 'room_type',  'cancellation_policy', 'review_scores_rating']
+df = pd.get_dummies(df, columns = dummycols, drop_first = True)
+df[df.columns[list(df.dtypes == 'uint8')]] = df[df.columns[list(df.dtypes == 'uint8')]].astype('int')
+```
+
+A continuación, calculamos los Coeficeinte de Correlación y los gráficamos a modo de barplot para analizarlos de forma más visual. Si bien muchos de los coeficeintes relevantes ya los habiamos identificado, esta vez han aparecido algunes entre las variables dummy muy dignas de mención, como **Room_tye Private Room** o bien variables relacionadas con los ammenities como son **Air Conditioning** o  **Family Kid-Friendly**
+
+![](/imagenes/CorrPearson.png?raw=true)
+
+Continuando el tratamiento de correlaciones, graficamos una matriz de correlaciones, a través de la cual detectamos puntos calientes de interés. Uno de los principales focos donde se concentra la colinealidades elevadas se encuentra en los atributos relacionados con las distancias, sin embargo, dada nuestra intención de ajustar estos atributos y reducir su dimensionalidad con un **PCA**, ignoramos estos features para más adelante.
+
 ![](/imagenes/MatrizCorr.png?raw=true)
 
+Por otro lado, encontramos una correlación mayor de 80% entre las variables de **Beds, Accommmodates, Bedrooms**, como era de esperar debido a la naturaleza de su relación. Por último, curiosamente los **Restaurantes Cercanos** y las **Salas de Música Cercanas** tiene una correlación de 86%. Dada su relación más débil con la variable precio, eliminamos las variables que recogen Beds, Bedrooms y las Salas de Música Cercanas.
+
 ##  Modelado
+
+La última sección del TFM consta del modelado y utilización de varios algoritmos de **Machine Learning**, donde se perseguirá la obtención de predicciones lo más aproximadas posbiles respecto a la variable dependiente **goodprice**, o en su defecto **LogGoodprice**.
+
+Los datos utilizados para esta parte final provienen del dataset previamente analizado y tratado en la **Sección 2- Exploración General**. A partir de este, se llevarán a cabo ajustes tanto con **Modelos de Regresión Lineal** como **Modelos de Árbol** y **Redes Neuronales**, así como un **PCA** y procesos de tuneado de hiperparámetros mediante varias metodologías.
+
+**Baseline con Regresión Lineal y Lasso**
+
+Como Baseline se decidió utilizar una **Regresión Lineal Múltiple** ya que la sección de análisis exploratorio se centro en estudiar las relaciones lineales entre las variables indpeneidentes y la dpeendiente, además de ser un algoritmo bastante rápido y sencillo de aplicar y comprender su funcionamiento.
+
+- **Regresion Lineal Múltiple y Lasso**
+
+Un primer ajuste del modelo nos revela un **Coeficiente de Determinación** de 66% y un **Mean Squared Error** de 0.351 tanto en Train como en Test, un buen punto de partida desde el que mejorar nuestras predicciones. 
+
+[IMAGENES DE REGRESION LINEAL] 
+
+Como siguiente paso, se añadió a la función de coste de la regresión, ![equation](https://latex.codecogs.com/gif.latex?%5Cinline%20J%20%3D%20%5Cfrac%7B1%7D%7B2m%7D%5Csum_%7Bi%3D1%7D%5Em%20%28y_%7Bi%7D-%20%5Chat%7By_%7Bi%7D%7D%29%5E2) una regurlarización L1 o Lasso, ![equation](+ $\alpha\cdot\frac{1}{n}\sum_{j=1}^n|\theta_j|$) a fin de reducir el valor de los coeficientes y discriminar los coeficientes/atributos que no aportan apenas información a las predicciones del modelo. Un alfa curiosamente bajo es suficiente para detectar 8 atributos con pesos de valor igual a 0 manteniendo el mismo Coeficiente de Determinación (una pérdida de pocas décimas). 
+
+[IMAGENES DE LASSO]
+
+La esquematización de los pesos de cada feature nos permite vislumbrar que las columnas a eliminadas son aquellas que presentan colineanlidad entre ellas y no fueron eliminadas en su momento, es decir las distancias, así como otras que en principo ya sospechábamos poco importantes, como **id** ( de asignación completamnete aleatoria) o **latitude** (dada la disposición de la ciudad).
+
+![](/imagenes/PesosRegresionLasso.png?raw=true)
+
+A fin de reducir la dimensionalidad de los atributos eliminamos esos features de la matriz **X** y se volvió a ajustar la regresión lineal, logrando un R² prácticamente idéntico al conseguido con todos los atributos disponibles en el dataset, 66%. 
+
+[IMAGENES DE REGRESION LINEAL FILTRADO]
+
+- **Regresión Lineal con PCA**
+
+Como alternativa al **Feature Selection** anterior, ajustamos un **PCA** a las variables relacionadas con distancias para reducir la dimensionalidad de nuestro dataset. Este nos permitió más alla de esta reducción, la eliminación de la colinealidad en las variables que no se eliminaron en la fase de exploración (dadas las características del PCA).
+
+```python
+distancias = list(X_train.columns[X_train.columns.str.contains('dist')]) 
++ ['longitude', 'latitude']
+
+X_trainpca = X_train[distancias]
+X_testpca = X_test[distancias]
+```
+
+En este caso, seleccionamos de X_train, y X_test los atributos relacionados con las distancias. Escalamos la variables y realizamos el ajuste del PCA sin límite de componenetes para analizar visualmente el número de atributos a seleccionar.
+
+![](/imagenes/PCA.png?raw=true)
+
+Una demostración gráfica del porcentaje de varianza de los datos acumulado por número de componentes, nos muestra que llegado el quinto componente se explica prácticamente el 99% de esta. Es por ello que volvemos a ajustar el modelo con tan sólo 5 componentes, eliminando 12 atributos que registran la poca varianza restante. Una vez hecho, eliminamos las columnas del **X_train** original, para posteriormente concatenar los 5 nuevos atributos obtenidos.
+
+```python
+pca = PCA(n_components = 5)
+X_trainpca = pca.fit_transform(X_trainpca)
+X_testpca = pca.transform(X_testpca)
+
+X_train.drop(distancias, axis = 1, inplace = True)
+X_test.drop(distancias, axis = 1, inplace = True)
+
+atributosfin = X_train.columns.tolist() + ['PCA_Component_{}'.format(x) for x in range(1, X_trainpca.shape[1]+1)] # Esta variable se utiliza de referencia más adelante
+X_train = np.concatenate((X_train, X_trainpca), axis = 1)
+X_test = np.concatenate((X_test, X_testpca), axis = 1)
+
+X = np.append(X_train, X_test, axis = 0)
+y = np.append(y_train, y_test, axis = 0)
+```
+
+Volvemos a ajustar el modelo de Regresión Lineal Múltiple y observamos una caída del 5% del **Coeficiente de Determinación** respecto al ajuste inicial. No obstante, si llevamos a cabo una validación cruzada con todo el dataset observamos muy poca diferencia entre las dos alternativas, quedando esta nueva opción muy levemente por debajo a nivel de performance (Sin PCA obtenemos un 65.8  de media y con PCA 65.4), es por ello que optamos por las ventajas del **PCA** (eliminamos 13 features y aceleramos el ajuste del modelo) a pesar de que nos suponga un baseline más pobre en la parte de test. **Cabe destacar que para la validación cruzada  definimos una función propia para dadas las particularidades de nuestro enfoque**-
+
+```python
+
+def PCA_cross_validation(model, X, y, cv = 5, scoring = 'r2', standarization = True):
+  kf = KFold(n_splits=cv, random_state=1997, shuffle=True)
+  cvscore = []
+  for train_index, test_index in kf.split(X):
+    X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+    y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+
+    distancias = list(X_train.columns[X_train.columns.str.contains('dist')]) + ['longitude', 'latitude']
+
+    X_trainpca = X_train[distancias]
+    X_testpca = X_test[distancias]
+
+    sc = StandardScaler()
+    X_trainpca = sc.fit_transform(X_trainpca)
+    X_testpca = sc.transform(X_testpca)
+
+    pca = PCA(n_components = 5)
+    X_trainpca = pca.fit_transform(X_trainpca)
+    X_testpca = pca.transform(X_testpca)
+
+    X_train.drop(distancias, axis = 1, inplace = True)
+    X_test.drop(distancias, axis = 1, inplace = True)
+
+    X_train = np.concatenate((X_train, X_trainpca), axis = 1)
+    X_test = np.concatenate((X_test, X_testpca), axis = 1)
+    
+    if standarization == True:
+      sc = StandardScaler()
+      X_train = sc.fit_transform(X_train)
+      X_test = sc.transform(X_test)
+
+    if scoring == 'r2':
+      model.fit(X_train, y_train)
+      cvscore.append(r2_score(y_test, model.predict(X_test)))
+
+    elif scoring == 'mae':
+      model.fit(X_train, y_train)
+      cvscore.append(mean_absolute_error(y_test, model.predict(X_test)))
+
+  return np.array(cvscore)
+
+```
+
+**Algoritmos basados en Árboles**
+
+- **Comparativa CatBoost y XGBoost**
+
+- **Optimización de Hiperparámetros de XGBoost**
+
+**Redes Neuronales**
+
+- **Creación de Redes Neuronales**
+
+- **Optimización de Redes Neuronales**
 
 [LINK A COLAB]
 
