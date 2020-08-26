@@ -108,7 +108,7 @@ En caso de querer seguir los scripts o los notebooks es necesario instalar los s
 En caso de no tener todos instalados recomendamos crear un environment a partir del archivo **TFMenvironment.yml** con el siguiente código:
 
 ```shell
-$ conda env create -f TFMenvironment.yml
+$ conda env create -f TFM	environment.yml
 ```
 
 **El proyecto ha sido divido en cuatro partes, y por tanto, aunque no es necesario se recomienda ejecutarlos en ese orden para tener un compresión global.**
@@ -234,17 +234,15 @@ Concretamente, el **coeficiente de asimetría de Fisher** resulta ser de 0.404, 
 
 ![](/imagenes/QQplot.png?raw=true)
 
-Para finalizar el análisis de la variable dependiente, se realizó un estudio de la evolución de los precios medios a fin de encontrar una posible tendencia o estacionalidad a lo largo de los meses y años. Para ello se procedió a gráficar los precios medios por mes junto a sus intervalos de confianza.
+Para finalizar el análisis de la variable dependiente, se realizó un estudio de la evolución de los precios a fin de encontrar una posible tendencia o estacionalidad a lo largo de los meses y años. Para ello se procedió a gráficar los precios medios por mes junto a sus intervalos de confianza.
 
 ```python
 def intervalosConfianza(agrupacion, variable):
   """Agrupa los datos del dataset según la columna que indiques y calcula el 
   intervalo de confianza de la segunda columna que especifiques"""
 
-  intsup = (df.groupby(agrupacion)[variable].mean() 
-  + 1.96*(df.groupby(agrupacion)[variable].std()/np.sqrt(df.groupby(agrupacion)[variable].count()))).reset_index()
-  intinf = (df.groupby(agrupacion)[variable].mean() 
-  - 1.96*(df.groupby(agrupacion)[variable].std()/np.sqrt(df.groupby(agrupacion)[variable].count()))).reset_index()
+  intsup = (df.groupby(agrupacion)[variable].mean() + 1.96*(df.groupby(agrupacion)[variable].std()/np.sqrt(df.groupby(agrupacion)[variable].count()))).reset_index()
+  intinf = (df.groupby(agrupacion)[variable].mean() - 1.96*(df.groupby(agrupacion)[variable].std()/np.sqrt(df.groupby(agrupacion)[variable].count()))).reset_index()
   return intsup, intinf
 
 intsup, intinf = intervalosConfianza('month_year', 'goodprice')
@@ -300,8 +298,8 @@ Una vez eliminados los outliers a través de esta primera clusterización, se co
 A partir de los centros de cada clúster, creamos un dataframe que recoge cada centroide y se le asigna un número del 1-11 debido a que la aleatoriedad en la asignación del número de clúster nos impide ser consistentes en la asignación de nombres a la agrupación.
 
 ```python
-clusters = ['Landmark_1', 'Landmark_2', 'Landmark_3', 'Landmark_4', 'Landmark_5', 'Landmark_6', 
-	'Landmark_7', 'Landmark_8', 'Landmark_9', 'Landmark_10', 'Landmark_11']
+clusters = ['Landmark_1', 'Landmark_2', 'Landmark_3', 'Landmark_4', 'Landmark_5', 'Landmark_6', 'Landmark_7',
+            'Landmark_8', 'Landmark_9', 'Landmark_10', 'Landmark_11']
 centroids = km.cluster_centers_.tolist()
 
 centroids_km = pd.DataFrame({'cluster': clusters, 'centroids': centroids})
@@ -314,8 +312,7 @@ Finalizando este primer análisis de datos geográficos, cada uno de los centroi
 ```python
 for landlat, landlon, name in zip(landmarks.Latitud, landmarks.Longitud, landmarks.cluster):
     print(name)
-    map_df['{}_Haversinedistance'.format(name)] = [haversine_distance(landlat, landlon, listlat, listlon) 
-    for listlat, listlon in zip(map_df.latitude, map_df.longitude)]```
+    map_df['{}_Haversinedistance'.format(name)] = [haversine_distance(landlat, landlon, listlat, listlon) for listlat, listlon in zip(map_df.latitude, map_df.longitude)]```
 ```
 
 Con esto finalizamos la primera parte de esta geoexploración.
@@ -339,23 +336,21 @@ map_df['fgc_distance'] = [min(haversine_distance(tlat, tlon, listlat, listlon) f
 Para el método del buffer, transformamos las geometrias de todos los listings a fin de crear puntos con un diámetro mucho mayor, basándonos en un criterio distinto en caso de los transportes y los sitios turísticos (300 metros de radio para paradas de transporte y 600 para sitios turísticos). Por cada uno de las localizaciones se realiza el cálculo de booleanos (True/False) a través de la función de geopandas **within**, la cual marca con True los lugares que se encuentran dentro del *área* del alojamiento y con False los que no se encuentran en ella. Posteriormente, estos se suman (asumiendo que los valores True equivalen a 1 y los False a 0).
 
 ```python
-map_df['tranvia_cercanos'] = [sum(i.within(j) 
-for i in tramvia.geometry) 
-for j in mapbuffer.geometry]
+map_df['tranvia_cercanos'] = [sum(i.within(j) for i in tramvia.geometry) for j in mapbuffer.geometry]
 
-map_df['museos_cercanos'] = [sum(i.within(j) 
-for i in museos.geometry) 
-for j in mapbuffer.geometry]
+map_df['museos_cercanos'] = [sum(i.within(j) for i in museos.geometry) for j in mapbuffer.geometry]
 ```
-![](/imagenes/Museos.png?raw=true)
-
 ![](/imagenes/ParadasCercanas.png?raw=true)
+
+![](/imagenes/Museos.png?raw=true)
 
 ##  Exploración Parte B
 
 [LINK A COLAB]
 
 **INPUTS:** DatosLimpios.csv, Distancias.csv, DistanciasTurismo.csv **OUTPUTS:** DatosModelar.csv
+
+
 
 **Variables Numéricas**
 
@@ -365,50 +360,28 @@ Para este primer enfoque abordamos el análisis de las variables númericas a pa
 
 **Variables Categóricas**
 
-Los atributos categóricos fueron tratados en primer lugar con **Boxplots** y **Barplots** para obeterner una visión general de como se distribuían, así como influenciaban al precio en caso de tener algún peso sobre este. Esta vez en lugar de ser transformadas (se iban a transformar en variables dummy), nuestro objetivo era determinar si deberían incluirse en la etapa de modelado  o no.
-
 ![](/imagenes/BarplotCat.png?raw=true)
-
-Por otro lado, a fin de no quedarnos con una visión demasiado general de la influencia de las víasariables categóricas, graficamos la  evolución de precios medios respecto a cada una de las categorías. Con ello observamos que a pesar de que a nivel general las diferencias entre categorias es muy evidente en ciertos momentos del tiempo, dichas diferencias no son tan notables como a priori se podía suponer.
 
 ![](/imagenes/EvoCat.png?raw=true)
 
 **Variables Dicotómicas**
 
-Un elevado número de variables de nuestro dataset presentan tan solo valores booleanos. Al igual que con las categóricas, estas han sido tratadas con **Barplots** para comprobar que proporción son True o False, ya que consideramos que no vale la pena mantener una variable con una proporción demasiado dispar (si el 90% de los hosts tienen un email verificado, esa variable tendrá muy poca influencia en los precios), y con **Boxplots**, para analizar que relación mantenia entre categoria dicotómica y precio.
-
 ![](/imagenes/BarplotDic.png?raw=true)
-
-De nuevo, graficamos la evolución de precios medios respecto a las alternativas dicotomicas. Como resultado encontramos que la relación entre precios y dichos atributos varian dependiendo del año y mes, llegando incluso a igualarse la media de precios de ambas categorias, por lo que el peso de estos atributos puede no llegar a ser tan relevante como considerabamos en principio. No obstante, en algunos caso las diferencias en vez de igualarse, pueden incluso duplicarse, por lo que también podemos estar subestimando la importancia de ciertas variables.
 
 ![](/imagenes/EvoDic.png?raw=true)
 
 **Landmarks**
 
-En general las distancias a los landmarks se aproximan o bien a una forma uniforme o normal, acumulando la mayoría de registros en el intervalo de 1000 a 5000 metros. Para este tipo de distancia hemos seguido el mismo proceso que con las anteriores variables numéricas, combinar gráficos de colmena con una regresión y la distribución de sus marginales. Con ello observamos que todos y cada uno de los atributos relacionados con este tipo de distancias presentan en mayor o menor medida, una tendencia negativa, es de suponer ya que la proximidad a un Landmark debería influenciar al alza, en cierta medida, a los precios de un alojamiento turístico. 
-
-![](/imagenes/LandmarksDistancia.png?raw=true)
-
-No obstante, es evidente que dicha relación lineal es muy débil. Calculada a partir de la **correlación de Pearson** ![equation](https://latex.codecogs.com/gif.latex?\inline&space;\rho_{xy}&space;=&space;\frac{S_{xy}}{S_{x}S_{y}}), las distancias más relevantes a penas presentan una correlación lineal del 20%, incluso cuando hemos tratado de encontrar y aplicar transformaciones que aumentaran la relación lineal entre el precio y las distancias. A pesar de ello, dado que estas se tratan en un futuro con un Ánalisis de Componentes Principales o **PCA** en el momento de modelado, se esperaba una serie de combinaciones lineales que nos permitiera eliminar atributos innecesarios sin tener que perder varianza explicada por estos features.
+En general las distancias a los landmarks se aproximan o bien a una forma uniforme o normal, acumulando la mayoría de registros en el intervalo de 1000 a 5000 metros. Para este tipo de distancia hemos seguido el mismo proceso que con las anteriores variables numéricas, combinar gráficos de colmena con una regresión y la distribución de sus marginales. Con ello observamos que todos y cada uno de los atributos relacionados con este tipo de distancias presentan en mayor o menor medida, una tendencia negativa, es de suponer ya que la proximidad a un Landmark debería influenciar al alza, en cierta medida, a los precios de un alojamiento turístico. No obstante, observamos que dicha relación lineal es muy débil. Calculada a partir de la **correlación de Pearson** ![ecuation](https://latex.codecogs.com/gif.latex?%5Crho_%7Bxy%7D%20%3D%20%5Cfrac%7BS_%7Bxy%7D%7D%7BS_%7Bx%7DS_%7By%7D%7D) , las distancias más relevantes a penas presentan una correlación lineal del 20%, incluso cuando hemos tratado de encontrar y aplicar transformaciones que aumentaran la relación lineal entre el precio y las distancias. A pesar de ello, dado que estas se tratan en un futuro con un Ánalisis de Componentes Principales o **PCA** en el momento de modelado, se esperaba una serie de combinaciones lineales que nos permitiera eliminar atributos innecesarios sin tener que perder varianza explicada por estos features.
 
 
 **Transportes**
 
 De nuevo los gráficos en colmena revelan unas cuantas distancias o features de paradas cercanas que carecen de importancia, a causa de la gran red de transportes públicos que ofrece Barcelona, especialmente en cuanto a metros y autobuses, por lo que cualquier alojamiento tiene una o varias paradas cercanas y la proximidad o el número de paradas próximas de este tipo de transportes no es relevante a la hora de elegir o no una residencia turística. A pesar de esta cuestión, si que encontramos distancias a transportes con una leve relación lineal negativa respecto a los precios, sobretodo si hablamos de distancia a las paradas de bus al aeropuerto o distancia a las estaciones de Ferrorcarril. Una vez más, hemos intentado encontrar alguna transformación que aplicada a los datos aumentara la relación con el precio, aunque solo se ha encontrado alguna mejora en unos pocos features aplicando una transformación logaritmica.
 
-![](/imagenes/FerrocarrilExploracion.png?raw=true)
-
 **Sitios Turísticos**
 
 Curiosamente, la mayoría de atributos relacionados con el número de lugares de interés turístico carecen de importancia en términos de relación lineal, pese a que una última vez más se ha intentado aplicar transformaciones a los datos en busca de alguna señal más fuerte. No obstante, destacamos atributos como **restaurantes cercanos** que a través de una transformación a base logarítmica sí que presentan alguna señal suficiente para ser considerada 'relevante', en este caso se ha procedido a crear nuevos atributos que recogen esta transformación y eliminado los originales a fin de evitar el problema de la colinealidad innecesariamente.
-
-![](/imagenes/RestaurantesExploracion.png?raw=true)
-
-**Correlaciones**
-
-Una vez estudiadas todas las variables del dataset y su relación con el precio, se procedió a realizar por último un análisis de **correlaciones** entre variables dependientes a fin de encontrar posibles **colinealidaes** que pudieran ser evitadas con la eliminación de dichos atributos.
-
-![](/imagenes/MatrizCorr.png?raw=true)
 
 ##  Modelado
 
