@@ -732,4 +732,35 @@ Tras un largo proceso de tuneado el resumen de resultados nos muestra como mejor
 
 ##  Visualización y Dashboard
 
+Tras finalizar todo el proceso de modelización, la visualización es otro de los aspectos relevantes dentro del Data Science. De hecho se ha convertido en un punto clave para comunicar y, es relevante desde nuestro punto de vista, para acabar de comprender y entender la importancia de los datos con los que hemos trabajado durante todo el proyecto desde un contexto visual.
+
+La visualización que os presentamos en tableau, pretende acercarnos a los usuarios para poder contextualizar de forma interactiva, cuáles son los datos que hemos ido incorporando en los modelos que os hemos ido presentando en los anteriores puntos.
+
+El dashboard consta de 3 bloques principales.
+
+El primer bloque muestra de manera interactiva cuáles son los datos de los que disponemos de la base de Datos de Inside Airbnb. Las características de todos aquellos registros que hemos utilizado para el modelado. 
+
+En un primer lugar podremos observar el número de pisos únicos dados de alta en AirBNB durante los años 2017 a 2020, así como la evolución de los precios de todos los ellos. El precio es una variable que hemos querido visualizar al inicio del Dashboard dada su relevancia dentro de nuestro proyecto como variable a predecir por nuestros modelos.
+
+Una vez comprendidoel número de registros y el nivel de precios promedio de los que hablamos, pasamos a analizar la estructura de los alojamientos a nivel de qué tipo de propiedades son y cuál es el grado de alquiler en cuanto a si es toda la propiedad o solo una habitación, y, otros aspectos relevantes que son los primeros a ser consultados por los usuarios cuando navegas por tipos de apps/web como Airbnb que son, el número de habitaciones, camas e incluso baños.
+
+Por otro lado, y cada vez más, nos gusta saber la ubicación de las cosas que buscamos. Es por ello que consideramos incluir un mapa donde se pudieran visualizar dos cosas, los barrios en los que se distribuyen los alojamientos, y otra opción que hemos añadido como visaluzación del mapa, el nivel de densidad en los que se distribuye la oferta de alojamientos en Barcelona.
+
+Normalmente, el tipo de propiedad y si se alquila de forma completa o parcial, es una de las cosas que previamente a la búsqueda del aliojamiento ideal ya tenemos pensados en base al tipo de viaje o escapada que queremos realizar. Es por ello que hemos considerado que la variable debería ser usada com filtro de visualización. Hacer click en cada uno de las opciones que ofrece el gráfico en forma de barra, permite que la visualización del resto de variables cambie, desde los precios, hasta el tamaño del alojammiento, los mapas e incluso variables que explicaremos a continuación.
+
+![](/imagenes/TFMAirBNBTableau1.png?raw=true)
+![](/imagenes/TFMAirBNBTableau1b.png?raw=true)
+
+Una vez vista la primera parte del Dashboard, donde hemos podido ver las primeras características principales de los alojamientos, visualizamos aquellas variables que aportan un valor añadido a los alojamiento a alquilar como son los servicios que ofrecen, desde Aire Acondicionado hasta saber si tienen terraza o balcón, entender el tipo de póliza de cancelación que ofrecen así como el mínimo de noches necesarias para poder alquilar el tipo de alojamiento que queramos visualizar. Comentar que en estos tres gráficos, también influirá el filtro de tipo de propiedad que hayamos seleccionado, ya mencionado y explicado anteriormente.
+
+![](/imagenes/TFMAirBNBTableau2.png?raw=true)
+
+Finalmente, encontramos una visualización que pretende mostrar el tipo de datos obtenidos a raíz del procesado de datasets externos que nos han permitido nutrir de información adicional los modelos de predicción.
+
+Encontramos dos mapas, en un primer lugar y, a raíz de datos extraídos de Open Data barcelona a nivel de transportes y servicios, se muestra los servicios y oferta turística alredador de cada uno de los alojamientos. Un parámetro en la parte superior del mapa nos permite cambiar la visualización en base a lo que seleccionemos.
+
+En segundo lugar, encontramos el mapa que nos ha permitido determinar landmarks de Barcelona, gracias a un dataset de fotografias geolocalizadas de una API de Flickr. Éste mapa es más ilustrativo y lo que pretende es más una visualización de los punto más relevantes con su icono asociado.
+
+![](/imagenes/TFMAirBNBTableau3.png?raw=true)
+
 # Conclusiones y Mejoras
