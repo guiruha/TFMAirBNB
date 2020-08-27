@@ -363,7 +363,7 @@ Para este primer enfoque abordamos el análisis de las variables númericas a pa
 
 ![](/imagenes/Accommodates.png?raw=true)
 
-### Variables Categóricas**
+### **Variables Categóricas**
 
 Los atributos categóricos fueron tratados en primer lugar con **Boxplots** y **Barplots** para obeterner una visión general de como se distribuían, así como influenciaban al precio en caso de tener algún peso sobre este. Esta vez en lugar de ser transformadas (se iban a transformar en variables dummy), nuestro objetivo era determinar si deberían incluirse en la etapa de modelado  o no.
 
@@ -450,7 +450,7 @@ Un primer ajuste del modelo nos revela un **Coeficiente de Determinación** de 6
 
 ![](/imagenes/RegresionLinealBase2.png?raw=true)
 
-Como siguiente paso, se añadió a la función de coste de la regresión, ![equation](https://latex.codecogs.com/gif.latex?%5Cinline%20J%20%3D%20%5Cfrac%7B1%7D%7B2m%7D%5Csum_%7Bi%3D1%7D%5Em%20%28y_%7Bi%7D-%20%5Chat%7By_%7Bi%7D%7D%29%5E2) una regurlarización L1 o Lasso, ![equation](+ $\alpha\cdot\frac{1}{n}\sum_{j=1}^n|\theta_j|$) a fin de reducir el valor de los coeficientes y discriminar los coeficientes/atributos que no aportan apenas información a las predicciones del modelo. Un alfa curiosamente bajo es suficiente para detectar 8 atributos con pesos de valor igual a 0 manteniendo el mismo Coeficiente de Determinación (una pérdida de pocas décimas). 
+Como siguiente paso, se añadió a la función de coste de la regresión, ![equation](https://latex.codecogs.com/gif.latex?%5Cinline%20J%20%3D%20%5Cfrac%7B1%7D%7B2m%7D%5Csum_%7Bi%3D1%7D%5Em%20%28y_%7Bi%7D-%20%5Chat%7By_%7Bi%7D%7D%29%5E2) una regurlarización L1 o Lasso, ![equation](https://latex.codecogs.com/gif.latex?%5Cinline%20&plus;%5Calpha%5Ccdot%5Cfrac%7B1%7D%7Bn%7D%5Csum_%7Bj%3D1%7D%5En%7C%5Ctheta_j%7C) a fin de reducir el valor de los coeficientes y discriminar los coeficientes/atributos que no aportan apenas información a las predicciones del modelo. Un alfa curiosamente bajo es suficiente para detectar 8 atributos con pesos de valor igual a 0 manteniendo el mismo Coeficiente de Determinación (una pérdida de pocas décimas). 
 
 ![](/imagenes/RegresionLasso1.png?raw=true)
 
@@ -599,11 +599,15 @@ El GridSearch nos deja con un modelo bastante similar al que de por sí ya habia
 
 ![](/imagenes/XGBoost1.png?raw=true)
 
+-
+
 ![](/imagenes/XGBoost2.png?raw=true)
 
 [ELABORAR LA COMPARATIVA]
 
 ![](/imagenes/CatBoost.png?raw=true)
+
+-
 
 ![](/imagenes/CatBoost2.png?raw=true)
 
