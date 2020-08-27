@@ -785,7 +785,7 @@ Finalmente, en el tercer bloque del Dashbaord, encontramos una visualización qu
 
 Encontramos dos mapas, en un primer lugar y, a raíz de datos extraídos de Open Data Barcelona a nivel de transportes y servicios, se muestra los servicios y oferta turística alredador de cada uno de los alojamientos con un density map. Un parámetro en la parte superior del mapa nos permite cambiar la visualización en base a lo que queramos visualizar y analizar.
 
-En segundo lugar, encontramos el mapa donde podemos ver los landmarks de Barcelona, que nos ha permitdio obtener el dataset de fotografias geolocalizadas de una API de Flickr una vez aplicado el modelo de aprendizaje no supervisado de clusterización. Este mapa es más ilustrativo y lo que pretende es aportar una visualización de los punto más relevantes con su icono asociado.
+En segundo lugar encontramos el mapa donde podemos ver los landmarks de Barcelona. Esta visualización ha sido posible gracias al dataset de fotografias geolocalizadas de una API de Flickr y la aplicación del modelo de aprendizaje no supervisado de clusterización. Este mapa es más ilustrativo y lo que pretende es aportar una visualización de los puntos más relevantes con su icono asociado.
 
 ![](/imagenes/TFMAirBNBTableau3.png?raw=true)
 
