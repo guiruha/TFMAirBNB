@@ -56,7 +56,7 @@ Es el archivo más importante de los tres, en este csv encontramos toda la infor
 
 ### Calendar.csv
 
-El dataset de calendar nos proporciona información diaria sobre como se comportan los precios y la disponibilidad de los listings. A pesar de que encontramos el comportamiento de los precios a nivel diario, la capacidad de almacenamiento y procesamiento nos ha llevado a utilizar medias mensuales de cada listing para reducir el tamaño de los datos. Tan sólo nos centraremos en cuatro columnas relevantes de este csv.
+El dataset de calendar nos proporciona información diaria sobre cómo se comportan los precios y la disponibilidad de los listings. A pesar de que encontramos el comportamiento de los precios a nivel diario, la capacidad de almacenamiento y procesamiento nos ha llevado a utilizar medias mensuales de cada listing para reducir el tamaño de los datos. Tan sólo nos centraremos en cuatro columnas relevantes de este csv.
 
 | Columna       | Descripción          
 | ------------- |------------- | 
@@ -121,7 +121,7 @@ $ conda env create -f TFMenvironment.yml
 
 La primera Fase de este proyecto consiste en la limpieza y análisis superficial de los datasets base para la evolución del TFM, listings.csv y calendar.csv. 
 
-Un primer barrido de eliminación de columnas suprimió del proceso todas las variables relacionadas con urls, así como descripciones tanto del host como del alojamiento (se planteó el uso de NLP en estas columnas a fin de encontrar nuevos atributos útiles pero finalmente, dado que los algoritmos ya estabann dando muy buenos resultados, se decidió seguir un camino distinto). Por otro lado, también fueron eliminadas columnas con más de un **60%** de Nulls dada su relativamente baja importancia y el riesgo a introducir un sesgo grande por medio de la imputación de valores (tanto predichos a través de modelos lineales como medianas o medias).
+Un primer barrido de eliminación de columnas suprimió del proceso todas las variables relacionadas con urls, así como descripciones tanto del host como del alojamiento (se planteó el uso de NLP en estas columnas a fin de encontrar nuevos atributos útiles pero finalmente, dado que los algoritmos ya estaban dando muy buenos resultados, se decidió seguir un camino distinto). Por otro lado, también fueron eliminadas columnas con más de un **60%** de Nulls dada su relativamente baja importancia y el riesgo a introducir un sesgo grande por medio de la imputación de valores (tanto predichos a través de modelos lineales como medianas o medias).
 
 ```python
 nulls = df.isnull().sum() / df.shape[0]
@@ -226,7 +226,7 @@ Resultado de este filtrado de precios obtenemos un histograma a priori visualmen
 
 ![](/imagenes/LogNormal.png?raw=true)
 
-Es por ello que aplicamos un logaritmo natural como medida típica para "normalizar" nuestra variable dependiente. Una comparativa de una distribución normal generada a partir del paquete random nos muestra bastante semejanza a una distribución normal  a pesar de la ligera asimetría positiva.
+Es por ello que aplicamos un logaritmo natural como medida típica para "normalizar" nuestra variable dependiente. Una comparativa de una distribución normal generada a partir del paquete random nos muestra bastante semejanza a una distribución normal a pesar de la ligera asimetría positiva.
 
 ![](/imagenes/Normal.png?raw=true)
 
@@ -280,7 +280,7 @@ No obstante, de esta última parte del análisis solo podemos destacar la posibl
 
 **INPUTS:** DatosLimpios.csv **OUTPUTS:** Distancias.csv, DistanciasTurismo.csv
 
-La Geoexploración supone un interludio dentro la fase de exploración, una breve desviación que hemos decidido tratar en un notebook distinto debido a que tiene una temática distinta a la que tratamos en la exploración más general. Esta fase del proyecto se divide en dos enfoques distintos centrados en datos geoespaciales, en primer lugar la determinación de localizaciones de **Landmarks** a través del calculo de centroides y el ćalculo de distancias entre landmark y alojamiento, y por otro lado el cálculo, o bien de distancias a paradas de trasnporte cercanas, o bien el número de paradas cercanas a un alojamiento.
+La Geoexploración supone un interludio dentro la fase de exploración, una breve desviación que hemos decidido tratar en un notebook distinto debido a que tiene una temática distinta a la que tratamos en la exploración más general. Esta fase del proyecto se divide en dos enfoques distintos centrados en datos geoespaciales, en primer lugar la determinación de localizaciones que llamaremos **Landmarks** que encontraremos a través del calculo de centroides, y el ćalculo de distancias entre landmark y alojamiento, y por otro lado el cálculo, o bien de distancias a paradas de transnporte cercanas, o bien el número de paradas cercanas a un alojamiento.
 
 ### **Centroides a partir de datos de Flickr**
 
@@ -365,21 +365,21 @@ Para este primer enfoque abordamos el análisis de las variables númericas a pa
 
 ### Variables Categóricas**
 
-Los atributos categóricos fueron tratados en primer lugar con **Boxplots** y **Barplots** para obeterner una visión general de como se distribuían, así como influenciaban al precio en caso de tener algún peso sobre este. Esta vez en lugar de ser transformadas (se iban a transformar en variables dummy), nuestro objetivo era determinar si deberían incluirse en la etapa de modelado  o no.
+Los atributos categóricos fueron tratados en primer lugar con **Boxplots** y **Barplots** para obeterner una visión general de como se distribuían, así como influenciaban al precio en caso de tener algún peso sobre este. Esta vez en lugar de ser transformadas (se iban a transformar en variables dummy), nuestro objetivo era determinar si deberían incluirse en la etapa de modelado o no.
 
 ![](/imagenes/BarplotCat.png?raw=true)
 
-Por otro lado, a fin de no quedarnos con una visión demasiado general de la influencia de las víasariables categóricas, graficamos la  evolución de precios medios respecto a cada una de las categorías. Con ello observamos que a pesar de que a nivel general las diferencias entre categorias es muy evidente en ciertos momentos del tiempo, dichas diferencias no son tan notables como a priori se podía suponer.
+Por otro lado, a fin de no quedarnos con una visión demasiado general de la influencia de las variables categóricas, graficamos la  evolución de precios medios respecto a cada una de las categorías. Con ello observamos que a pesar de que a nivel general las diferencias entre categorías es muy evidente en ciertos momentos del tiempo, dichas diferencias no son tan notables como a priori se podía suponer.
 
 ![](/imagenes/EvoCat.png?raw=true)
 
 ### **Variables Dicotómicas**
 
-Un elevado número de variables de nuestro dataset presentan tan solo valores booleanos. Al igual que con las categóricas, estas han sido tratadas con **Barplots** para comprobar que proporción son True o False, ya que consideramos que no vale la pena mantener una variable con una proporción demasiado dispar (si el 90% de los hosts tienen un email verificado, esa variable tendrá muy poca influencia en los precios), y con **Boxplots**, para analizar que relación mantenia entre categoria dicotómica y precio.
+Un elevado número de variables de nuestro dataset presentan tan solo valores booleanos. Al igual que con las categóricas, estas han sido tratadas con **Barplots** para comprobar que proporción son True o False, ya que consideramos que no vale la pena mantener una variable con una proporción demasiado dispar (si el 90% de los hosts tienen un email verificado, esa variable tendrá muy poca influencia en los precios), y con **Boxplots**, para analizar que relación mantenia entre categoría dicotómica y precio.
 
 ![](/imagenes/BarplotDic.png?raw=true)
 
-De nuevo, graficamos la evolución de precios medios respecto a las alternativas dicotomicas. Como resultado encontramos que la relación entre precios y dichos atributos varian dependiendo del año y mes, llegando incluso a igualarse la media de precios de ambas categorias, por lo que el peso de estos atributos puede no llegar a ser tan relevante como considerabamos en principio. No obstante, en algunos caso las diferencias en vez de igualarse, pueden incluso duplicarse, por lo que también podemos estar subestimando la importancia de ciertas variables.
+De nuevo, graficamos la evolución de precios medios respecto a las alternativas dicotómicas. Como resultado encontramos que la relación entre precios y dichos atributos varían dependiendo del año y mes, llegando incluso a igualarse la media de precios de ambas categorías, por lo que el peso de estos atributos puede no llegar a ser tan relevante como considerábamos en principio. No obstante, en algunos caso las diferencias en vez de igualarse, pueden incluso duplicarse, por lo que también podemos estar subestimando la importancia de ciertas variables.
 
 ![](/imagenes/EvoDic.png?raw=true)
 
@@ -389,12 +389,12 @@ En general las distancias a los landmarks se aproximan o bien a una forma unifor
 
 ![](/imagenes/LandmarksDistancia.png?raw=true)
 
-No obstante, es evidente que dicha relación lineal es muy débil. Calculada a partir de la **correlación de Pearson** ![equation](https://latex.codecogs.com/gif.latex?\inline&space;\rho_{xy}&space;=&space;\frac{S_{xy}}{S_{x}S_{y}}), las distancias más relevantes a penas presentan una correlación lineal del 20%, incluso cuando hemos tratado de encontrar y aplicar transformaciones que aumentaran la relación lineal entre el precio y las distancias. A pesar de ello, dado que estas se tratan en un futuro con un Ánalisis de Componentes Principales o **PCA** en el momento de modelado, se esperaba una serie de combinaciones lineales que nos permitiera eliminar atributos innecesarios sin tener que perder varianza explicada por estos features.
+No obstante, es evidente que dicha relación lineal es muy débil. Calculada a partir de la **correlación de Pearson** ![equation](https://latex.codecogs.com/gif.latex?\inline&space;\rho_{xy}&space;=&space;\frac{S_{xy}}{S_{x}S_{y}}), las distancias más relevantes a penas presentan una correlación lineal del 20%, incluso cuando hemos tratado de encontrar y aplicar transformaciones que aumentaran la relación lineal entre el precio y las distancias. A pesar de ello, dado que estas se tratan en un futuro con un Análisis de Componentes Principales o **PCA** en el momento de modelado, se esperaba una serie de combinaciones lineales que nos permitiera eliminar atributos innecesarios sin tener que perder varianza explicada por estos features.
 
 
 ### **Transportes**
 
-De nuevo los gráficos en colmena revelan unas cuantas distancias o features de paradas cercanas que carecen de importancia, a causa de la gran red de transportes públicos que ofrece Barcelona, especialmente en cuanto a metros y autobuses, por lo que cualquier alojamiento tiene una o varias paradas cercanas y la proximidad o el número de paradas próximas de este tipo de transportes no es relevante a la hora de elegir o no una residencia turística. A pesar de esta cuestión, si que encontramos distancias a transportes con una leve relación lineal negativa respecto a los precios, sobretodo si hablamos de distancia a las paradas de bus al aeropuerto o distancia a las estaciones de Ferrorcarril. Una vez más, hemos intentado encontrar alguna transformación que aplicada a los datos aumentara la relación con el precio, aunque solo se ha encontrado alguna mejora en unos pocos features aplicando una transformación logaritmica.
+De nuevo los gráficos en colmena revelan unas cuantas distancias o features de paradas cercanas que carecen de importancia, a causa de la gran red de transportes públicos que ofrece Barcelona, especialmente en cuanto a metros y autobuses, por lo que cualquier alojamiento tiene una o varias paradas cercanas y la proximidad o el número de paradas próximas de este tipo de transportes no es relevante a la hora de elegir o no una residencia turística. A pesar de esta cuestión, si que encontramos distancias a transportes con una leve relación lineal negativa respecto a los precios, sobretodo si hablamos de distancia a las paradas de bus al aeropuerto o distancia a las estaciones de Ferrocarril. Una vez más, hemos intentado encontrar alguna transformación que aplicada a los datos aumentara la relación con el precio, aunque solo se ha encontrado alguna mejora en unos pocos features aplicando una transformación logarítmica.
 
 ![](/imagenes/FerrocarrilExploracion.png?raw=true)
 
@@ -408,7 +408,7 @@ Curiosamente, la mayoría de atributos relacionados con el número de lugares de
 
 Una vez estudiadas todas las variables del dataset y su relación con el precio, se procedió a realizar por último un análisis de **correlaciones** entre variables dependientes a fin de encontrar posibles **colinealidaes** que pudieran ser evitadas con la eliminación de dichos atributos.
 
-En primer lugar, se seleccionaron las variables categóricas y dicotómicas analizadas en apartados anteriores para transfromarlas en **variables dummy** para que puedan ser introducidas en el proceso de ajuste y predicción. 
+En primer lugar, se seleccionaron las variables categóricas y dicotómicas analizadas en apartados anteriores para transformarlas en **variables dummy** para que puedan ser introducidas en el proceso de ajuste y predicción. 
 
 ```python
 dummycols = ['host_response_time', 'neighbourhood_group_cleansed', 'property_type', 'room_type',  'cancellation_policy', 'review_scores_rating']
@@ -416,11 +416,11 @@ df = pd.get_dummies(df, columns = dummycols, drop_first = True)
 df[df.columns[list(df.dtypes == 'uint8')]] = df[df.columns[list(df.dtypes == 'uint8')]].astype('int')
 ```
 
-A continuación, calculamos los Coeficeinte de Correlación y los gráficamos a modo de barplot para analizarlos de forma más visual. Si bien muchos de los coeficeintes relevantes ya los habiamos identificado, esta vez han aparecido algunes entre las variables dummy muy dignas de mención, como **Room_tye Private Room** o bien variables relacionadas con los ammenities como son **Air Conditioning** o  **Family Kid-Friendly**
+A continuación, calculamos los Coeficientes de Correlación y los graficamos a modo de barplot para analizarlos de forma más visual. Si bien muchos de los coeficientes relevantes ya los habíamos identificado, esta vez han aparecido algunos entre las variables dummy muy dignas de mención, como **Room_type Private Room** o bien variables relacionadas con los ammenities como son **Air Conditioning** o  **Family Kid-Friendly**
 
 ![](/imagenes/CorrPearson.png?raw=true)
 
-Continuando el tratamiento de correlaciones, graficamos una matriz de correlaciones, a través de la cual detectamos puntos calientes de interés. Uno de los principales focos donde se concentra la colinealidades elevadas se encuentra en los atributos relacionados con las distancias, sin embargo, dada nuestra intención de ajustar estos atributos y reducir su dimensionalidad con un **PCA**, ignoramos estos features para más adelante.
+Continuando con el tratamiento de correlaciones, graficamos una matriz de correlaciones, a través de la cual detectamos puntos calientes de interés. Uno de los principales focos donde se concentra la colinealidades elevadas se encuentra en los atributos relacionados con las distancias, sin embargo, dada nuestra intención de ajustar estos atributos y reducir su dimensionalidad con un **PCA**, ignoramos estos features para más adelante.
 
 ![](/imagenes/MatrizCorr.png?raw=true)
 
@@ -436,11 +436,11 @@ La última sección del TFM consta del modelado y utilización de varios algorit
 
 Los datos utilizados para esta parte final provienen del dataset previamente analizado y tratado en la **Sección 2- Exploración General**. A partir de este, se llevarán a cabo ajustes tanto con **Modelos de Regresión Lineal** como **Modelos de Árbol** y **Redes Neuronales**, así como un **PCA** y procesos de tuneado de hiperparámetros mediante varias metodologías.
 
-Así mismo, como herramienta de comparación entre modelos se definió la función **evaluadorDeModelos**, la cual imprime la dos métricas elegidas para analizar el desempeño (**MAE** y **R²**) además de graficar la relación lineal entre valores prónosticados vs reales y el valor de los residuos de cada predicción.
+Así mismo, como herramienta de comparación entre modelos se definió la función **evaluadorDeModelos**, la cual imprime la dos métricas elegidas para analizar el desempeño (**MAE** y **R²**) además de graficar la relación lineal entre valores pronosticados vs reales y el valor de los residuos de cada predicción.
 
 ### **Baseline con Regresión Lineal y Lasso**
 
-Como Baseline se decidió utilizar una **Regresión Lineal Múltiple** ya que la sección de análisis exploratorio se centro en estudiar las relaciones lineales entre las variables indpeneidentes y la dpeendiente, además de ser un algoritmo bastante rápido y sencillo de aplicar y comprender su funcionamiento.
+Como Baseline se decidió utilizar una **Regresión Lineal Múltiple** ya que la sección de análisis exploratorio se centro en estudiar las relaciones lineales entre las variables independientes y la dependiente, además de ser un algoritmo bastante rápido y sencillo de aplicar así como de comprender su funcionamiento.
 
 ### **Regresion Lineal Múltiple y Lasso**
 
@@ -452,7 +452,7 @@ Como siguiente paso, se añadió a la función de coste de la regresión, ![equa
 
 [IMAGENES DE LASSO]
 
-La esquematización de los pesos de cada feature nos permite vislumbrar que las columnas a eliminadas son aquellas que presentan colineanlidad entre ellas y no fueron eliminadas en su momento, es decir las distancias, así como otras que en principo ya sospechábamos poco importantes, como **id** ( de asignación completamnete aleatoria) o **latitude** (dada la disposición de la ciudad).
+La esquematización de los pesos de cada feature nos permite vislumbrar que las columnas eliminadas son aquellas que presentan colineanlidad entre ellas y no fueron eliminadas en su momento, es decir las distancias, así como otras que en principo ya sospechábamos poco importantes, como **id** (de asignación completamnete aleatoria) o **latitude** (dada la disposición de la ciudad).
 
 ![](/imagenes/PesosRegresionLasso.png?raw=true)
 
@@ -462,7 +462,7 @@ A fin de reducir la dimensionalidad de los atributos eliminamos esos features de
 
 ### **Regresión Lineal con PCA**
 
-Como alternativa al **Feature Selection** anterior, ajustamos un **PCA** a las variables relacionadas con distancias para reducir la dimensionalidad de nuestro dataset. Este nos permitió más alla de esta reducción, la eliminación de la colinealidad en las variables que no se eliminaron en la fase de exploración (dadas las características del PCA).
+Como alternativa al **Feature Selection** anterior, ajustamos un **PCA** a las variables relacionadas con distancias para reducir la dimensionalidad de nuestro dataset. Este nos permitió más allá de esta reducción, la eliminación de la colinealidad en las variables que no se eliminaron en la fase de exploración (dadas las características del PCA).
 
 ```python
 distancias = list(X_train.columns[X_train.columns.str.contains('dist')]) 
@@ -494,7 +494,7 @@ X = np.append(X_train, X_test, axis = 0)
 y = np.append(y_train, y_test, axis = 0)
 ```
 
-Volvemos a ajustar el modelo de Regresión Lineal Múltiple y observamos una caída del 5% del **Coeficiente de Determinación** respecto al ajuste inicial. No obstante, si llevamos a cabo una validación cruzada con todo el dataset observamos muy poca diferencia entre las dos alternativas, quedando esta nueva opción muy levemente por debajo a nivel de performance (Sin PCA obtenemos un 65.8  de media y con PCA 65.4), es por ello que optamos por las ventajas del **PCA** (eliminamos 13 features y aceleramos el ajuste del modelo) a pesar de que nos suponga un baseline más pobre en la parte de test. **Cabe destacar que para la validación cruzada  definimos una función propia para dadas las particularidades de nuestro enfoque**.
+Volvemos a ajustar el modelo de Regresión Lineal Múltiple y observamos una caída del 5% del **Coeficiente de Determinación** respecto al ajuste inicial. No obstante, si llevamos a cabo una validación cruzada con todo el dataset observamos muy poca diferencia entre las dos alternativas, quedando esta nueva opción muy levemente por debajo a nivel de performance (Sin PCA obtenemos un 65.8  de media y con PCA 65.4), es por ello que optamos por las ventajas del **PCA** (eliminamos 13 features y aceleramos el ajuste del modelo) a pesar de que nos suponga un baseline más pobre en la parte de test. **Cabe destacar que para la validación cruzada  definimos una función propia dadas las particularidades de nuestro enfoque**.
 
 ```python
 
@@ -548,16 +548,16 @@ def PCA_cross_validation(model, X, y, cv = 5, scoring = 'r2', standarization = T
 #### **Comparativa CatBoost y XGBoost**
 
 Existen varios modelos en estado del arte en cuanto a algoritmo de árboles. Particularmente, se escogió dos de las opciones estrella actualmente, **XGBoost** y **CatBoost**, ya que al construir árboles de forma secuencial, cada nuevo árbol ayuda a corregir los errores cometidos por el anterior.
-XGBoost, a pesar de ser un algoritmo algo más antiguo que CatBoost sigue siendo un referente en las competiciones en páginas web como [Kaggle](https://www.kaggle.com/competitions). No obstante, CatBoost presenta ciertas mejoras que lo hacen una alternativa bastante aconsejable, menor tiempo de entrenamiento, manejo de las variables categoricas y missing values. Con el objetivo de escorge una de las dos opciones, se jugó tocando manualmente los hiperparámetros hasta encontrar dos predicciones lo más acertadas posibles.
+XGBoost, a pesar de ser un algoritmo algo más antiguo que CatBoost sigue siendo un referente en las competiciones en páginas web como [Kaggle](https://www.kaggle.com/competitions). No obstante, CatBoost presenta ciertas mejoras que lo hacen una alternativa bastante aconsejable, menor tiempo de entrenamiento, manejo de las variables categóricas y missing values. Con el objetivo de escoger una de las dos opciones, se ajustaron manualmente los hiperparámetros hasta encontrar dos predicciones lo más acertadas posibles.
 
 [IMAGEN DE CATBOOST Y XGBOOST]
 
 
 #### **Optimización de Hiperparámetros de XGBoost**
 
-Tras haber determinado XGBoost como la alternativa más viable, se procede a realizar el método de optimización conocido como **Coarse to Fine Tuning** para el tuneado de hiperparámetros. Esta metodologia se basa en combinar el **Random Search**, que sirve para reconocer una zona 'prometedora' donde hacer un búsque más exhaustiva de hiperparámetros dentro de esos rangos, de lo cual se encarga a continuación **Grid Search**.
+Tras haber determinado XGBoost como la alternativa más viable, se procedió a realizar el método de optimización conocido como **Coarse to Fine Tuning** para el tuneado de hiperparámetros. Esta metodología se basa en combinar el **Random Search**, que sirve para reconocer una zona 'prometedora', y en las que una vez encontradas, utilizamos el **Grid Search** para hacer una búsqueda más exhaustiva de los mejores hiperparámetros dentro de esos rangos para nuestro modelo.
 
-En primer lugar, el Random Search realiza 20 **cross validations** combinando aleatoriamente los hiperparámetros **learning rate**, **gamma**, **max depth** y **min child weight**, los más recomendados para tunear. Como resultado, observamos que valores muy altos de gamma perjudica a test más que lo ayuda a pesar de ser un regularizador, min child weight no tiene importancia alguna en el score final, mientras que valores alrededor de 0.16 y 25 son bastante óptimos para el **learning rate** y para el **max depth** respectivamente.
+En primer lugar, el **Random Search** realiza 20 **cross validations** combinando aleatoriamente los hiperparámetros **learning rate**, **gamma**, **max depth** y **min child weight**, los más recomendados para tunear. Como resultado, observamos que valores muy altos de gamma perjudican a test más de lo que que lo ayuda a pesar de ser un regularizador, min child weight no tiene importancia alguna en el score final, mientras que valores alrededor de 0.16 y 25 son bastante óptimos para el **learning rate** y para el **max depth** respectivamente.
 
 ```python
 xgbcv = xgb.XGBRegressor(seed=1997, n_jobs = -1, verbose = 10, verbosity = 1, n_estimators = 50) 
@@ -573,7 +573,7 @@ rs = RandomizedSearchCV(xgbcv, param_distributions=param_dist, cv = 5,
 rs.fit(X_train, y_train)
 ```
 
-Una vez encontrado un rango de hiperparámetros viable, se establecen valores dentro de este para aplicar un Grid Search satisfactoriamente. Esta vez solo se utiliza un 3-fold cross validation debido a cuestiones de velocidad de ajuste y recursos disponibles.
+Una vez encontrado un rango de hiperparámetros viable, se establecen valores dentro de este para aplicar un **Grid Search** satisfactoriamente. Esta vez solo se utiliza un **3-fold cross validation** debido a cuestiones de velocidad de ajuste y recursos disponibles.
 
 ```python
 xgbcv = xgb.XGBRegressor(seed=1997, n_jobs = -1, verbose = 10, verbosity = 1, n_estimators = 50, min_child_weight=5)
@@ -591,9 +591,9 @@ El GridSearch nos deja con un modelo bastante similar al que de por sí ya habia
 
 [IMAGEN XGBOOST OPTIMIZADO]
 
-Tras finalizar el Grid Search y por tanto el proceso de **Coarse to Fine Tunning**. optamos por la **Optimización Bayesiana**, una metología mucho más eficiente utilizando un modelo probabilístico de la función de coste (concretamente hablamos de un proceso Gaussiano), el cual va actualizando los parámetros de forma automática, por lo que podríamos optener unos paramétros mejor optimizados y un modelo más acertado en sus predicciones.
+Tras finalizar el Grid Search y por tanto el proceso de **Coarse to Fine Tunning**, optamos por la **Optimización Bayesiana**, una metología mucho más eficiente utilizando un modelo probabilístico de la función de coste (concretamente hablamos de un proceso Gaussiano), el cual va actualizando los parámetros de forma automática, por lo que podríamos optener unos parámetros mejor optimizados y un modelo más acertado en sus predicciones.
 
-Para la implementación de este tipo de optimizadores debemos crear una función objetivo (en esta caso de coste) que llamaremos **crossVal_score**, siendo esta una validación cruzada de 3-Folds con función de pérdidad **MAE**.
+Para la implementación de este tipo de optimizadores debemos crear una función objetivo (en esta caso de coste) que llamaremos **crossVal_score**, siendo esta una validación cruzada de 3-Folds con función de pérdida **MAE**.
 
 ```python
 domain = [{'name': 'learning_rate', 'type': 'continuous', 'domain': (0, 0.3)},
@@ -632,17 +632,17 @@ optimizer.run_optimization(max_iter=5)
 
 #### **Creación de Redes Neuronales**
 
-Pór último, abordamos esta fase de modelado con redes neuronales. Concretamente, utilizaremos **Artificial Neural Networks** de poco tamaño (no más de 4/5 fully connected layers de 256/512 neuronas por capa) y jugaremos con las funciones de activación para encontrar una arquitectura que pueda compertir con el XGBoost. Para la compilación de las redes utilizarmos de nuevo el **MAE** como función de pérdida, así como el optimizador **ADAM** (el que consideramos más completo dadas las alternativas que disponemos).
+Por último, abordamos esta fase de modelado con redes neuronales. Concretamente, utilizaremos **Artificial Neural Networks** de poco tamaño (no más de 4/5 fully connected layers de 256/512 neuronas por capa) y jugaremos con las funciones de activación para encontrar una arquitectura que pueda compertir con el XGBoost. Para la compilación de las redes utilizarmos de nuevo el **MAE** como función de pérdida, así como el optimizador **ADAM** (el que consideramos más completo dadas las alternativas que disponemos).
 
 [IMAGEN ESQUEMA DE NN]
 
 [IMAGEN EVALUADOR DE MODELOS NN]
 
-Si comparamos los resultados con el XGBoost observamos que las redes neuronales no llegan a alcanzar el mismo perfomance, aunque presentan un menor overfitting que dicho modelo. Por tanto, se plantea la posiblidad de que una Red Neuronal Artificial presenta la oportunidad de conseguir mejores predicciones manteniendo un menor overfitting que el XGBoost, es decir, un modelo mejor geenralizado. Es por ello que damos paso a la Optimización de Redes Neuronales.
+Si comparamos los resultados con el XGBoost observamos que las redes neuronales no llegan a alcanzar el mismo perfomance, aunque presentan un menor overfitting que dicho modelo. Por tanto, se plantea la posiblidad de que una Red Neuronal Artificial presente la oportunidad de conseguir mejores predicciones manteniendo un menor overfitting que el XGBoost, es decir, un modelo mejor generalizado. Es por ello que damos paso a la Optimización de Redes Neuronales.
 
 #### **Optimización de Redes Neuronales**
 
-Esta vez, en la búsqueda de los hiperparámetros óptimos se utiliza directamente la **Optimización bayesiana** a través del nuevo paquete de Keras conocido como **Keras-Tuner**. A partir de la definición de una clase y la creación de un objeto (el **HyperModel**) conseguimos hacer uso de la función con alias **KerasBayesianOptimization**.
+Esta vez, en la búsqueda de los hiperparámetros óptimos, se utiliza directamente la **Optimización bayesiana** a través del nuevo paquete de Keras conocido como **Keras-Tuner**. A partir de la definición de una clase y la creación de un objeto (el **HyperModel**) conseguimos hacer uso de la función con alias **KerasBayesianOptimization**.
 
 ```python
 class ANNRegressor(HyperModel):
@@ -726,13 +726,13 @@ tuner = KerasBayesianOptimization(
 
 [IMAGEN DEL RESUMEN DEL TUNEADOR]
 
-Tras un largo proceso de tuneado el resumen de resultados nos muestra como mejor candidato a un combinación de tangenetes hiperbólicas y rectificadores lineales en una arquitectura con el número máximo de nodos que se habia planteado en un principio excepto para la capa conectada con la del ouput **(units_5)**. Una vez expuesto el mejor modelo, lo ajustamos a nuestros datos para elaborar las predicciones.
+Tras un largo proceso de tuneado el resumen de resultados nos muestra como mejor candidato una combinación de tangenetes hiperbólicas y rectificadores lineales en una arquitectura con el número máximo de nodos que se había planteado en un principio excepto para la capa conectada con la del ouput **(units_5)**. Una vez expuesto el mejor modelo, lo ajustamos a nuestros datos para elaborar las predicciones.
 
 [IMAGEN DE EVALUADOR DE LA NN OPTIMIZADA]
 
 ##  Visualización y Dashboard
 
-Tras finalizar todo el proceso de modelización, la visualización es otro de los aspectos relevantes dentro del Data Science. De hecho se ha convertido en un punto clave para comunicar y, es relevante desde nuestro punto de vista, para acabar de comprender y entender la importancia de los datos con los que hemos trabajado durante todo el proyecto desde un contexto visual.
+Tras finalizar todo el proceso de limpieza, exploración y modelización, la visualización es otro de los aspectos relevantes dentro del Data Science. De hecho se ha convertido en un punto clave para comunicar y, desde nuestro punto de vista, es relevante para poder trasladar la comprensión y la importancia de los datos con los que hemos trabajado durante todo el proyecto desde un contexto visual.
 
 La visualización que os presentamos en tableau, pretende acercarnos a los usuarios para poder contextualizar de forma interactiva, cuáles son los datos que hemos ido incorporando en los modelos que os hemos ido presentando en los anteriores puntos.
 
@@ -742,7 +742,7 @@ El primer bloque muestra de manera interactiva cuáles son los datos de los que 
 
 En un primer lugar podremos observar el número de pisos únicos dados de alta en AirBNB durante los años 2017 a 2020, así como la evolución de los precios de todos los ellos. El precio es una variable que hemos querido visualizar al inicio del Dashboard dada su relevancia dentro de nuestro proyecto como variable a predecir por nuestros modelos.
 
-Una vez comprendidoel número de registros y el nivel de precios promedio de los que hablamos, pasamos a analizar la estructura de los alojamientos a nivel de qué tipo de propiedades son y cuál es el grado de alquiler en cuanto a si es toda la propiedad o solo una habitación, y, otros aspectos relevantes que son los primeros a ser consultados por los usuarios cuando navegas por tipos de apps/web como Airbnb que son, el número de habitaciones, camas e incluso baños.
+Una vez comprendido el número de registros y el nivel de precios promedio de los que hablamos, pasamos a analizar la estructura de los alojamientos a nivel de qué tipo de propiedades son y cuál es el grado de alquiler en cuanto a si es toda la propiedad o solo una habitación, y, otros aspectos relevantes que son los primeros a ser consultados por los usuarios cuando navegas por tipos de apps/web como Airbnb que son, el número de habitaciones, camas e incluso baños.
 
 Por otro lado, y cada vez más, nos gusta saber la ubicación de las cosas que buscamos. Es por ello que consideramos incluir un mapa donde se pudieran visualizar dos cosas, los barrios en los que se distribuyen los alojamientos, y otra opción que hemos añadido como visaluzación del mapa, el nivel de densidad en los que se distribuye la oferta de alojamientos en Barcelona.
 
@@ -751,15 +751,17 @@ Normalmente, el tipo de propiedad y si se alquila de forma completa o parcial, e
 ![](/imagenes/TFMAirBNBTableau1.png?raw=true)
 ![](/imagenes/TFMAirBNBTableau1b.png?raw=true)
 
-Una vez vista la primera parte del Dashboard, donde hemos podido ver las primeras características principales de los alojamientos, visualizamos aquellas variables que aportan un valor añadido a los alojamiento a alquilar como son los servicios que ofrecen, desde Aire Acondicionado hasta saber si tienen terraza o balcón, entender el tipo de póliza de cancelación que ofrecen así como el mínimo de noches necesarias para poder alquilar el tipo de alojamiento que queramos visualizar. Comentar que en estos tres gráficos, también influirá el filtro de tipo de propiedad que hayamos seleccionado, ya mencionado y explicado anteriormente.
+Un segundo bloque permite, después de la primera parte del Dashboard donde hemos podido ver las primeras características principales de los alojamientos, visualizar aquellas variables que aportan un valor añadido a los alojamiento a alquilar como son los servicios que ofrecen, desde Aire Acondicionado hasta saber si tienen terraza o balcón, a entender el tipo de póliza de cancelación que ofrecen así como el mínimo de noches necesarias para poder alquilar el tipo de alojamiento que queramos visualizar. 
+
+Comentar que en estos tres gráficos, también influirá el filtro de tipo de propiedad que hayamos seleccionado en la primera parte del Dashboard, ya mencionado y explicado anteriormente.
 
 ![](/imagenes/TFMAirBNBTableau2.png?raw=true)
 
-Finalmente, encontramos una visualización que pretende mostrar el tipo de datos obtenidos a raíz del procesado de datasets externos que nos han permitido nutrir de información adicional los modelos de predicción.
+Finalmente, en el tercer bloque del Dashbaord, encontramos una visualización que pretende mostrar el tipo de datos obtenidos a raíz del procesado de datasets externos que nos han permitido nutrir de información adicional los modelos de predicción.
 
-Encontramos dos mapas, en un primer lugar y, a raíz de datos extraídos de Open Data barcelona a nivel de transportes y servicios, se muestra los servicios y oferta turística alredador de cada uno de los alojamientos. Un parámetro en la parte superior del mapa nos permite cambiar la visualización en base a lo que seleccionemos.
+Encontramos dos mapas, en un primer lugar y, a raíz de datos extraídos de Open Data Barcelona a nivel de transportes y servicios, se muestra los servicios y oferta turística alredador de cada uno de los alojamientos con un density map. Un parámetro en la parte superior del mapa nos permite cambiar la visualización en base a lo que queramos visualizar y analizar.
 
-En segundo lugar, encontramos el mapa que nos ha permitido determinar landmarks de Barcelona, gracias a un dataset de fotografias geolocalizadas de una API de Flickr. Éste mapa es más ilustrativo y lo que pretende es más una visualización de los punto más relevantes con su icono asociado.
+En segundo lugar, encontramos el mapa donde podemos ver los landmarks de Barcelona, que nos ha permitdio obtener el dataset de fotografias geolocalizadas de una API de Flickr una vez aplicado el modelo de aprendizaje no supervisado de clusterización. Este mapa es más ilustrativo y lo que pretende es aportar una visualización de los punto más relevantes con su icono asociado.
 
 ![](/imagenes/TFMAirBNBTableau3.png?raw=true)
 
