@@ -363,7 +363,7 @@ Para este primer enfoque abordamos el análisis de las variables númericas a pa
 
 ![](/imagenes/Accommodates.png?raw=true)
 
-### Variables Categóricas**
+### **Variables Categóricas**
 
 Los atributos categóricos fueron tratados en primer lugar con **Boxplots** y **Barplots** para obeterner una visión general de como se distribuían, así como influenciaban al precio en caso de tener algún peso sobre este. Esta vez en lugar de ser transformadas (se iban a transformar en variables dummy), nuestro objetivo era determinar si deberían incluirse en la etapa de modelado o no.
 
@@ -446,11 +446,15 @@ Como Baseline se decidió utilizar una **Regresión Lineal Múltiple** ya que la
 
 Un primer ajuste del modelo nos revela un **Coeficiente de Determinación** de 66% y un **Mean Squared Error** de 0.351 tanto en Train como en Test, un buen punto de partida desde el que mejorar nuestras predicciones. 
 
-[IMAGENES DE REGRESION LINEAL] 
+![](/imagenes/RegresionLinealBase1.png?raw=true)
 
-Como siguiente paso, se añadió a la función de coste de la regresión, ![equation](https://latex.codecogs.com/gif.latex?%5Cinline%20J%20%3D%20%5Cfrac%7B1%7D%7B2m%7D%5Csum_%7Bi%3D1%7D%5Em%20%28y_%7Bi%7D-%20%5Chat%7By_%7Bi%7D%7D%29%5E2) una regurlarización L1 o Lasso, ![equation](+ $\alpha\cdot\frac{1}{n}\sum_{j=1}^n|\theta_j|$) a fin de reducir el valor de los coeficientes y discriminar los coeficientes/atributos que no aportan apenas información a las predicciones del modelo. Un alfa curiosamente bajo es suficiente para detectar 8 atributos con pesos de valor igual a 0 manteniendo el mismo Coeficiente de Determinación (una pérdida de pocas décimas). 
+![](/imagenes/RegresionLinealBase2.png?raw=true)
 
-[IMAGENES DE LASSO]
+Como siguiente paso, se añadió a la función de coste de la regresión, ![equation](https://latex.codecogs.com/gif.latex?%5Cinline%20J%20%3D%20%5Cfrac%7B1%7D%7B2m%7D%5Csum_%7Bi%3D1%7D%5Em%20%28y_%7Bi%7D-%20%5Chat%7By_%7Bi%7D%7D%29%5E2) una regurlarización L1 o Lasso, ![equation](https://latex.codecogs.com/gif.latex?%5Cinline%20&plus;%5Calpha%5Ccdot%5Cfrac%7B1%7D%7Bn%7D%5Csum_%7Bj%3D1%7D%5En%7C%5Ctheta_j%7C) a fin de reducir el valor de los coeficientes y discriminar los coeficientes/atributos que no aportan apenas información a las predicciones del modelo. Un alfa curiosamente bajo es suficiente para detectar 8 atributos con pesos de valor igual a 0 manteniendo el mismo Coeficiente de Determinación (una pérdida de pocas décimas). 
+
+![](/imagenes/RegresionLasso1.png?raw=true)
+
+![](/imagenes/RegresionLasso2.png?raw=true)
 
 La esquematización de los pesos de cada feature nos permite vislumbrar que las columnas eliminadas son aquellas que presentan colineanlidad entre ellas y no fueron eliminadas en su momento, es decir las distancias, así como otras que en principo ya sospechábamos poco importantes, como **id** (de asignación completamnete aleatoria) o **latitude** (dada la disposición de la ciudad).
 
@@ -458,7 +462,7 @@ La esquematización de los pesos de cada feature nos permite vislumbrar que las 
 
 A fin de reducir la dimensionalidad de los atributos eliminamos esos features de la matriz **X** y se volvió a ajustar la regresión lineal, logrando un R² prácticamente idéntico al conseguido con todos los atributos disponibles en el dataset, 66%. 
 
-[IMAGENES DE REGRESION LINEAL FILTRADO]
+[REGRESION LINEAL FILTRADO IMAGENES]
 
 ### **Regresión Lineal con PCA**
 
@@ -494,7 +498,15 @@ X = np.append(X_train, X_test, axis = 0)
 y = np.append(y_train, y_test, axis = 0)
 ```
 
+<<<<<<< HEAD
 Volvemos a ajustar el modelo de Regresión Lineal Múltiple y observamos una caída del 5% del **Coeficiente de Determinación** respecto al ajuste inicial. No obstante, si llevamos a cabo una validación cruzada con todo el dataset observamos muy poca diferencia entre las dos alternativas, quedando esta nueva opción muy levemente por debajo a nivel de performance (Sin PCA obtenemos un 65.8  de media y con PCA 65.4), es por ello que optamos por las ventajas del **PCA** (eliminamos 13 features y aceleramos el ajuste del modelo) a pesar de que nos suponga un baseline más pobre en la parte de test. **Cabe destacar que para la validación cruzada  definimos una función propia dadas las particularidades de nuestro enfoque**.
+=======
+![](/imagenes/RegresionLinealPCA.png?raw=true)
+
+![](/imagenes/RegresionLinealPCA2.png?raw=true)
+
+Volvemos a ajustar el modelo de Regresión Lineal Múltiple y observamos una caída del 5% del **Coeficiente de Determinación** respecto al ajuste inicial. No obstante, si llevamos a cabo una validación cruzada con todo el dataset observamos muy poca diferencia entre las dos alternativas, quedando esta nueva opción muy levemente por debajo a nivel de performance (Sin PCA obtenemos un 65.8  de media y con PCA 65.4), es por ello que optamos por las ventajas del **PCA** (eliminamos 13 features y aceleramos el ajuste del modelo) a pesar de que nos suponga un baseline más pobre en la parte de test. **Cabe destacar que para la validación cruzada  definimos una función propia para dadas las particularidades de nuestro enfoque**.
+>>>>>>> ebf9dfa70f9f19512ddf00ff0e6920a2415eb06b
 
 ```python
 
@@ -589,7 +601,19 @@ GridSearch.fit(X_train, y_train)
 
 El GridSearch nos deja con un modelo bastante similar al que de por sí ya habiamos obtenido en la comparativa entre CatBoost y XGBoost, lo cual es comprensible dado que de base ya tenemos un score muy difícil de superar.
 
-[IMAGEN XGBOOST OPTIMIZADO]
+![](/imagenes/XGBoost1.png?raw=true)
+
+-
+
+![](/imagenes/XGBoost2.png?raw=true)
+
+[ELABORAR LA COMPARATIVA]
+
+![](/imagenes/CatBoost.png?raw=true)
+
+-
+
+![](/imagenes/CatBoost2.png?raw=true)
 
 Tras finalizar el Grid Search y por tanto el proceso de **Coarse to Fine Tunning**, optamos por la **Optimización Bayesiana**, una metología mucho más eficiente utilizando un modelo probabilístico de la función de coste (concretamente hablamos de un proceso Gaussiano), el cual va actualizando los parámetros de forma automática, por lo que podríamos optener unos parámetros mejor optimizados y un modelo más acertado en sus predicciones.
 
