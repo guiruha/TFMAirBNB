@@ -1,4 +1,4 @@
-# AirBNB analysis and price prediction
+# Análisis y predicción de precios de alojamientos en AIRBNB
 ## TFM / Máster en Data Science / KSCHOOL
 #### **Guillem Rochina Aguas y Helena Saigí Aguas**
 #### 04/09/2020
@@ -282,7 +282,7 @@ No obstante, de esta última parte del análisis solo podemos destacar la posibl
 
 La Geoexploración supone un interludio dentro la fase de exploración, una breve desviación que hemos decidido tratar en un notebook distinto debido a que tiene una temática distinta a la que tratamos en la exploración más general. Esta fase del proyecto se divide en dos enfoques distintos centrados en datos geoespaciales, en primer lugar la determinación de localizaciones de **Landmarks** a través del calculo de centroides y el ćalculo de distancias entre landmark y alojamiento, y por otro lado el cálculo, o bien de distancias a paradas de trasnporte cercanas, o bien el número de paradas cercanas a un alojamiento.
 
-- **Centroides a partir de datos de Flickr**
+### **Centroides a partir de datos de Flickr**
 
 A través de la recopilación de coordenadas de la ciudad de Barcelona donde se han tomado fotos relacionadas con algún monumento o sitio especialmente turístico, procedimos a realizar el cálculo de centroides como punto de referencia para la localización de un landmark. En un principio se presentaba un mapa con la siguiente distribución:
 
@@ -320,7 +320,7 @@ for landlat, landlon, name in zip(landmarks.Latitud, landmarks.Longitud, landmar
 
 Con esto finalizamos la primera parte de esta geoexploración.
 
-- **Transportes y Sitios de Interés Turísico**
+### **Transportes y Sitios de Interés Turísico**
 
 En la segunda fase de análisis geográfico el análisis de divide en dos vertientes:
 
@@ -357,13 +357,13 @@ for j in mapbuffer.geometry]
 
 **INPUTS:** DatosLimpios.csv, Distancias.csv, DistanciasTurismo.csv **OUTPUTS:** DatosModelar.csv
 
-**Variables Numéricas**
+### **Variables Numéricas**
 
 Para este primer enfoque abordamos el análisis de las variables númericas a partir de **gráficos de colmena combinados con los histogramas de las distribuciones marginales**. Dado que nuestro baseline se basa en un modelo lineal básico, la **Regresión Lineal Múltiple**, decidimos realizar las transformaciones pertinentes basándonos en la maximización del **Coeficiente de correlación de Pearson**, ![equation](https://latex.codecogs.com/gif.latex?\inline&space;\rho_{xy}&space;=&space;\frac{S_{xy}}{S_{x}S_{y}}), ya sea a partir de features polinómicos, en escala logaritmica, raíces cuadradas o cúbicas etc.
 
 ![](/imagenes/Accommodates.png?raw=true)
 
-**Variables Categóricas**
+### Variables Categóricas**
 
 Los atributos categóricos fueron tratados en primer lugar con **Boxplots** y **Barplots** para obeterner una visión general de como se distribuían, así como influenciaban al precio en caso de tener algún peso sobre este. Esta vez en lugar de ser transformadas (se iban a transformar en variables dummy), nuestro objetivo era determinar si deberían incluirse en la etapa de modelado  o no.
 
@@ -373,7 +373,7 @@ Por otro lado, a fin de no quedarnos con una visión demasiado general de la inf
 
 ![](/imagenes/EvoCat.png?raw=true)
 
-**Variables Dicotómicas**
+### **Variables Dicotómicas**
 
 Un elevado número de variables de nuestro dataset presentan tan solo valores booleanos. Al igual que con las categóricas, estas han sido tratadas con **Barplots** para comprobar que proporción son True o False, ya que consideramos que no vale la pena mantener una variable con una proporción demasiado dispar (si el 90% de los hosts tienen un email verificado, esa variable tendrá muy poca influencia en los precios), y con **Boxplots**, para analizar que relación mantenia entre categoria dicotómica y precio.
 
@@ -383,7 +383,7 @@ De nuevo, graficamos la evolución de precios medios respecto a las alternativas
 
 ![](/imagenes/EvoDic.png?raw=true)
 
-**Landmarks**
+### **Landmarks**
 
 En general las distancias a los landmarks se aproximan o bien a una forma uniforme o normal, acumulando la mayoría de registros en el intervalo de 1000 a 5000 metros. Para este tipo de distancia hemos seguido el mismo proceso que con las anteriores variables numéricas, combinar gráficos de colmena con una regresión y la distribución de sus marginales. Con ello observamos que todos y cada uno de los atributos relacionados con este tipo de distancias presentan en mayor o menor medida, una tendencia negativa, es de suponer ya que la proximidad a un Landmark debería influenciar al alza, en cierta medida, a los precios de un alojamiento turístico. 
 
@@ -392,19 +392,19 @@ En general las distancias a los landmarks se aproximan o bien a una forma unifor
 No obstante, es evidente que dicha relación lineal es muy débil. Calculada a partir de la **correlación de Pearson** ![equation](https://latex.codecogs.com/gif.latex?\inline&space;\rho_{xy}&space;=&space;\frac{S_{xy}}{S_{x}S_{y}}), las distancias más relevantes a penas presentan una correlación lineal del 20%, incluso cuando hemos tratado de encontrar y aplicar transformaciones que aumentaran la relación lineal entre el precio y las distancias. A pesar de ello, dado que estas se tratan en un futuro con un Ánalisis de Componentes Principales o **PCA** en el momento de modelado, se esperaba una serie de combinaciones lineales que nos permitiera eliminar atributos innecesarios sin tener que perder varianza explicada por estos features.
 
 
-**Transportes**
+### **Transportes**
 
 De nuevo los gráficos en colmena revelan unas cuantas distancias o features de paradas cercanas que carecen de importancia, a causa de la gran red de transportes públicos que ofrece Barcelona, especialmente en cuanto a metros y autobuses, por lo que cualquier alojamiento tiene una o varias paradas cercanas y la proximidad o el número de paradas próximas de este tipo de transportes no es relevante a la hora de elegir o no una residencia turística. A pesar de esta cuestión, si que encontramos distancias a transportes con una leve relación lineal negativa respecto a los precios, sobretodo si hablamos de distancia a las paradas de bus al aeropuerto o distancia a las estaciones de Ferrorcarril. Una vez más, hemos intentado encontrar alguna transformación que aplicada a los datos aumentara la relación con el precio, aunque solo se ha encontrado alguna mejora en unos pocos features aplicando una transformación logaritmica.
 
 ![](/imagenes/FerrocarrilExploracion.png?raw=true)
 
-**Sitios Turísticos**
+### **Sitios Turísticos**
 
 Curiosamente, la mayoría de atributos relacionados con el número de lugares de interés turístico carecen de importancia en términos de relación lineal, pese a que una última vez más se ha intentado aplicar transformaciones a los datos en busca de alguna señal más fuerte. No obstante, destacamos atributos como **restaurantes cercanos** que a través de una transformación a base logarítmica sí que presentan alguna señal suficiente para ser considerada 'relevante', en este caso se ha procedido a crear nuevos atributos que recogen esta transformación y eliminado los originales a fin de evitar el problema de la colinealidad innecesariamente.
 
 ![](/imagenes/RestaurantesExploracion.png?raw=true)
 
-**Correlaciones**
+### **Correlaciones**
 
 Una vez estudiadas todas las variables del dataset y su relación con el precio, se procedió a realizar por último un análisis de **correlaciones** entre variables dependientes a fin de encontrar posibles **colinealidaes** que pudieran ser evitadas con la eliminación de dichos atributos.
 
@@ -428,15 +428,21 @@ Por otro lado, encontramos una correlación mayor de 80% entre las variables de 
 
 ##  Modelado
 
+[LINK A COLAB]
+
+**INPUTS:** DatosModelar.csv **OUTPUTS:** xxxxxx
+
 La última sección del TFM consta del modelado y utilización de varios algoritmos de **Machine Learning**, donde se perseguirá la obtención de predicciones lo más aproximadas posbiles respecto a la variable dependiente **goodprice**, o en su defecto **LogGoodprice**.
 
 Los datos utilizados para esta parte final provienen del dataset previamente analizado y tratado en la **Sección 2- Exploración General**. A partir de este, se llevarán a cabo ajustes tanto con **Modelos de Regresión Lineal** como **Modelos de Árbol** y **Redes Neuronales**, así como un **PCA** y procesos de tuneado de hiperparámetros mediante varias metodologías.
 
-**Baseline con Regresión Lineal y Lasso**
+Así mismo, como herramienta de comparación entre modelos se definió la función **evaluadorDeModelos**, la cual imprime la dos métricas elegidas para analizar el desempeño (**MAE** y **R²**) además de graficar la relación lineal entre valores prónosticados vs reales y el valor de los residuos de cada predicción.
+
+### **Baseline con Regresión Lineal y Lasso**
 
 Como Baseline se decidió utilizar una **Regresión Lineal Múltiple** ya que la sección de análisis exploratorio se centro en estudiar las relaciones lineales entre las variables indpeneidentes y la dpeendiente, además de ser un algoritmo bastante rápido y sencillo de aplicar y comprender su funcionamiento.
 
-- **Regresion Lineal Múltiple y Lasso**
+### **Regresion Lineal Múltiple y Lasso**
 
 Un primer ajuste del modelo nos revela un **Coeficiente de Determinación** de 66% y un **Mean Squared Error** de 0.351 tanto en Train como en Test, un buen punto de partida desde el que mejorar nuestras predicciones. 
 
@@ -454,7 +460,7 @@ A fin de reducir la dimensionalidad de los atributos eliminamos esos features de
 
 [IMAGENES DE REGRESION LINEAL FILTRADO]
 
-- **Regresión Lineal con PCA**
+### **Regresión Lineal con PCA**
 
 Como alternativa al **Feature Selection** anterior, ajustamos un **PCA** a las variables relacionadas con distancias para reducir la dimensionalidad de nuestro dataset. Este nos permitió más alla de esta reducción, la eliminación de la colinealidad en las variables que no se eliminaron en la fase de exploración (dadas las características del PCA).
 
@@ -488,7 +494,7 @@ X = np.append(X_train, X_test, axis = 0)
 y = np.append(y_train, y_test, axis = 0)
 ```
 
-Volvemos a ajustar el modelo de Regresión Lineal Múltiple y observamos una caída del 5% del **Coeficiente de Determinación** respecto al ajuste inicial. No obstante, si llevamos a cabo una validación cruzada con todo el dataset observamos muy poca diferencia entre las dos alternativas, quedando esta nueva opción muy levemente por debajo a nivel de performance (Sin PCA obtenemos un 65.8  de media y con PCA 65.4), es por ello que optamos por las ventajas del **PCA** (eliminamos 13 features y aceleramos el ajuste del modelo) a pesar de que nos suponga un baseline más pobre en la parte de test. **Cabe destacar que para la validación cruzada  definimos una función propia para dadas las particularidades de nuestro enfoque**-
+Volvemos a ajustar el modelo de Regresión Lineal Múltiple y observamos una caída del 5% del **Coeficiente de Determinación** respecto al ajuste inicial. No obstante, si llevamos a cabo una validación cruzada con todo el dataset observamos muy poca diferencia entre las dos alternativas, quedando esta nueva opción muy levemente por debajo a nivel de performance (Sin PCA obtenemos un 65.8  de media y con PCA 65.4), es por ello que optamos por las ventajas del **PCA** (eliminamos 13 features y aceleramos el ajuste del modelo) a pesar de que nos suponga un baseline más pobre en la parte de test. **Cabe destacar que para la validación cruzada  definimos una función propia para dadas las particularidades de nuestro enfoque**.
 
 ```python
 
@@ -535,26 +541,195 @@ def PCA_cross_validation(model, X, y, cv = 5, scoring = 'r2', standarization = T
 
 ```
 
-**Algoritmos basados en Árboles**
+*Al decidir optar por la alternativa del PCA, definimos la función PCA_train_test_split para reducir la dimensionalidad y agilizar los siguientes ajustes y etapas del modelado.*
 
-- **Comparativa CatBoost y XGBoost**
+### **Algoritmos basados en Árboles**
 
-- **Optimización de Hiperparámetros de XGBoost**
+#### **Comparativa CatBoost y XGBoost**
 
-**Redes Neuronales**
+Existen varios modelos en estado del arte en cuanto a algoritmo de árboles. Particularmente, se escogió dos de las opciones estrella actualmente, **XGBoost** y **CatBoost**, ya que al construir árboles de forma secuencial, cada nuevo árbol ayuda a corregir los errores cometidos por el anterior.
+XGBoost, a pesar de ser un algoritmo algo más antiguo que CatBoost sigue siendo un referente en las competiciones en páginas web como [Kaggle](https://www.kaggle.com/competitions). No obstante, CatBoost presenta ciertas mejoras que lo hacen una alternativa bastante aconsejable, menor tiempo de entrenamiento, manejo de las variables categoricas y missing values. Con el objetivo de escorge una de las dos opciones, se jugó tocando manualmente los hiperparámetros hasta encontrar dos predicciones lo más acertadas posibles.
 
-- **Creación de Redes Neuronales**
+[IMAGEN DE CATBOOST Y XGBOOST]
 
-- **Optimización de Redes Neuronales**
 
-[LINK A COLAB]
+#### **Optimización de Hiperparámetros de XGBoost**
 
-**INPUTS:** DatosModelar.csv **OUTPUTS:** xxxxxx
+Tras haber determinado XGBoost como la alternativa más viable, se procede a realizar el método de optimización conocido como **Coarse to Fine Tuning** para el tuneado de hiperparámetros. Esta metodologia se basa en combinar el **Random Search**, que sirve para reconocer una zona 'prometedora' donde hacer un búsque más exhaustiva de hiperparámetros dentro de esos rangos, de lo cual se encarga a continuación **Grid Search**.
+
+En primer lugar, el Random Search realiza 20 **cross validations** combinando aleatoriamente los hiperparámetros **learning rate**, **gamma**, **max depth** y **min child weight**, los más recomendados para tunear. Como resultado, observamos que valores muy altos de gamma perjudica a test más que lo ayuda a pesar de ser un regularizador, min child weight no tiene importancia alguna en el score final, mientras que valores alrededor de 0.16 y 25 son bastante óptimos para el **learning rate** y para el **max depth** respectivamente.
+
+```python
+xgbcv = xgb.XGBRegressor(seed=1997, n_jobs = -1, verbose = 10, verbosity = 1, n_estimators = 50) 
+
+param_dist = {"learning_rate": sp.stats.uniform(0.1, 0.5),
+              "gamma": sp.stats.uniform(0, 1),
+              "max_depth": range(20, 30),
+              "min_child_weight": range(1,10)}
+
+rs = RandomizedSearchCV(xgbcv, param_distributions=param_dist, cv = 5,
+                        scoring='neg_mean_absolute_error', n_iter = 10, verbose = 10)
+
+rs.fit(X_train, y_train)
+```
+
+Una vez encontrado un rango de hiperparámetros viable, se establecen valores dentro de este para aplicar un Grid Search satisfactoriamente. Esta vez solo se utiliza un 3-fold cross validation debido a cuestiones de velocidad de ajuste y recursos disponibles.
+
+```python
+xgbcv = xgb.XGBRegressor(seed=1997, n_jobs = -1, verbose = 10, verbosity = 1, n_estimators = 50, min_child_weight=5)
+
+gparameters = {'learning_rate': [0.12, 0.15, 0.17], 'max_depth': [25, 27, 30],
+               'gamma': [0, 0.05, 0.08]}
+
+GridSearch = GridSearchCV(xgbcv, param_grid = gparameters, scoring='neg_mean_absolute_error',
+                          verbose = 10, cv = 3, iid = True)
+
+GridSearch.fit(X_train, y_train)
+```
+
+El GridSearch nos deja con un modelo bastante similar al que de por sí ya habiamos obtenido en la comparativa entre CatBoost y XGBoost, lo cual es comprensible dado que de base ya tenemos un score muy difícil de superar.
+
+[IMAGEN XGBOOST OPTIMIZADO]
+
+Tras finalizar el Grid Search y por tanto el proceso de **Coarse to Fine Tunning**. optamos por la **Optimización Bayesiana**, una metología mucho más eficiente utilizando un modelo probabilístico de la función de coste (concretamente hablamos de un proceso Gaussiano), el cual va actualizando los parámetros de forma automática, por lo que podríamos optener unos paramétros mejor optimizados y un modelo más acertado en sus predicciones.
+
+Para la implementación de este tipo de optimizadores debemos crear una función objetivo (en esta caso de coste) que llamaremos **crossVal_score**, siendo esta una validación cruzada de 3-Folds con función de pérdidad **MAE**.
+
+```python
+domain = [{'name': 'learning_rate', 'type': 'continuous', 'domain': (0, 0.3)},
+        {'name': 'gamma', 'type': 'continuous', 'domain': (0, 1)},
+        {'name': 'max_depth', 'type': 'discrete', 'domain': (30, 50)},
+        {'name': 'reg_lambda', 'type': 'continuous', 'domain': (0, 2)}]
+ 
+def crossVal_score(parameters):
+    parameters = parameters[0]
+    score = -cross_val_score(
+                xgb.XGBRegressor(n_estimators = 50,
+                              learning_rate=parameters[0],
+                              gamma=parameters[1],
+                              max_depth=int(parameters[2]),
+                              reg_lambda = parameters[3],
+                              n_jobs = -1,
+                              verbose = 10), 
+                X_train, y_train, scoring='neg_mean_absolute_error', cv = 3).mean()
+    score = np.array(score)
+    return score
+
+
+optimizer = BayesianOptimization(f=crossVal_score, 
+                                 domain=domain,
+                                 model_type='GP',
+                                 acquisition_type ='EI',
+                                 exact_eval=True, 
+                                 maximize=False)
+
+optimizer.run_optimization(max_iter=5)
+```
+
+[IMAGEN DE XGBOOST BAYESIANO]
+
+### **Redes Neuronales**
+
+#### **Creación de Redes Neuronales**
+
+Pór último, abordamos esta fase de modelado con redes neuronales. Concretamente, utilizaremos **Artificial Neural Networks** de poco tamaño (no más de 4/5 fully connected layers de 256/512 neuronas por capa) y jugaremos con las funciones de activación para encontrar una arquitectura que pueda compertir con el XGBoost. Para la compilación de las redes utilizarmos de nuevo el **MAE** como función de pérdida, así como el optimizador **ADAM** (el que consideramos más completo dadas las alternativas que disponemos).
+
+[IMAGEN ESQUEMA DE NN]
+
+[IMAGEN EVALUADOR DE MODELOS NN]
+
+Si comparamos los resultados con el XGBoost observamos que las redes neuronales no llegan a alcanzar el mismo perfomance, aunque presentan un menor overfitting que dicho modelo. Por tanto, se plantea la posiblidad de que una Red Neuronal Artificial presenta la oportunidad de conseguir mejores predicciones manteniendo un menor overfitting que el XGBoost, es decir, un modelo mejor geenralizado. Es por ello que damos paso a la Optimización de Redes Neuronales.
+
+#### **Optimización de Redes Neuronales**
+
+Esta vez, en la búsqueda de los hiperparámetros óptimos se utiliza directamente la **Optimización bayesiana** a través del nuevo paquete de Keras conocido como **Keras-Tuner**. A partir de la definición de una clase y la creación de un objeto (el **HyperModel**) conseguimos hacer uso de la función con alias **KerasBayesianOptimization**.
+
+```python
+class ANNRegressor(HyperModel):
+  def __init__(self, input_shape):
+    self.input_shape = input_shape
+
+  def build(self, hp):
+    model = keras.Sequential()
+    
+    model.add(
+        Dense(units = hp.Int('units_1', min_value = 32, max_value = 256,
+                             step = 16, default = 128),
+              activation = hp.Choice('dense_activation_1', values = ['relu', 'sigmoid', 'tanh'],
+                                     default = 'tanh')
+              )
+      )
+    
+    model.add(
+        Dense(units = hp.Int('units_2', min_value = 32, max_value = 512,
+                             step = 16, default = 256),
+              activation = hp.Choice('dense_activation_2', values = ['relu', 'sigmoid', 'tanh'],
+                                     default = 'relu')
+              )
+      )
+    
+    model.add(
+        Dense(units = hp.Int('units_3', min_value = 32, max_value = 512,
+                             step = 16, default = 256),
+              activation = hp.Choice('dense_activation_3', values = ['relu', 'sigmoid', 'tanh'],
+                                     default = 'tanh')
+              )
+      )
+    
+    model.add(
+        Dense(units = hp.Int('units_4', min_value = 32, max_value = 256,
+                             step = 16, default = 256),
+              activation = hp.Choice('dense_activation_4', values = ['relu', 'sigmoid', 'tanh'],
+                                     default = 'relu')
+              )
+      )
+    
+    model.add(
+        Dense(units = hp.Int('units_5', min_value = 32, max_value = 256,
+                             step = 16, default = 128),
+              activation = hp.Choice('dense_activation_5', values = ['relu', 'sigmoid', 'tanh'],
+                                     default = 'relu')
+              )
+      )
+    
+    model.add(
+        Dense(units = hp.Int('units_6', min_value = 1, max_value = 1, 
+                             default = 1), 
+              activation = 'linear'
+              )
+      )
+    
+    model.compile(optimizer = keras.optimizers.Adam(
+                  hp.Float('learning_rate', min_value = 1e-3, max_value = 1e-2,
+                           default = 8e-3, step = 1e-3)),
+                  loss = 'mae', metrics = ['mae'])
+    return model
+
+hypermodel = ANNRegressor(input_shape = (X_train.shape[1], ))
+```
+
+Una vez definida la clase y creado el objeto, la función KerasBayesianOptimization nos permite crear una función de hyperparameter tunning cuyo objetivo es minimizar el **MAE** con la mejor combinación posible de hiperparámetros. En la parte inferior podemos observar el resumen de nuestro tuner:
+- Se seleccionará un número de nodos dentro del rango de 128 a 256 para las capas más cercanas a la de **Input** y **Output** y de 256 a 512 para las interiores, con saltos de 16 neuronas.
+
+- Para cada una de las capas se escogerá entre las tres **funciones de activación** que mejor han funcionado en la sección anterior: **RELU, SIGMOIDE y TANGENTE HIPERBÓLICA**.
+
+```python
+tuner = KerasBayesianOptimization(
+    hypermodel,
+    max_trials = 20,
+    objective = 'mae',
+    executions_per_trial = 1,
+    directory='TFMoptimization',
+    project_name='AirBNB'
+)
+```
+
+[IMAGEN DEL RESUMEN DEL TUNEADOR]
+
+Tras un largo proceso de tuneado el resumen de resultados nos muestra como mejor candidato a un combinación de tangenetes hiperbólicas y rectificadores lineales en una arquitectura con el número máximo de nodos que se habia planteado en un principio excepto para la capa conectada con la del ouput **(units_5)**. Una vez expuesto el mejor modelo, lo ajustamos a nuestros datos para elaborar las predicciones.
+
+[IMAGEN DE EVALUADOR DE LA NN OPTIMIZADA]
 
 ##  Visualización y Dashboard
-
-[LINK A COLAB]
-
-**INPUTS:** xxxx **OUTPUTS:** []
 
 # Conclusiones y Mejoras
