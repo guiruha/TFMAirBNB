@@ -359,13 +359,13 @@ for j in mapbuffer.geometry]
 
 ### **Variables Numéricas**
 
-Para este primer enfoque abordamos el análisis de las variables númericas a partir de **gráficos de colmena combinados con los histogramas de las distribuciones marginales**. Dado que nuestro baseline se basa en un modelo lineal básico, la **Regresión Lineal Múltiple**, decidimos realizar las transformaciones pertinentes basándonos en la maximización del **Coeficiente de correlación de Pearson**, ![equation](https://latex.codecogs.com/gif.latex?\inline&space;\rho_{xy}&space;=&space;\frac{S_{xy}}{S_{x}S_{y}}), ya sea a partir de features polinómicos, en escala logaritmica, raíces cuadradas o cúbicas etc.
+Para este primer enfoque abordamos el análisis de las variables numéricas a partir de **gráficos de colmena combinados con los histogramas de las distribuciones marginales**. Dado que nuestro baseline se basa en un modelo lineal básico, la **Regresión Lineal Múltiple**, decidimos realizar las transformaciones pertinentes basándonos en la maximización del **Coeficiente de correlación de Pearson**, ![equation](https://latex.codecogs.com/gif.latex?\inline&space;\rho_{xy}&space;=&space;\frac{S_{xy}}{S_{x}S_{y}}), ya sea a partir de features polinómicos, en escala logarítmica, raíces cuadradas o cúbicas etc.
 
 ![](/imagenes/Accommodates.png?raw=true)
 
 ### **Variables Categóricas**
 
-Los atributos categóricos fueron tratados en primer lugar con **Boxplots** y **Barplots** para obeterner una visión general de como se distribuían, así como influenciaban al precio en caso de tener algún peso sobre este. Esta vez en lugar de ser transformadas (se iban a transformar en variables dummy), nuestro objetivo era determinar si deberían incluirse en la etapa de modelado o no.
+Los atributos categóricos fueron tratados en primer lugar con **Boxplots** y **Barplots** para obterner una visión general de como se distribuían, así como influenciaban al precio en caso de tener algún peso sobre este. Esta vez en lugar de ser transformadas (se iban a transformar en variables dummy), nuestro objetivo era determinar si deberían incluirse en la etapa de modelado o no.
 
 ![](/imagenes/BarplotCat.png?raw=true)
 
@@ -375,11 +375,11 @@ Por otro lado, a fin de no quedarnos con una visión demasiado general de la inf
 
 ### **Variables Dicotómicas**
 
-Un elevado número de variables de nuestro dataset presentan tan solo valores booleanos. Al igual que con las categóricas, estas han sido tratadas con **Barplots** para comprobar que proporción son True o False, ya que consideramos que no vale la pena mantener una variable con una proporción demasiado dispar (si el 90% de los hosts tienen un email verificado, esa variable tendrá muy poca influencia en los precios), y con **Boxplots**, para analizar que relación mantenia entre categoría dicotómica y precio.
+Un elevado número de variables de nuestro dataset presentan tan solo valores booleanos. Al igual que con las categóricas, estas han sido tratadas con **Barplots** para comprobar que proporción son True o False, ya que consideramos que no vale la pena mantener una variable con una proporción demasiado dispar (si el 90% de los hosts tienen un email verificado, esa variable tendrá muy poca influencia en los precios), y con **Boxplots**, para analizar que relación mantenÍa entre categoría dicotómica y precio.
 
 ![](/imagenes/BarplotDic.png?raw=true)
 
-De nuevo, graficamos la evolución de precios medios respecto a las alternativas dicotomicas. Como resultado encontramos que la relación entre precios y dichos atributos varian dependiendo del año y mes, llegando incluso a igualarse la media de precios de ambas categorias, por lo que el peso de estos atributos puede no llegar a ser tan relevante como considerabamos en principio. No obstante, en algunos caso las diferencias en vez de igualarse, pueden incluso duplicarse, por lo que también podemos estar subestimando la importancia de ciertas variables.
+De nuevo, graficamos la evolución de precios medios respecto a las alternativas dicotómicas. Como resultado encontramos que la relación entre precios y dichos atributos varían dependiendo del año y mes, llegando incluso a igualarse la media de precios de ambas categorías, por lo que el peso de estos atributos puede no llegar a ser tan relevante como considerábamos en principio. No obstante, en algunos caso las diferencias en vez de igualarse, pueden incluso duplicarse, por lo que también podemos estar subestimando la importancia de ciertas variables.
 
 ![](/imagenes/EvoDic.png?raw=true)
 
@@ -389,12 +389,12 @@ En general las distancias a los landmarks se aproximan o bien a una forma unifor
 
 ![](/imagenes/LandmarksDistancia.png?raw=true)
 
-No obstante, es evidente que dicha relación lineal es muy débil. Calculada a partir de la **correlación de Pearson** ![equation](https://latex.codecogs.com/gif.latex?\inline&space;\rho_{xy}&space;=&space;\frac{S_{xy}}{S_{x}S_{y}}), las distancias más relevantes a penas presentan una correlación lineal del 20%, incluso cuando hemos tratado de encontrar y aplicar transformaciones que aumentaran la relación lineal entre el precio y las distancias. A pesar de ello, dado que estas se tratan en un futuro con un Ánalisis de Componentes Principales o **PCA** en el momento de modelado, se esperaba una serie de combinaciones lineales que nos permitiera eliminar atributos innecesarios sin tener que perder varianza explicada por estos features.
+No obstante, es evidente que dicha relación lineal es muy débil. Calculada a partir de la **correlación de Pearson** ![equation](https://latex.codecogs.com/gif.latex?\inline&space;\rho_{xy}&space;=&space;\frac{S_{xy}}{S_{x}S_{y}}), las distancias más relevantes a penas presentan una correlación lineal del 20%, incluso cuando hemos tratado de encontrar y aplicar transformaciones que aumentaran la relación lineal entre el precio y las distancias. A pesar de ello, dado que estas se tratan en un futuro con un Análisis de Componentes Principales o **PCA** en el momento de modelado, se esperaba una serie de combinaciones lineales que nos permitiera eliminar atributos innecesarios sin tener que perder varianza explicada por estos features.
 
 
 ### **Transportes**
 
-De nuevo los gráficos en colmena revelan unas cuantas distancias o features de paradas cercanas que carecen de importancia, a causa de la gran red de transportes públicos que ofrece Barcelona, especialmente en cuanto a metros y autobuses, por lo que cualquier alojamiento tiene una o varias paradas cercanas y la proximidad o el número de paradas próximas de este tipo de transportes no es relevante a la hora de elegir o no una residencia turística. A pesar de esta cuestión, si que encontramos distancias a transportes con una leve relación lineal negativa respecto a los precios, sobretodo si hablamos de distancia a las paradas de bus al aeropuerto o distancia a las estaciones de Ferrorcarril. Una vez más, hemos intentado encontrar alguna transformación que aplicada a los datos aumentara la relación con el precio, aunque solo se ha encontrado alguna mejora en unos pocos features aplicando una transformación logaritmica.
+De nuevo los gráficos en colmena revelan unas cuantas distancias o features de paradas cercanas que carecen de importancia, a causa de la gran red de transportes públicos que ofrece Barcelona, especialmente en cuanto a metros y autobuses, por lo que cualquier alojamiento tiene una o varias paradas cercanas y la proximidad o el número de paradas próximas de este tipo de transportes no es relevante a la hora de elegir o no una residencia turística. A pesar de esta cuestión, si que encontramos distancias a transportes con una leve relación lineal negativa respecto a los precios, sobretodo si hablamos de distancia a las paradas de bus al aeropuerto o distancia a las estaciones de Ferrocarril. Una vez más, hemos intentado encontrar alguna transformación que aplicada a los datos aumentara la relación con el precio, aunque solo se ha encontrado alguna mejora en unos pocos features aplicando una transformación logarítmica.
 
 ![](/imagenes/FerrocarrilExploracion.png?raw=true)
 
@@ -408,7 +408,7 @@ Curiosamente, la mayoría de atributos relacionados con el número de lugares de
 
 Una vez estudiadas todas las variables del dataset y su relación con el precio, se procedió a realizar por último un análisis de **correlaciones** entre variables dependientes a fin de encontrar posibles **colinealidaes** que pudieran ser evitadas con la eliminación de dichos atributos.
 
-En primer lugar, se seleccionaron las variables categóricas y dicotómicas analizadas en apartados anteriores para transformarlas en **variables dummy** para que puedan ser introducidas en el proceso de ajuste y predicción. 
+En primer lugar, se seleccionaron las variables categóricas y dicotómicas analizadas en apartados anteriores para transformarlas en **variables dummy** para poder ser introducidas en el proceso de ajuste y predicción. 
 
 ```python
 dummycols = ['host_response_time', 'neighbourhood_group_cleansed', 'property_type', 'room_type',  'cancellation_policy', 'review_scores_rating']
@@ -416,7 +416,7 @@ df = pd.get_dummies(df, columns = dummycols, drop_first = True)
 df[df.columns[list(df.dtypes == 'uint8')]] = df[df.columns[list(df.dtypes == 'uint8')]].astype('int')
 ```
 
-A continuación, calculamos los Coeficiente de Correlación y los gráficamos a modo de barplot para analizarlos de forma más visual. Si bien muchos de los coeficientes relevantes ya los habíamos identificado, esta vez han aparecido algunos entre las variables dummy muy dignas de mención, como **Room_type Private Room** o bien variables relacionadas con los ammenities como son **Air Conditioning** o  **Family Kid-Friendly**
+A continuación, calculamos los Coeficiente de Correlación y los graficamos a modo de barplot para analizarlos de forma más visual. Si bien muchos de los coeficientes relevantes ya los habíamos identificado, esta vez han aparecido algunos entre las variables dummy muy dignas de mención, como **Room_type Private Room** o bien variables relacionadas con los ammenities como son **Air Conditioning** o  **Family Kid-Friendly**
 
 ![](/imagenes/CorrPearson.png?raw=true)
 
