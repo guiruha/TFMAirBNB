@@ -5,13 +5,13 @@
 
 # Introducción y Motivación
 
-El sitio web AirBNB permite a propietarios de apartamentos convertirse en 'hosts' de la plataforma y ofertar sus propiedades, llamadas 'listings', online a fin de cobrar un alquiler vacacional. Determinar el precio del alojamiento puede ser una tarea difícil en ciudades con tanta competencia como Barcelona si lo que se busca es maximizar el beneficio/ocupación de tu listing. Además, a pesar de que ya existen plataformas como AirDNA ofreciendo asesoramiento en este aspecto, o bien son demasiado caros para el usuario medio u ofrecen predicciones poco convincentes.
+El sitio web AirBNB permite a propietarios de apartamentos convertirse en 'hosts' de la plataforma y ofertar sus propiedades, llamadas 'listings', online a fin de cobrar un alquiler vacacional. En un mercado de competencia perfecta como el alquiler vacacional (muchos ofertantes, productos muy similares, fácil acceso a información del mercado y pocas barreras de entrada), determinar el precio del alojamiento puede ser una tarea difícil, mucho más en ciudades con tanta competencia como Barcelona, si lo que se busca es maximizar el beneficio/ocupación de tu listing. Además, a pesar de que ya existen plataformas como AirDNA ofreciendo asesoramiento en este aspecto, o bien son demasiado caros para el usuario medio u ofrecen predicciones poco convincentes.
 
 ![](/imagenes/AirBNBweb.png?raw=true)
 
-Es por ello que el objetivo principal de este proyecto de TFM es el desarrollo de un modelo predictivo de los precios a través del uso de machine learning y deep learning, así como de data engineering para la limpieza y exploración de datos tanto de la web de AirBNB como de datos públicos de la ciudad de Barcelona.
+Es por ello que el objetivo principal de este proyecto de TFM es el desarrollo de un modelo predictivo de precios a través del uso de machine learning/deep learning, así como de data engineering para la limpieza y exploración de datos tanto de la web de AirBNB como de datos públicos de la ciudad de Barcelona.
 
-De forma alternativa, otro de los usos adicionales que un usuario no propietario de alojamientos a este análisis, es el de 'buscador de chollos', que permita a usuarios interesados en alquilar habitaciones en la ciudad de Barcelona acceder a 'listings' que a priori deberían tener unos precios más elevados debido a sus características y predicciones por parte del modelo.
+De forma alternativa, otro de los usos adicionales a este análisis, sobretodo para usuarios no propietarios, es el de 'buscador de chollos', que permita a usuarios interesados en alquilar habitaciones en la ciudad de Barcelona acceder a 'listings' que a priori deberían tener unos precios más elevados debido a sus características y predicciones por parte del modelo.
 
 # Descripción de los Datasets
 
@@ -435,79 +435,9 @@ Por otro lado, encontramos una correlación mayor de 80% entre las variables de 
 
 La última sección del TFM consta del modelado y utilización de varios algoritmos de **Machine Learning**, donde se perseguirá la obtención de predicciones lo más aproximadas posibles respecto a la variable dependiente **goodprice**, o en su defecto **LogGoodprice**.
 
-Los datos utilizados para esta parte final provienen del dataset previamente analizado y tratado en la **Sección 2- Exploración General**. A partir de este, se llevarán a cabo ajustes tanto con **Modelos de Regresión Lineal** como **Modelos de Árbol** y **Redes Neuronales**, así como un **PCA** y procesos de tuneado de hiperparámetros mediante varias metodologías.
+Los datos utilizados para esta parte final provienen del dataset previamente analizado y tratado en la **Sección 2- Exploración General**. A partir de este, se llevarán a cabo ajustes tanto con **Modelos de Regresión Lineal** como **Modelos de Árbol** y **Redes Neuronales**, así como un **PCA** y procesos de tuneado de hiperparámetros mediante varias metodologías, realizando tareas de **Estandarización** de las variables previamente al ajuste de los algoritmos que .
 
-Así mismo, como herramienta de comparación entre modelos se definió la función **evaluadorDeModelos**, la cual imprime la dos métricas elegidas para analizar el desempeño (**MAE** y **R²**) además de graficar la relación lineal entre valores pronosticados vs reales y el valor de los residuos de cada predicción.
-
-```python
-def evaluadorDeModelos(modelo, X_train, X_test, y_train, y_test, nombre= 'No especificado'):
-  """
-  Dado un modelo y unos sets de entrenamiento y test, imprime el Mean Absolute Error y el Coeficiente
-  de Correlación (R2) tanto del ajuste de entrenamiento como de test. A continuación grafica la relación
-  entre valores pronosticados y reales, así como los errores de las predicciones.
-  """
-
-  y_pred = modelo.predict(X_test)
-  y_pred_train = modelo.predict(X_train)
-
-  print('\nEl modelo {} presenta los siguientes valores en las principales métricas: \n'.format(nombre))
-  print('MAE en Train: {} | MAE en Test: {}\n'\
-        .format(
-            round(mean_absolute_error(y_train, y_pred_train), 3),
-            round(mean_absolute_error(y_test, y_pred), 3)))
-  
-  print('R² en Train: {}% | R² en Test: {}%\n'\
-      .format(
-          round(r2_score(y_train, y_pred_train)*100, 2),
-          round(r2_score(y_test, y_pred)*100, 2)))
-  
-  temp = pd.DataFrame({'y_test': y_test, 'y_pred': y_pred, 
-                       'error': np.abs(y_test - y_pred)}).sort_values(by = 'error', ascending = False)
-  print('Errores más altos:')
-  print(temp.head(20))
-  
-
-  fig1, ax1 = plt.subplots(1, 2, figsize=(45, 12))
-  
-  ax1[0].scatter(y_test, y_pred, color = 'navy', alpha = 0.3)
-  ax1[0].plot([0,10],[0,10], color='maroon', linewidth = 5)
-  ax1[0].tick_params(axis="x", labelsize=20)
-  ax1[0].tick_params(axis="y", labelsize=20)
-  ax1[0].set_title('\n\n\nTEST: Precio Pronosticado vs Precio Real', fontsize = 28)
-  ax1[0].set_ylabel('Precio Pronosticado', fontsize = 20)
-  ax1[0].set_xlabel('Precio Real', fontsize = 20)
-
-  ax1[1].scatter(y_train, y_pred_train, color = 'navy', alpha = 0.3)
-  ax1[1].plot([0,10],[0,10], color='maroon', linewidth = 5)
-  ax1[1].tick_params(axis="x", labelsize=20)
-  ax1[1].tick_params(axis="y", labelsize=20)
-  ax1[1].set_title('\n\n\nTRAIN: Precio Pronosticado vs Precio Real', fontsize = 28)
-  ax1[1].set_ylabel('Precio Pronosticado', fontsize = 20)
-  ax1[1].set_xlabel('Precio Real', fontsize = 20)
-
-
-  fig2, ax2 = plt.subplots(1, 2, figsize=(45, 12))
-
-  ax2[0].scatter(y_pred, y_pred - y_test, color = 'navy', alpha = 0.3)
-  ax2[0].hlines(0, 8, 0, color = 'maroon', linewidth = 5)
-  ax2[0].set_yticks(range(round(min(y_pred - y_test) - 0.5), round(max(y_pred - y_test) + 0.5)))
-  ax2[0].tick_params(axis="x", labelsize=20)
-  ax2[0].tick_params(axis="y", labelsize=20)
-  ax2[0].set_title("\n\n\nTEST: Residual Plot de {}".format(nombre), fontsize = 35)
-  ax2[0].set_xlabel("Valores pronosticados", fontsize = 25)
-  ax2[0].set_ylabel("Residuos", fontsize = 25)
-
-  ax2[1].scatter(y_pred_train, y_pred_train - y_train, color = 'navy', alpha = 0.3)
-  ax2[1].hlines(0, 8, 0, color = 'maroon', linewidth = 5)
-  ax2[1].set_yticks(range(round(min(y_pred - y_test) - 0.5), round(max(y_pred - y_test) + 0.5)))
-  ax2[1].tick_params(axis="x", labelsize=20)
-  ax2[1].tick_params(axis="y", labelsize=20)
-  ax2[1].set_title("\n\n\nTRAIN: Residual Plot de {}".format(nombre), fontsize = 35)
-  ax2[1].set_xlabel("Valores pronosticados", fontsize = 25)
-  ax2[1].set_ylabel("")
-  
-  plt.tight_layout()
-```
+Así mismo, como herramienta de comparación entre modelos se definió la función **evaluadorDeModelos**, la cual imprime la dos métricas elegidas para analizar el desempeño (**MAE**, como función de pérdida, y **R²**, como 'accuracy') además de graficar la relación lineal entre valores pronosticados vs reales y el valor de los residuos de cada predicción.
 
 ### **Baseline con Regresión Lineal y Lasso**
 
@@ -637,33 +567,31 @@ def PCA_cross_validation(model, X, y, cv = 5, scoring = 'r2', standarization = T
 #### **Comparativa CatBoost y XGBoost**
 
 Existen varios modelos en estado del arte en cuanto a algoritmo de árboles. Particularmente, se escogió dos de las opciones estrella actualmente, **XGBoost** y **CatBoost**, ya que al construir árboles de forma secuencial, cada nuevo árbol ayuda a corregir los errores cometidos por el anterior.
-XGBoost, a pesar de ser un algoritmo algo más antiguo que CatBoost sigue siendo un referente en las competiciones en páginas web como [Kaggle](https://www.kaggle.com/competitions). No obstante, CatBoost presenta ciertas mejoras que lo hacen una alternativa bastante aconsejable, menor tiempo de entrenamiento, manejo de las variables categóricas y missing values. Con el objetivo de escoger una de las dos opciones, se jugó tocando manualmente los hiperparámetros hasta encontrar dos predicciones lo más acertadas posibles.
+XGBoost, a pesar de ser un algoritmo algo más antiguo que CatBoost sigue siendo un referente en las competiciones en páginas web como [Kaggle](https://www.kaggle.com/competitions), unos de los algoritmos más populares para aplicar a datos tabulares. No obstante, CatBoost presenta ciertas mejoras que lo hacen una alternativa bastante aconsejable, menor tiempo de entrenamiento, manejo de las variables categóricas y missing values. Con el objetivo de escoger una de las dos opciones, se jugó tocando manualmente los hiperparámetros hasta encontrar dos predicciones lo más acertadas posibles.
 
-![](/imagenes/XGBoost1.png?raw=true)
+![](/imagenes/XGBoost.png?raw=true)
 
 
 ![](/imagenes/XGBoost2.png?raw=true)
 
-Aunque a priori el modelo **CatBoost** se mostraba como favorito en esta primera comparación, **XGBoost** demostró tener mayor facilidad para obtener predicciones mucho más acertadas tras varias pruebas y cambios manuales de hiperparámetros. Entre las ventajas de CatBoost, dado nuestro enfoque con los datasets en fases anteriores, la única interesante residía en la velocidad de ajuste, de lo cual no encontramos una mejora tan significativa como para considerarla relevante. Es por ello que se optó por XGBoost como modelo de árboles a optimizar. 
+Aunque a priori el modelo **CatBoost** se mostraba como favorito en esta primera comparación, **XGBoost** demostró tener mayor facilidad para obtener predicciones mucho más acertadas tras varias pruebas y cambios manuales de hiperparámetros, llegando a superar en más de un 3% el performance en el R² de test (93.04 de Test frente al 96.7 de Train). Entre las ventajas de CatBoost, dado nuestro enfoque con los datasets en fases anteriores, la única interesante residía en la velocidad de ajuste, de lo cual no encontramos una mejora tan significativa como para considerarla relevante. Es por ello que se optó por XGBoost como modelo de árboles a optimizar. 
 
 ![](/imagenes/CatBoost.png?raw=true)
-
 
 ![](/imagenes/CatBoost2.png?raw=true)
 
 
-
 #### **Optimización de Hiperparámetros de XGBoost**
 
-Tras haber determinado XGBoost como la alternativa más viable, se procedió a realizar el método de optimización conocido como **Coarse to Fine Tuning** para el tuneado de hiperparámetros. Esta metodología se basa en combinar el **Random Search** y el **Grid Search**, el primer utilizado para reconocer zonas 'prometedores' donde hacer un búsqueda más exhaustiva de combinaciones de hiperarámetros, de lo cual se encarga el segundo.
+Tras haber determinado XGBoost como la alternativa más viable, se procedió a realizar el método de optimización conocido como **Coarse to Fine Tuning** para el tuneado de hiperparámetros. Esta metodología se basa en combinar el **Random Search** y el **Grid Search**, el primero utilizado para reconocer zonas 'prometedoras' donde hacer un búsqueda más exhaustiva de combinaciones de hiperarámetros, de lo cual se encarga el segundo.
 
-En primer lugar, el Random Search realiza 20 **cross validations** combinando aleatoriamente los hiperparámetros **learning rate**, **gamma**, **max depth** y **min child weight**, los más recomendados para tunear. Como resultado, observamos que valores muy altos de gamma perjudica a test más que lo ayuda a pesar de ser un regularizador, min child weight no tiene importancia alguna en el score final, mientras que valores alrededor de 0.16 y 25 son bastante óptimos para el **learning rate** y para el **max depth** respectivamente.
+En primer lugar, el Random Search realiza 10 **cross validations** combinando aleatoriamente los hiperparámetros **learning rate**, **gamma**, **max depth** y **min child weight**, los más recomendados para tunear. Como resultado, observamos que valores muy altos de gamma perjudica a test más que lo ayuda a pesar de ser un regularizador, min child weight no tiene importancia alguna en el score final, mientras que valores alrededor de 0.16 y 25 son bastante óptimos para el **learning rate** y para el **max depth** respectivamente.
 
 ```python
 xgbcv = xgb.XGBRegressor(seed=1997, n_jobs = -1, verbose = 10, verbosity = 1, n_estimators = 50) 
 
 param_dist = {"learning_rate": sp.stats.uniform(0.1, 0.5),
-              "gamma": sp.stats.uniform(0, 1),
+              "reg_lambda": sp.stats.uniform(0.3, 1.5),
               "max_depth": range(20, 30),
               "min_child_weight": range(1,10)}
 
@@ -678,8 +606,8 @@ Una vez encontrado un rango de hiperparámetros viable, se establecen valores de
 ```python
 xgbcv = xgb.XGBRegressor(seed=1997, n_jobs = -1, verbose = 10, verbosity = 1, n_estimators = 50, min_child_weight=5)
 
-gparameters = {'learning_rate': [0.12, 0.15, 0.17], 'max_depth': [25, 27, 30],
-               'gamma': [0, 0.05, 0.08]}
+gparameters = {'learning_rate': [0.13, 0.17, 0.21], 'max_depth': [25, 27, 30],
+               'reg_lambda': [0.5, 0.9, 1.3]}
 
 GridSearch = GridSearchCV(xgbcv, param_grid = gparameters, scoring='neg_mean_absolute_error',
                           verbose = 10, cv = 3, iid = True)
@@ -687,7 +615,7 @@ GridSearch = GridSearchCV(xgbcv, param_grid = gparameters, scoring='neg_mean_abs
 GridSearch.fit(X_train, y_train)
 ```
 
-El GridSearch nos deja con un modelo bastante similar al que de por sí ya habíamos obtenido en la comparativa entre CatBoost y XGBoost, lo cual es comprensible dado que de base ya tenemos un score muy difícil de superar.
+El GridSearch nos deja con un modelo bastante similar al que de por sí ya habíamos obtenido en la comparativa entre CatBoost y XGBoost, esta vez alcanzando un Coeficiente de Determinación del 97%, lo cual es comprensible dado que de base ya tenemos un score muy difícil de superar.
 
 Tras finalizar el Grid Search y por tanto el proceso de **Coarse to Fine Tunning**. optamos por la **Optimización Bayesiana**, una metodología mucho más eficiente utilizando un modelo probabilístico de la función de coste (concretamente hablamos de un proceso Gaussiano), el cual va actualizando los parámetros de forma automática, por lo que podríamos obtener unos parámetros mejor optimizados y un modelo más acertado en sus predicciones.
 
@@ -724,7 +652,41 @@ optimizer = BayesianOptimization(f=crossVal_score,
 optimizer.run_optimization(max_iter=5)
 ```
 
-[IMAGEN DE XGBOOST BAYESIANO]
+![](/imagenes/XGBoostBayes.png?raw=true)
+
+El modelo optimizado a través del método bayesiano nos dejó el mejor ajuste que se pudo encontrar, alcanzando casi la perfección en train, **99.93%**,  pero quedando un poco por detrás en la evaluación de test, **97.24%** (overfitting que no hemos sido capaces de evitar en pro de minimizar la función de pérdida en la medida de lo posible).
+
+![](/imagenes/XGBoostBayes2.png?raw=true)
+
+Con el objetivo de asegurar la interpretabilidad del algoritmo de **XGBoost**, utilizamos los valores **Shap (Shapley Additive exPlanations)**, es decir los valores medios de la contribución marginal a través de todas las permutaciones posibles, ya que la *interpretabilidad global* del algoritmo nos permite mostrar cuanto contribuye cada uno de los features (y no solo la importancia del feature sino su influencia positiva o negativa con la predicción).
+
+![](/imagenes/PesosXGBoost.png?raw=true)
+
+La importancia de los features en algoritmos basados en árboles nos indica el valor de cada uno de los features utilizados en las predicciones (ya que hablamos de contribuciones marginales, cuanto más se usa un atributo en la construcción secuencial de árboles, mayor será su importancia). A pesar de que tan sólo graficamos 30 de los 60 atributos disponibles, es evidente la tendencia a valores muy próximos a cero a partir de la última feature gráficada, revelando la posibilidad de eliminar practicamente la mitad de columnas de nuestro dataset sin perjudicar en gran medida las predicciones de nuestro modelo.
+
+Entre los 7 atributos más importantes encontramos:
+
+**Private Room**: La variable dummy que indica si el alojamiento es una habitación privada o no. Desde un principio esta variable era una evidente pieza clave, ya que la mayoría de los listings se dividen en Habitaciones Privadas y Casa Enteras, siendo este primero la alternativa de menor precio.
+
+**LogAccommodates**: El atributo de huéspedes en escala logarítmica. Obviamente, cuanto mayor el número de huéspedes, mayor el precio por noche, como ya se observaba analizando las relaciones lineales.
+
+**minimum_nights**: Aunque en un principio no presentaba una relación lineal muy evidente, ya se observó en el baseline su influencia negativa en el precio, suponemos que alquileres de mayor duración son menos atractivas y repercuten en unos precios menores por parte de lo host.
+
+**extra_people**: Coste del alojamiento añadido por cada huésped más allá del establecido en **Accommodates**. De nuevo, esta variable es obviamente importante en la determinación del precio.
+
+**Air Conditioning**: Variable dicotómica que indica la existencia o no de aire accondicionado en el alojamiento. Curiosamente, juega un papel muy importante en la determinación de precios tanto en los modelos lineales como de árboles.
+
+**PCA_component_1**: El primer componente que se obtiene del PCA sobre las variables de distancias. No volvemos a ver el siguiente componente hasta pasados unos cuantos atributos, por lo que nos preguntamos si ajustando de nuevo sin PCA las variables de distancia tendrían una influencia mayor.
+
+**month**: De entre todas las variables esta es la más destacable de todas, ya que se demuestra como, a diferencia de los modelos lineales, el **XGBoost** ha sido capaz de capturar la estacionalidad que mostrábamos en la Fase de Exploración y el valor que tiene tener en cuenta el mes en el momento de determinar un precio.
+
+![](/imagenes/ShapXGBoost.png?raw=true)
+
+Un gráfico más elaborado nos permite confirmar lo que se comentaba anteriormente *(se realizó con una muestra aleatoria de 10000 samples debido a capacidad computacional)*. El eje horizontal muestra si el efecto del feature para esa predicción fue positivo (aumento el valor de la predicción) o viceversa, mientras que el color muestra el valor del feature en dicha predicción (para variables dicotómicas azul implica un valor de 0 y el rojo de 1). 
+
+Advertimos como los valores de Private Room positivo empujan los precios hacia abajo confirmando nuesta tesis anterior, además de la relación positiva entre Accommodates y Price, así como la negativa entre minimum_nights y price. 
+
+Features como **month** demuestran como valores intermedios (6, 7 y 8, es decir, meses de Verano) en su mayoría "empujan las predicciones hacia arriba" mientras que valores extremos relativos a los meses de Invierno por norma general tienen el efecto contrario. Por otra parte, **PCA_Component_1** recoge como esperabamos el comportamiento propio de variables relacionadas con distancias, menor distancia mayor precio.
 
 ### **Redes Neuronales**
 
@@ -754,47 +716,32 @@ class ANNRegressor(HyperModel):
         Dense(units = hp.Int('units_1', min_value = 32, max_value = 256,
                              step = 16, default = 128),
               activation = hp.Choice('dense_activation_1', values = ['relu', 'sigmoid', 'tanh'],
-                                     default = 'tanh')
-              )
-      )
+                                     default = 'tanh'))
+        )
     
     model.add(
         Dense(units = hp.Int('units_2', min_value = 32, max_value = 512,
                              step = 16, default = 256),
               activation = hp.Choice('dense_activation_2', values = ['relu', 'sigmoid', 'tanh'],
-                                     default = 'relu')
-              )
-      )
+                                     default = 'relu'))
+        )
     
     model.add(
         Dense(units = hp.Int('units_3', min_value = 32, max_value = 512,
                              step = 16, default = 256),
               activation = hp.Choice('dense_activation_3', values = ['relu', 'sigmoid', 'tanh'],
-                                     default = 'tanh')
-              )
-      )
+                                     default = 'tanh'))
+        )
     
     model.add(
         Dense(units = hp.Int('units_4', min_value = 32, max_value = 256,
                              step = 16, default = 256),
               activation = hp.Choice('dense_activation_4', values = ['relu', 'sigmoid', 'tanh'],
-                                     default = 'relu')
-              )
-      )
+                                     default = 'relu'))
+        )
     
     model.add(
-        Dense(units = hp.Int('units_5', min_value = 32, max_value = 256,
-                             step = 16, default = 128),
-              activation = hp.Choice('dense_activation_5', values = ['relu', 'sigmoid', 'tanh'],
-                                     default = 'relu')
-              )
-      )
-    
-    model.add(
-        Dense(units = hp.Int('units_6', min_value = 1, max_value = 1, 
-                             default = 1), 
-              activation = 'linear'
-              )
+        Dense(units = 1, activation = 'linear')
       )
     
     model.compile(optimizer = keras.optimizers.Adam(
