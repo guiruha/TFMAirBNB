@@ -569,14 +569,14 @@ def PCA_cross_validation(model, X, y, cv = 5, scoring = 'r2', standarization = T
 Existen varios modelos en estado del arte en cuanto a algoritmo de árboles. Particularmente, se escogió dos de las opciones estrella actualmente, **XGBoost** y **CatBoost**, ya que al construir árboles de forma secuencial, cada nuevo árbol ayuda a corregir los errores cometidos por el anterior.
 XGBoost, a pesar de ser un algoritmo algo más antiguo que CatBoost sigue siendo un referente en las competiciones en páginas web como [Kaggle](https://www.kaggle.com/competitions), unos de los algoritmos más populares para aplicar a datos tabulares. No obstante, CatBoost presenta ciertas mejoras que lo hacen una alternativa bastante aconsejable, menor tiempo de entrenamiento, manejo de las variables categóricas y missing values. Con el objetivo de escoger una de las dos opciones, se jugó tocando manualmente los hiperparámetros hasta encontrar dos predicciones lo más acertadas posibles.
 
-![](/imagenes/XGBoost.png?raw=true)
+![](/imagenes/XGboost.png?raw=true)
 
 
 ![](/imagenes/XGBoost2.png?raw=true)
 
 Aunque a priori el modelo **CatBoost** se mostraba como favorito en esta primera comparación, **XGBoost** demostró tener mayor facilidad para obtener predicciones mucho más acertadas tras varias pruebas y cambios manuales de hiperparámetros, llegando a superar en más de un 3% el performance en el R² de test (93.04 de Test frente al 96.7 de Train). Entre las ventajas de CatBoost, dado nuestro enfoque con los datasets en fases anteriores, la única interesante residía en la velocidad de ajuste, de lo cual no encontramos una mejora tan significativa como para considerarla relevante. Es por ello que se optó por XGBoost como modelo de árboles a optimizar. 
 
-![](/imagenes/CatBoost.png?raw=true)
+![](/imagenes/Catboost.png?raw=true)
 
 ![](/imagenes/CatBoost2.png?raw=true)
 
@@ -654,7 +654,7 @@ optimizer.run_optimization(max_iter=5)
 
 ![](/imagenes/XGBoostBayes.png?raw=true)
 
-El modelo optimizado a través del método bayesiano nos dejó el mejor ajuste que se pudo encontrar, alcanzando casi la perfección en train, **99.93%**,  pero quedando un poco por detrás en la evaluación de test, **97.24%** (overfitting que no hemos sido capaces de evitar en pro de minimizar la función de pérdida en la medida de lo posible).
+El modelo optimizado a través del método bayesiano nos dejó el mejor ajuste que se pudo encontrar, alcanzando casi la perfección en train, **99.93%**,  pero quedando un poco por detrás en la evaluación de test, **97.24%** (overfitting que no hemos sido capaces de evitar en pro de minimizar la función de pérdida en la medida de lo posible). Una validación cruzada de 5-folds nos dejó de media un **97.3%** de R².
 
 ![](/imagenes/XGBoostBayes2.png?raw=true)
 
@@ -692,17 +692,24 @@ Features como **month** demuestran como valores intermedios (6, 7 y 8, es decir,
 
 #### **Creación de Redes Neuronales**
 
-Pór último, abordamos esta fase de modelado con redes neuronales. Concretamente, utilizaremos **Artificial Neural Networks** de poco tamaño (no más de 4/5 fully connected layers de 256/512 neuronas por capa) y jugaremos con las funciones de activación para encontrar una arquitectura que pueda competir con el XGBoost. Para la compilación de las redes utilizamos de nuevo el **MAE** como función de pérdida, así como el optimizador **ADAM** (el que consideramos más completo dadas las alternativas que disponemos).
+Por último, abordamos esta fase de modelado con redes neuronales. Concretamente, utilizaremos **Artificial Neural Networks** de poco tamaño (no más de 4/5 fully connected layers de 256/512 neuronas por capa) y jugaremos con las funciones de activación para encontrar una arquitectura que pueda competir con el XGBoost. Para la compilación de las redes utilizamos de nuevo el **MAE** como función de pérdida, así como el optimizador **ADAM** (el que consideramos más completo dadas las alternativas que disponemos).
 
+Como primera arquitectura se creó una **Shallow Neural Network** de cuatro capas ocultas (128 nodos en las capas más cercanas a las de Input y Output, 256 para el resto) en las que utilizamos una función sigmoide de activación para las tres primeras y un **REctificador Lineal Unitario (RELU)** para la última. La capa del output utiliza una función de activación **Lineal** (no realiza ninguna transformación), ya que tratabamos un problema de regresión.
+ 
 ![](/imagenes/RedNeuronal1.png?raw=true)
+
+Este primer ajuste exhibió unos resultados prometedores. Un **91.5%** en Test y **92.75%** en Train, así como una reducción del **MAE** bastante acorde entre los dos, demuestra una buena generalización por parte del modelo, por lo que la **regularización** no parecía precisa.
 
 ![](/imagenes/EvaluaRedNeuronal1.png?raw=true)
 
+A fin de lograr reducir aún más el **MAE** y aproximar la performance al **XGBoost**, aumentamos la complejidad del modelo añadiendo una capa más en la arquitectura. Cambiando manualmente las funciones de activación encontramos que una combinación de **tangentes hiperbólicas** y **RELU**s presenta un mejor ajuste qu el anterior.
+
 ![](/imagenes/RedNeuronal2.png?raw=true)
+
+Manualmente logramos mejorar el ajuste unas décimas. Sin embargo, si comparamos los resultados con el XGBoost observamos que las redes neuronales no llegan a alcanzar el mismo perfomance, aunque presentan un menor overfitting que dicho modelo. Por tanto, se plantea la posibilidad de que una Red Neuronal Artificial presente la oportunidad de conseguir mejores predicciones manteniendo un menor overfitting que el XGBoost, es decir, un modelo mejor generalizado. Es por ello que damos paso a la Optimización de Redes Neuronales.
 
 ![](/imagenes/EvaluaRedNeuronal2.png?raw=true)
 
-Si comparamos los resultados con el XGBoost observamos que las redes neuronales no llegan a alcanzar el mismo perfomance, aunque presentan un menor overfitting que dicho modelo. Por tanto, se plantea la posibilidad de que una Red Neuronal Artificial presente la oportunidad de conseguir mejores predicciones manteniendo un menor overfitting que el XGBoost, es decir, un modelo mejor generalizado. Es por ello que damos paso a la Optimización de Redes Neuronales.
 
 #### **Optimización de Redes Neuronales**
 
@@ -773,17 +780,19 @@ tuner = KerasBayesianOptimization(
 )
 ```
 
-[IMAGEN DEL RESUMEN DEL TUNEADOR]
+![](/imagenes/Summary.png?raw=true)
 
 Tras un largo proceso de tuneado el resumen de resultados nos muestra como mejor candidato una combinación de tangentes hiperbólicas y rectificadores lineales en una arquitectura con el número máximo de nodos que se había planteado en un principio excepto para la capa conectada con la del output **(units_5)**. Una vez expuesto el mejor modelo, lo ajustamos a nuestros datos para elaborar las predicciones.
 
 ![](/imagenes/RedNeuronalOpt.png?raw=true)
 
+Últimando esta fase alcazamos una Red Neuronal bastante próxima a nivel de performance al **XGBoost**, con un **97.69%** de Coeficiente de Determinación en Train y **95.45%** en Test. Intentos de optimización con redes más complejas llevaron a peores resultados, por lo que se desestimó esta alternativa. 
+
 ![](/imagenes/EvaluaciónRedNeuronalOpt.png?raw=true)
 
 ##  Visualización y Dashboard
 
-Finalizado el proceso de limpieza, exploración y modelización, la visualización y comunicación de resultados se presenta como la última fase del proyecto, un punto clave poder trasladar al usuario final el conocimiento e inforamción obtenida durante el tratamiento de los datos a lo largo de las fases anteriores, utilizando siempre un contexto visual para facilitar su entendimiento.
+Finalizado el proceso de limpieza, exploración y modelización, la visualización y comunicación de resultados se presenta como la última fase del proyecto, un punto clave poder trasladar al usuario final el conocimiento e información obtenida durante el tratamiento de los datos a lo largo de las fases anteriores, utilizando siempre un contexto visual para facilitar su entendimiento.
 
 Con el objetivo de acercar a los usuarios a una interfaz interactiva en la que puedan comprobar por cuenta propia los resultados presentados, se realizó una serie de **Dashboards** en **Tableau**. Con él pretendemos que el usuario tenga la posiblidad de contextualizar los datos que han sido incorporados a lo largo de todo el proyecto, e introducidos en los modelos presentados en la fase de modelado.
 
