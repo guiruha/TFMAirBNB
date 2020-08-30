@@ -694,9 +694,13 @@ Features como **month** demuestran como valores intermedios (6, 7 y 8, es decir,
 
 Pór último, abordamos esta fase de modelado con redes neuronales. Concretamente, utilizaremos **Artificial Neural Networks** de poco tamaño (no más de 4/5 fully connected layers de 256/512 neuronas por capa) y jugaremos con las funciones de activación para encontrar una arquitectura que pueda competir con el XGBoost. Para la compilación de las redes utilizamos de nuevo el **MAE** como función de pérdida, así como el optimizador **ADAM** (el que consideramos más completo dadas las alternativas que disponemos).
 
-[IMAGEN ESQUEMA DE NN]
+![](/imagenes/RedNeuronal1.png?raw=true)
 
-[IMAGEN EVALUADOR DE MODELOS NN]
+![](/imagenes/EvaluaRedNeuronal1.png?raw=true)
+
+![](/imagenes/RedNeuronal2.png?raw=true)
+
+![](/imagenes/EvaluaRedNeuronal2.png?raw=true)
 
 Si comparamos los resultados con el XGBoost observamos que las redes neuronales no llegan a alcanzar el mismo perfomance, aunque presentan un menor overfitting que dicho modelo. Por tanto, se plantea la posibilidad de que una Red Neuronal Artificial presente la oportunidad de conseguir mejores predicciones manteniendo un menor overfitting que el XGBoost, es decir, un modelo mejor generalizado. Es por ello que damos paso a la Optimización de Redes Neuronales.
 
@@ -773,21 +777,26 @@ tuner = KerasBayesianOptimization(
 
 Tras un largo proceso de tuneado el resumen de resultados nos muestra como mejor candidato una combinación de tangentes hiperbólicas y rectificadores lineales en una arquitectura con el número máximo de nodos que se había planteado en un principio excepto para la capa conectada con la del output **(units_5)**. Una vez expuesto el mejor modelo, lo ajustamos a nuestros datos para elaborar las predicciones.
 
-[IMAGEN DE EVALUADOR DE LA NN OPTIMIZADA]
+![](/imagenes/RedNeuronalOpt.png?raw=true)
+
+![](/imagenes/EvaluaciónRedNeuronalOpt.png?raw=true)
 
 ##  Visualización y Dashboard
 
-Tras finalizar todo el proceso de limpieza, exploración y modelización, la visualización es otro de los aspectos relevantes dentro del Data Science. De hecho se ha convertido en un punto clave para comunicar y, desde nuestro punto de vista, es relevante para poder trasladar la comprensión y la importancia de los datos con los que hemos trabajado durante todo el proyecto desde un contexto visual.
+Finalizado el proceso de limpieza, exploración y modelización, la visualización y comunicación de resultados se presenta como la última fase del proyecto, un punto clave poder trasladar al usuario final el conocimiento e inforamción obtenida durante el tratamiento de los datos a lo largo de las fases anteriores, utilizando siempre un contexto visual para facilitar su entendimiento.
 
-La visualización que os presentamos en tableau, pretende acercarnos a los usuarios para poder contextualizar de forma interactiva, cuáles son los datos que hemos ido incorporando en los modelos que os hemos ido presentando en los anteriores puntos.
+Con el objetivo de acercar a los usuarios a una interfaz interactiva en la que puedan comprobar por cuenta propia los resultados presentados, se realizó una serie de **Dashboards** en **Tableau**. Con él pretendemos que el usuario tenga la posiblidad de contextualizar los datos que han sido incorporados a lo largo de todo el proyecto, e introducidos en los modelos presentados en la fase de modelado.
 
-El dashboard consta de 3 bloques principales.
+Un primer vistazo al dashboard central nos revela una división en 3 bloques principales.
 
-El primer bloque muestra de manera interactiva cuáles son los datos de los que disponemos de la base de Datos de Inside Airbnb. Las características de todos aquellos registros que hemos utilizado para el modelado. 
+El primer de ellos presenta los datos obtenidos de la web de Inside Airbnb. Concretamente, las variables de todos aquellos registros con influencia relevante en la predicción de los modelos: 
 
-En un primer lugar podremos observar el número de pisos únicos dados de alta en AirBNB durante los años 2017 a 2020, así como la evolución de los precios de todos los ellos. El precio es una variable que hemos querido visualizar al inicio del Dashboard dada su relevancia dentro de nuestro proyecto como variable a predecir por nuestros modelos.
+En la parte superior podremos observar el número de pisos únicos dados de alta en AirBNB durante los años 2017 a 2020, así como la evolución de los precios de todos los ellos, variable a predecir como objetivo de nuestro proyecto.
 
-Una vez comprendido el número de registros y el nivel de precios promedio de los que hablamos, pasamos a analizar la estructura de los alojamientos a nivel de qué tipo de propiedades son y cuál es el grado de alquiler en cuanto a si es toda la propiedad o solo una habitación, y, otros aspectos relevantes que son los primeros a ser consultados por los usuarios cuando navegas por tipos de apps/web como Airbnb que son, el número de habitaciones, camas e incluso baños.
+A continuación, un análisis de las principales características los alojamientos nos permite analizar mediante filtros como cambia la evolución de precios dependiendo de distintos atributos: Tipo de propiedad, tipo de alquiler (E.G. toda la propiedad o solo una habitación), y otros aspectos relevantes que durante el proyecto han resultado ser relevantes en las predicciones, además de ser las primeras a ser consultadas por los usuarios cuando navegas por webs como **AirBNB**, como el número de habitaciones, camas o baños.
+
+
+[HASTA AQUÍ REVISADO]
 
 Por otro lado, y cada vez más, nos gusta saber la ubicación de las cosas que buscamos. Es por ello que consideramos incluir un mapa donde se pudieran visualizar dos cosas, los barrios en los que se distribuyen los alojamientos, y otra opción que hemos añadido como visualización del mapa, el nivel de densidad en los que se distribuye la oferta de alojamientos en Barcelona.
 
