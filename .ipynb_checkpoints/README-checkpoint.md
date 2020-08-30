@@ -5,13 +5,13 @@
 
 # Introducción y Motivación
 
-El sitio web AirBNB permite a propietarios de apartamentos convertirse en 'hosts' de la plataforma y ofertar sus propiedades, llamadas 'listings', online a fin de cobrar un alquiler vacacional. Determinar el precio del alojamiento puede ser una tarea difícil en ciudades con tanta competencia como Barcelona si lo que se busca es maximizar el beneficio/ocupación de tu listing. Además, a pesar de que ya existen plataformas como AirDNA ofreciendo asesoramiento en este aspecto, o bien son demasiado caros para el usuario medio u ofrecen predicciones poco convincentes.
+El sitio web AirBNB permite a propietarios de apartamentos convertirse en 'hosts' de la plataforma y ofertar sus propiedades, llamadas 'listings', online a fin de cobrar un alquiler vacacional. En un mercado de competencia perfecta como este (muchos ofertantes, productos muy similares, fácil acceso a información del mercado y pocas barreras de entrada), determinar el precio del alojamiento puede ser una tarea difícil, mucho más en ciudades con tanta competencia como Barcelona, si lo que se busca es maximizar el beneficio/ocupación de tu listing. Además, a pesar de que ya existen plataformas como AirDNA ofreciendo asesoramiento en este aspecto, son demasiado caros para el usuario medio y no es habitual el uso de estas plataformas por parte de particulares.
 
 ![](/imagenes/AirBNBweb.png?raw=true)
 
-Es por ello que el objetivo principal de este proyecto de TFM es el desarrollo de un modelo predictivo de los precios a través del uso de machine learning y deep learning, así como de data engineering para la limpieza y exploración de datos tanto de la web de AirBNB como de datos públicos de la ciudad de Barcelona.
+Es por ello que el objetivo principal de este proyecto de TFM es el desarrollo de un modelo predictivo de precios a través del uso de machine learning/deep learning, así como de data engineering para la limpieza y exploración de datos tanto de la web de AirBNB como de datos públicos de la ciudad de Barcelona.
 
-De forma alternativa, otro de los usos adicionales que un usuario no propietario de alojamientos a este análisis, es el de 'buscador de chollos', que permita a usuarios interesados en alquilar habitaciones en la ciudad de Barcelona acceder a 'listings' que a priori deberían tener unos precios más elevados debido a sus características y predicciones por parte del modelo.
+De forma alternativa, otro de los usos adicionales a este análisis, sobretodo para usuarios no propietarios, es el de 'buscador de chollos', que permita a usuarios interesados en alquilar habitaciones en la ciudad de Barcelona acceder a 'listings' que a priori deberían tener unos precios más elevados debido a sus características y predicciones por parte del modelo.
 
 # Descripción de los Datasets
 
@@ -23,36 +23,36 @@ El dataset principal consta de csv y geojson obtenidos desde la web de [Inside A
 
 ### Listings.csv
 
-Es el archivo más importante de los tres, en este csv encontramos toda la información disponible en la página específica de cada uno de los listings, desde descripciones propias del host hasta cuantos servicios o comodidades adicionales ofrece el listing. A continuación se describen brevemente las principales columnas del dataset.
+Es el archivo más importante de los tres. En este csv encontramos toda la información disponible en la página específica de cada uno de los listings, desde descripciones propias del host, hasta cuantos servicios o comodidades adicionales ofrece el listing. Para nuestro análisis se utilizaron datos de los meses de Abril y Octubre (para tener una visión general del año). A continuación se describen brevemente las principales columnas del dataset.
 
 | Columna       | Descripción          
 | ------------- |------------- | 
-| host_since | fecha en la que se registró el host en AirBNB |
-| host_response_time | tiempo medio que tarda el host en responder |
-| host_response_rate | porcentaje de mensajes que responde el host |
-| host_is_superhost | superhost es una señal de veteranía y experiencia en la plataforma|
-| host_verifications | formas de contacto e identificación verificadas por el host y AirBNB|
-| neighbourhood_group_cleansed | vecindario/distrito del listing |
-| property_type | columna del tipo de propiedad generalizada a cuatro categorias (Apartment, House, Hotel y Other|
-| room_type | tipo de habitación (Private, Hotel, Shared Room o bien Entrie Home) |
-| amenities | diccionario de servicios/comodidades adicionales que ofrece el alojamiento |
-| price | variable a predecir y (en su mayoría) precio por noche del listing |
-| security_deposit | cantiad de depósito obligatoria a abonar durante la estancia (en caso de ser necesario) |
-| cleaning_fee | tasa fija de limpieza |
-| extra_people | cantidad adicional al precio por persona si se supera el nº de guest included|
-| cancellation_policy | tipo de cancelación (flexible, moderate, strict...) |
-| host_listings_count | nº de alojamientos en propiedad del host |
-| accommodates | nº máximo de huéspedes permitidos |
-| bathrooms | nº de baños |
-| bedrooms | nº de dormitorios |
-| beds | nº de camas |
-| guests_included | nº de huéspedes incluídos en el precio base |
-| minimum_nights | nº mínimo de noches para la reserva |
-| maximum_nights | nº máximo de noches permitidas de reserva |
-| availability_x | disponibilidad del listing los siguientes x días (30, 60, 90, 365)|
-| reviews_per_month| media calculada de nº de reviews por mes |
-| number_of_reviews| nº total de reviews de cada listing |
-| reviews_scores_rating| calificación total del alojamiento proporcionada por los usuarios |
+| host_since | Fecha en la que se registró el host en AirBNB |
+| host_response_time | Tiempo medio que tarda el host en responder |
+| host_response_rate | Porcentaje de mensajes que responde el host |
+| host_is_superhost | Superhost es una señal de veterania y experiencia en la plataforma|
+| host_verifications | Formas de contacto e identificación verificadas por el host y AirBNB|
+| neighbourhood_group_cleansed | Vecindario/distrito del listing |
+| property_type | Tipo de propiedad, generalizada a cuatro categorías (Apartment, House, Hotel y Other|
+| room_type | Tipo de habitación (Private, Hotel, Shared Room o bien Entire Home) |
+| ammenities | Diccionario de servicios/comodidades adicionales que ofrece el alojamiento |
+| price | Variable a predecir y (en su mayoría) precio por noche del listing |
+| security_deposit | Cantidad de depósito obligatoria a abonar durante la estancia (en caso de ser necesario) |
+| cleaning_fee | Tasa fija de limpieza |
+| extra_people | Cantidad adicional al precio por persona si se supera el nº de guest included|
+| cancellation_policy | Tipo de cancelación (flexible, moderate, strict...) |
+| host_listings_count | Nº de alojamientos en propiedad del host |
+| accommodates | Nº máximo de huéspedes permitidos |
+| bathrooms | Nº de baños |
+| bedrooms | Nº de dormitorios |
+| beds | Nº de camas |
+| guests_included | Nº de huéspedes incluidos en el precio base |
+| minimum_nights | Nº mínimo de noches para la reserva |
+| maximum_nights | Nº máximo de noches permitidas de reserva |
+| availability_x | Disponibilidad del listing los siguientes 'x' días (30, 60, 90, 365)|
+| reviews_per_month| Media calculada de nº de reviews por mes |
+| number_of_reviews| Nº total de reviews de cada listing |
+| reviews_scores_rating| Calificación total del alojamiento proporcionada por los usuarios |
 
 ### Calendar.csv
 
@@ -62,16 +62,16 @@ El dataset de calendar nos proporciona información diaria sobre cómo se compor
 | ------------- |------------- | 
 | year | - |
 | month | - |
-| price_calendar | precio medio mensual por listing |
-| year_availability | disponibilidad mensual de cada listing |
+| price_calendar | Precio medio mensual por listing |
+| year_availability | Disponibilidad mensual de cada listing |
 
 ### Neighbourhood.geojson
 
-**Neighbourhood.geojson** es un archivo utilizado para representar elementos geográficos de Barcelona, en este caso los vecindarios de la ciudad, a través de geometrías de tipo poligono y multipoligono. La principal utilidad de este archivo es la de ser la principal referencia para trabajar con las latitudes y longitudes de los demás datasets, a través de la librería **geopandas**.
+**Neighbourhood.geojson** es un archivo utilizado para representar elementos geográficos de Barcelona, en este caso los vecindarios de la ciudad, a través de geometrías de tipo polígono y multipoligono. La principal utilidad de este archivo es la de ser la principal referencia para trabajar con las latitudes y longitudes de los demás datasets, a través de la librería **geopandas**.
 
 ## Dataset de Flickr
 
-Dataset que recoge las coordenadas de la ciudad de Barcelona donde se han tomado fotos relacionadas con algún monumento o lugar de interés de la ciudad (los cuáles llamaremos **landmarks**). Este dataset tan solo presenta la latitud y longitud sin especificar de que landmark se trata ninguno de los puntos, estando sujeto a un problema de tipo no supervisado, concretamente **clustering**, y se trabajará con coordenadas en grados **(Código EPSG 4326)**.
+Dataset que recoge las coordenadas de la ciudad de Barcelona donde se han tomado fotos relacionadas con algún monumento o lugar de interés de la ciudad (los cuáles llamaremos **landmarks**). Este dataset tan solo presenta la latitud y longitud sin especificar de qué landmark se trata ninguno de los puntos, estando sujeto a un problema de tipo no supervisado, concretamente **clustering**, y se trabajará con coordenadas en grados **(Código EPSG 4326)**.
 
 ## Datasets de Transportes
 
@@ -101,9 +101,9 @@ Finalmente, los datasets relacionados con sitios de interés turístico se divid
 
 El desarrollo de los scripts y los notebooks se ha llevado a cabo mediante el lenguaje Python, por lo que será imprescindible para poder seguir este proyecto. No obstante, se ha optado por desarrollar el proyecto también en Google Colab a fin de que estas limitaciones dificulten lo mínimo posible el seguimiento de este proyecto.
 
-En caso de querer seguir los scripts o los notebooks es necesario instalar los siguientes paquetes:
+En caso de querer ejecutar los scripts o los notebooks es necesario instalar los siguientes paquetes:
 
-**numpy**, **scipy**, **pandas**, **scikit-learn**, **tensorflow**, **keras**, **geopandas**, **shapely**, **contextily**, **matplotlib**, **seaborn**, **statsmodels**, **datetime**.
+**numpy**, **scipy**, **pandas**, **scikit-learn**, **tensorflow**, **keras**, **geopandas**, **shapely**, **contextily**, **matplotlib**, **seaborn**, **statsmodels**, **datetime**. **keras-tuner**, **xgboost**, **catboost**, **shap**, **GpyOpt**, **livelossplot**.
 
 En caso de no tener todos instalados recomendamos crear un environment a partir del archivo **TFMenvironment.yml** con el siguiente código:
 
@@ -121,7 +121,7 @@ $ conda env create -f TFMenvironment.yml
 
 La primera Fase de este proyecto consiste en la limpieza y análisis superficial de los datasets base para la evolución del TFM, listings.csv y calendar.csv. 
 
-Un primer barrido de eliminación de columnas suprimió del proceso todas las variables relacionadas con urls, así como descripciones tanto del host como del alojamiento (se planteó el uso de NLP en estas columnas a fin de encontrar nuevos atributos útiles pero finalmente, dado que los algoritmos ya estabann dando muy buenos resultados, se decidió seguir un camino distinto). Por otro lado, también fueron eliminadas columnas con más de un **60%** de Nulls dada su relativamente baja importancia y el riesgo a introducir un sesgo grande por medio de la imputación de valores (tanto predichos a través de modelos lineales como medianas o medias).
+Un primer barrido de eliminación de columnas suprimió del proceso todas las variables relacionadas con urls, así como descripciones tanto del host como del alojamiento (se planteó el uso de NLP en estas columnas a fin de encontrar nuevos atributos útiles pero finalmente, dado que los algoritmos ya estaban dando muy buenos resultados, se decidió seguir un camino distinto). Por otro lado, también fueron eliminadas columnas con más de un **60%** de Nulls dada su relativa baja importancia y el riesgo a introducir un sesgo grande por medio de la imputación de valores (tanto predichos a través de modelos lineales como medianas o medias).
 
 ```python
 nulls = df.isnull().sum() / df.shape[0]
@@ -134,9 +134,9 @@ nulls[nulls > 0.5]
 df.drop(nulls[nulls>0.6].index, axis = 1, inplace = True)
 ```
 
-La limpieza se desarrolla a continuación con el siguiente procedimiento: eliminación de columnas poco útiles o repetidas, eliminación de filas repetidas o con datos anómalos, imputación de valores, etc. Destacamos los procedimientos de limpieza más relevantes y menos comunes a continuación:
+La limpieza continua desarrollándose con el siguiente procedimiento: eliminación de columnas poco útiles o repetidas, eliminación de filas repetidas o con datos anómalos, imputación de valores, etc. Destacamos los procedimientos de limpieza más relevantes y menos comunes a continuación:
 
-- **Variables categóricas**
+#### **Variables categóricas**
 
 Existen columnas categóricas con un gran número de clases muy similares entre sí, es por ello que a fin de reducir las dimensiones de nuestro dataset lo máximo posible, hemos generalizado todos los valores en el menor número de categorías posible. Ejemplo de ello es la variable **cancellation_policy** que ha sido generalizada a cuatro alternativas **(flexible, moderate, strict_less30, strict_30orMore)**.
 
@@ -155,7 +155,7 @@ df['cancellation_policy'].value_counts()
 
 ![](/imagenes/CatCleaning2.png?raw=true)
 
-- **Variables string de precios**
+#### **Variables string de precios**
 
 Todas las columnas del dataset cuyo valor es el de un precio se presentan con un símbolo de dólar al principio y con comas a partir de los millares **E.G. $1,200.00**. La limpieza de estas variables ha sido abordada a través del method chaining de varias funciones **replace** ,para la eliminación de los símbolos anteriormente mencionados, y la transformación de tipo string a tipo float (en las columnas que presentaban Null debido a su naturaleza, E.G. existen listings sin tarifa de limpieza y en vez de ser codificado con 0 se presenta como un Null, se ha imputado valores de 0€).
 
@@ -174,12 +174,13 @@ df['cleaning_fee'] = df['cleaning_fee'].str.replace('$', '').str.replace(',','')
 df['extra_people'] = df['extra_people'].str.replace('$', '').str.replace(',','').fillna(0).astype('float')
 
 df[['price', 'security_deposit', 'cleaning_fee', 'extra_people']].sample(5)
-``` 
+```
+
 ![](/imagenes/ColPrice2.png?raw=true)
 
-- **Caso Especial: Amenities**
+#### **Caso Especial: Amenities**
 
-La columna amenities ha resultado ser un caso especial, ya que cada registro se presenta en forma de lista (con llaves **{}** en vez de corchetes **[]**) y además de ser de tipo string. Por ello, en primer lugar para visualizar lo comunes que son cada uno de los amenities entre todos los alojamientos se utiliza de nuevo el method chaining para tratar con el string y transformarlo realmente en una lista, a continuación mediante un diccionario y una serie de pandas logramos el objetivo de visualizar el porcentaje total de aparición de cada amenity.
+La columna ammenities ha resultado ser un caso especial, ya que cada registro se presenta en forma de lista (con llaves **{ }** en vez de corchetes **[ ]**), además de ser de tipo string. Por ello, en primer lugar para visualizar lo comunes que son cada uno de los amenities entre todos los alojamientos se utiliza de nuevo el method chaining para tratar con el string y transformarlo realmente en una lista, a continuación mediante un diccionario y una serie de pandas logramos el objetivo de visualizar el porcentaje total de aparición de cada ammenity.
 
 ```python
 amenities = df['amenities'].str.replace('{', '').str.replace('}', '').str\
@@ -198,12 +199,12 @@ ser_amen = pd.Series(dict_amen, index = dict_amen.keys())
 
 ![](/imagenes/Amenities.png?raw=true)
 
-Una vez visualizados, se seleccionaron los que por ser no tan comunes y, bajo nuestro criterio, relevantes para un huésped consideramos útiles para la determinación de un precio superior del alojamiento respecto a los que carecen de estos servicios. En concreto seleccionamos el siguiente conjunto a través de la creación de variables dummy:
+Una vez visualizados, se seleccionaron las que por no ser comunes y a su vez (bajo nuestro criterio) relevantes en la elección de un alojamiento, consideramos útiles para la determinación de un precio superior del alojamiento respecto a los que carecen de estos servicios. En concreto seleccionamos el siguiente conjunto a través de la creación de variables dummy:
 
 ```python
-columnselection = ['Air conditioning', 'Family/kid friendly', 'Host greets you', 'Laptop friendly workspace', 'Paid parking off premises', 
-                  'Patio or balcony', 'Luggage dropoff allowed', 'Long term stays allowed', 'Smoking allowed', 'Step-free access',
-                  'Pets allowed', '24-hour check-in']
+columnselection = ['Air conditioning', 'Family/kid friendly', 'Host greets you', 'Laptop friendly workspace', 'Paid parking off premises', 'Patio or balcony', 'Luggage dropoff allowed', 
+'Long term stays allowed', 'Smoking allowed', 'Step-free access', 'Pets allowed', '24-hour check-in']
+
 for column in columnselection:
     df[column] = df['amenities'].apply(lambda x: 1 if column in x else 0)
 df['Elevator'] = df['amenities'].apply(lambda x: 1 if ('Elevator' in x or 'Elevator in building' in x) else 0)
@@ -222,19 +223,19 @@ Esta primera fase de Exploración General se centra en el análisis, limpieza y 
 
 En primer lugar se procedió a investigar los motivos de la existencia de precios superiores a una cota de 2000€ y posteriormente 1200€, ya que excepto algún caso fuera de lo común superar esta barrera de precio por noche supone, bajo nuestro punto de vista, una anomalía producida por un error de registro o bien por un cálculo erróneo o fenómeno que no hemos tenido en cuenta. La investigación dio pie a descubrir un reducido número "outliers" en los que el propio alojamiento carecía de página propia en la web de AirBNB actualmente, o bien eran resultado de un cálculo erróneo del precio por noche (por parte del equipo de Inside AirBNB) a partir de los precios mensuales resultantes de alquilar un mínimo de 31 noches el alojamiento. Es por ello, que al tratarse de menos de un 1% de registros, estos fueron eliminados desde el principio del análisis a fin de evitar problemas futuros.
 
-Resultado de este filtrado de precios obtenemos un histograma a priori visualmente muy semejante a una distribución **LogNormal** ![equation](https://latex.codecogs.com/png.latex?exp(X)\sim&space;LogN(\mu,&space;\sigma^2)).
+Resultado de este filtrado de precios obtenemos un histograma con una gran asimetría positiva debido a que la gran mayoría de precios se acumulan en rangos inferiores a 100 euros/noche a pesar de que existen un cantidad considerable de precios que superan esta cota con creces.
 
-![](/imagenes/LogNormal.png?raw=true)
+![](/imagenes/Prelog.png?raw=true)
 
-Es por ello que aplicamos un logaritmo natural como medida típica para "normalizar" nuestra variable dependiente. Una comparativa de una distribución normal generada a partir del paquete random nos muestra bastante semejanza a una distribución normal, a pesar de la ligera asimetría positiva.
+Es por ello que aplicamos un logaritmo neperiano como transformación de datos típica para "normalizar" nuestra variable dependiente. Una comparativa de una distribución normal generada a partir del paquete random nos muestra bastante semejanza a una distribución normal, a pesar de la ligera asimetría positiva.
 
 ![](/imagenes/Normal.png?raw=true)
 
-Concretamente, el **coeficiente de asimetría de Fisher** resulta ser de 0.404, como ya puede observarse en el gráfico superior, una pequeña asimetría positiva que nos aleja de una buena aproximación a una distribución normal. Por otra parte el **exceso de kurtosis** es de -0.168 causada principalmente por la cola izquierda, demasiado cercano al valor 0 como para considerarla platicurtica. Finalmente, graficar un QQ-Plot nos demuestra que el problema radica en las colas de la distribución (demasiados pocos registros de precios bajos respecto al grueso y el hecho de establecer un "cut-off" para eliminar mucho outlier nos dificulta que la distribución sea completamente "normal"). Los test **Kolmogorov-Smirnov** y **D'Agostino-Pearson** nos terminan de confirmar nuestras conclusiones.
+Concretamente, el **coeficiente de asimetría de Fisher** resulta ser de 0.404, como ya puede observarse en el gráfico superior, una pequeña asimetría positiva que nos aleja de una buena aproximación a una distribución normal. Por otra parte el **exceso de kurtosis** es de -0.168 causada principalmente por la cola izquierda, demasiado cercano al valor 0 como para considerarla platicúrtica. Finalmente, graficar un QQ-Plot nos demuestra que el problema radica en las colas de la distribución (demasiados pocos registros de precios bajos respecto al grueso y el hecho de establecer un "cut-off" para eliminar mucho outlier nos dificulta que la distribución sea completamente "normal"). Los test **Kolmogorov-Smirnov** y **D'Agostino-Pearson** nos terminan de confirmar nuestras conclusiones.
 
 ![](/imagenes/QQplot.png?raw=true)
 
-Para finalizar el análisis de la variable dependiente, se realizó un estudio de la evolución de los precios medios a fin de encontrar una posible tendencia o estacionalidad a lo largo de los meses y años. Para ello se procedió a gráficar los precios medios por mes junto a sus intervalos de confianza.
+Para finalizar el análisis de la variable dependiente, se realizó un estudio de la evolución de los precios medios a fin de encontrar una posible tendencia o estacionalidad a lo largo de los meses y años. Para ello se procedió a graficar los precios medios por mes junto a sus intervalos de confianza.
 
 ```python
 def intervalosConfianza(agrupacion, variable):
@@ -264,7 +265,7 @@ plt.tight_layout()
 
 ![](/imagenes/EvoluciónMensual.png?raw=true)
 
-Un primer vistazo nos muestra una clara estacionalidad de los precios, situandose los más altos en los meses de verano, con algunos picos en lo que suponemos vacaciones de primavera. Curiosamente, la tendencia positiva que encontramos desde 2017 a finales de 2020 se ve eclipsada por un año 2018 con precios especialmente altos en temporada de vacaciones de verano (a pesar de que no hemos encontrado ningún grupo de outliers que empuje los precios hacia arriba). La descomposición estacional de la variable precio nos permite ver claramente esta evolución.
+Un primer vistazo nos muestra una clara estacionalidad de los precios, situándose los más altos en los meses de verano, con algunos picos en lo que suponemos vacaciones de primavera. Curiosamente, la tendencia positiva que encontramos desde 2017 a finales de 2020 se ve eclipsada por un año 2018 con precios especialmente altos en temporada de vacaciones de verano (a pesar de que no hemos encontrado ningún grupo de outliers que empuje los precios hacia arriba). La descomposición estacional de la variable precio nos permite ver claramente esta evolución.
 
 ![](/imagenes/Descomposicion.png?raw=true)
 
@@ -280,7 +281,7 @@ No obstante, de esta última parte del análisis solo podemos destacar la posibl
 
 **INPUTS:** DatosLimpios.csv **OUTPUTS:** Distancias.csv, DistanciasTurismo.csv
 
-La Geoexploración supone un interludio dentro la fase de exploración, una breve desviación que hemos decidido tratar en un notebook distinto debido a que tiene una temática distinta a la que tratamos en la exploración más general. Esta fase del proyecto se divide en dos enfoques distintos centrados en datos geoespaciales, en primer lugar la determinación de localizaciones de **Landmarks** a través del calculo de centroides y el ćalculo de distancias entre landmark y alojamiento, y por otro lado el cálculo, o bien de distancias a paradas de trasnporte cercanas, o bien el número de paradas cercanas a un alojamiento.
+La Geoexploración supone un interludio dentro la fase de exploración, una breve desviación que hemos decidido tratar en un notebook distinto debido a que tiene una temática distinta a la que tratamos en la exploración más general. Esta fase del proyecto se divide en dos enfoques distintos centrados en datos geoespaciales, en primer lugar la determinación de localizaciones de **Landmarks** a través del cálculo de centroides y el cálculo de distancias entre landmark y alojamiento, y por otro lado el cálculo, o bien de distancias a paradas de transporte cercanas, o bien el número de paradas cercanas a un alojamiento.
 
 ### **Centroides a partir de datos de Flickr**
 
@@ -288,7 +289,7 @@ A través de la recopilación de coordenadas de la ciudad de Barcelona donde se 
 
 ![](/imagenes/Landmarks1.png?raw=true)
 
-A primera vista ya se observaron puntos bastante separados de lo que consideramos un landmark, los cuáles consideramos outliers o localizaciones con muy poco dato como para considerarlo un landmark. Para la eliminación de dichos datos anómalos se decidió probar con **Clustering Jerárquico**, utilizando varios métodos y métricas de distinto tipo, aunque finalmete se optó por utilizar el método **single** (crear clústers a partir de los puntos más cercanos entre sí) y la **distancia de manhattan** o **cityblock**, ![ecuation](https://latex.codecogs.com/png.latex?%5Cinline%20D%28x%2Cy%29%20%3D%20%5Csum_%7Bi%3D1%7D%5En%7Cx_%7Bi%7D-y_%7Bi%7D%7C), dado que discriminaba más fácilmente los puntos más alejados entre sí (y el cálculo de distancias por ciudad se lleva bien con la métrica de cityblock).
+A primera vista ya se observaron puntos bastante separados de lo que consideramos un landmark, los cuáles consideramos outliers o localizaciones con muy poco dato como para considerarlo un landmark. Para la eliminación de dichos datos anómalos se decidió probar con **Clustering Jerárquico**, utilizando varios métodos y métricas de distinto tipo, aunque finalmente se optó por utilizar el método **single** (crear clústeres a partir de los puntos más cercanos entre sí) y la **distancia de manhattan** o **cityblock**, ![ecuation](https://latex.codecogs.com/png.latex?%5Cinline%20D%28x%2Cy%29%20%3D%20%5Csum_%7Bi%3D1%7D%5En%7Cx_%7Bi%7D-y_%7Bi%7D%7C), dado que discriminaba más fácilmente los puntos más alejados entre sí (y el cálculo de distancias por ciudad se lleva bien con la métrica de cityblock).
 
 ![](/imagenes/Dendrograma.png?raw=true)
 
@@ -324,9 +325,9 @@ Con esto finalizamos la primera parte de esta geoexploración.
 
 En la segunda fase de análisis geográfico el análisis de divide en dos vertientes:
 
--- Cálculo de distancias a la parada más cercana de cada medio de trasmporte para los listings del dataset.
+- Cálculo de distancias a la parada más cercana de cada medio de transporte para los listings del dataset.
 
--- Creación de **buffers** para el cálculo del número de elementos cercanos (principalmente sitios de interés turístico, aunque algún tipo de transporte ha sido incluido en este método) dentro del rango del buffer.
+- Creación de **buffers** para el cálculo del número de elementos cercanos (principalmente sitios de interés turístico, aunque algún tipo de transporte ha sido incluido en este método) dentro del rango del buffer.
 
 Para el cálculo de distancias utilizamos de nuevo la fórmula del semiverseno, sin embargo realizamos una pequeña modificación para que tan sólo se quede con la distancia más pequeña de todas las paradas.
 
@@ -336,7 +337,7 @@ map_df['fgc_distance'] = [min(haversine_distance(tlat, tlon, listlat, listlon) f
 
 ![](/imagenes/TransporteCercanos.png?raw=true)
 
-Para el método del buffer, transformamos las geometrias de todos los listings a fin de crear puntos con un diámetro mucho mayor, basándonos en un criterio distinto en caso de los transportes y los sitios turísticos (300 metros de radio para paradas de transporte y 600 para sitios turísticos). Por cada uno de las localizaciones se realiza el cálculo de booleanos (True/False) a través de la función de geopandas **within**, la cual marca con True los lugares que se encuentran dentro del *área* del alojamiento y con False los que no se encuentran en ella. Posteriormente, estos se suman (asumiendo que los valores True equivalen a 1 y los False a 0).
+Para el método del buffer, transformamos las geometrías de todos los listings a fin de crear puntos con un diámetro mucho mayor, basándonos en un criterio distinto en caso de los transportes y los sitios turísticos (300 metros de radio para paradas de transporte y 600 para sitios turísticos). Por cada uno de las localizaciones se realiza el cálculo de booleanos (True/False) a través de la función de geopandas **within**, la cual marca con True los lugares que se encuentran dentro del *área* del alojamiento y con False los que no se encuentran en ella. Posteriormente, estos se suman (asumiendo que los valores True equivalen a 1 y los False a 0).
 
 ```python
 map_df['tranvia_cercanos'] = [sum(i.within(j) 
@@ -365,7 +366,7 @@ Para este primer enfoque abordamos el análisis de las variables numéricas a pa
 
 ### **Variables Categóricas**
 
-Los atributos categóricos fueron tratados en primer lugar con **Boxplots** y **Barplots** para obterner una visión general de como se distribuían, así como influenciaban al precio en caso de tener algún peso sobre este. Esta vez en lugar de ser transformadas (se iban a transformar en variables dummy), nuestro objetivo era determinar si deberían incluirse en la etapa de modelado o no.
+Los atributos categóricos fueron tratados en primer lugar con **Boxplots** y **Barplots** para obtener una visión general de cómo se distribuían, así como influenciaban al precio en caso de tener algún peso sobre este. Esta vez en lugar de ser transformadas (se iban a transformar en variables dummy), nuestro objetivo era determinar si deberían incluirse en la etapa de modelado o no.
 
 ![](/imagenes/BarplotCat.png?raw=true)
 
@@ -375,17 +376,17 @@ Por otro lado, a fin de no quedarnos con una visión demasiado general de la inf
 
 ### **Variables Dicotómicas**
 
-Un elevado número de variables de nuestro dataset presentan tan solo valores booleanos. Al igual que con las categóricas, estas han sido tratadas con **Barplots** para comprobar que proporción son True o False, ya que consideramos que no vale la pena mantener una variable con una proporción demasiado dispar (si el 90% de los hosts tienen un email verificado, esa variable tendrá muy poca influencia en los precios), y con **Boxplots**, para analizar que relación mantenÍa entre categoría dicotómica y precio.
+Un elevado número de variables de nuestro dataset presentan tan solo valores booleanos. Al igual que con las categóricas, estas han sido tratadas con **Barplots** para comprobar que proporción son True o False, ya que consideramos que no vale la pena mantener una variable con una proporción demasiado dispar (si el 90% de los hosts tienen un email verificado, esa variable tendrá muy poca influencia en los precios), y con **Boxplots**, para analizar que relación mantenía entre categoría dicotómica y precio.
 
 ![](/imagenes/BarplotDic.png?raw=true)
 
-De nuevo, graficamos la evolución de precios medios respecto a las alternativas dicotómicas. Como resultado encontramos que la relación entre precios y dichos atributos varían dependiendo del año y mes, llegando incluso a igualarse la media de precios de ambas categorías, por lo que el peso de estos atributos puede no llegar a ser tan relevante como considerábamos en principio. No obstante, en algunos caso las diferencias en vez de igualarse, pueden incluso duplicarse, por lo que también podemos estar subestimando la importancia de ciertas variables.
+De nuevo, graficamos la evolución de precios medios respecto a las alternativas dicotómicas. Como resultado encontramos que la relación entre precios y dichos atributos varian dependiendo del año y mes, llegando incluso a igualarse la media de precios de ambas categorías, por lo que el peso de estos atributos puede no llegar a ser tan relevante como considerábamos al principio. No obstante, en algunos casos las diferencias en vez de igualarse, pueden incluso duplicarse, por lo que también podemos estar subestimando la importancia de ciertas variables.
 
 ![](/imagenes/EvoDic.png?raw=true)
 
 ### **Landmarks**
 
-En general las distancias a los landmarks se aproximan o bien a una forma uniforme o normal, acumulando la mayoría de registros en el intervalo de 1000 a 5000 metros. Para este tipo de distancia hemos seguido el mismo proceso que con las anteriores variables numéricas, combinar gráficos de colmena con una regresión y la distribución de sus marginales. Con ello observamos que todos y cada uno de los atributos relacionados con este tipo de distancias presentan en mayor o menor medida, una tendencia negativa, es de suponer ya que la proximidad a un Landmark debería influenciar al alza, en cierta medida, a los precios de un alojamiento turístico. 
+En general las distancias a los landmarks se aproximan o bien a una forma uniforme o normal, acumulando la mayoría de registros en el intervalo de 1000 a 5000 metros. Para este tipo de distancias hemos seguido el mismo proceso que con las anteriores variables numéricas, combinar gráficos de colmena con una regresión y la distribución de sus marginales. Con ello observamos que todos y cada uno de los atributos relacionados con este tipo de distancias presentan, en mayor o menor medida, una tendencia negativa. Es de suponer ya que la proximidad a un Landmark debería influenciar al alza, en cierta medida, a los precios de un alojamiento turístico. 
 
 ![](/imagenes/LandmarksDistancia.png?raw=true)
 
@@ -408,7 +409,7 @@ Curiosamente, la mayoría de atributos relacionados con el número de lugares de
 
 Una vez estudiadas todas las variables del dataset y su relación con el precio, se procedió a realizar por último un análisis de **correlaciones** entre variables dependientes a fin de encontrar posibles **colinealidaes** que pudieran ser evitadas con la eliminación de dichos atributos.
 
-En primer lugar, se seleccionaron las variables categóricas y dicotómicas analizadas en apartados anteriores para transformarlas en **variables dummy** para poder ser introducidas en el proceso de ajuste y predicción. 
+En primer lugar, se seleccionaron las variables categóricas y dicotómicas analizadas en apartados anteriores para transformarlas en **variables dummy** para que puedan ser introducidas en el proceso de ajuste y predicción. 
 
 ```python
 dummycols = ['host_response_time', 'neighbourhood_group_cleansed', 'property_type', 'room_type',  'cancellation_policy', 'review_scores_rating']
@@ -420,11 +421,11 @@ A continuación, calculamos los Coeficiente de Correlación y los graficamos a m
 
 ![](/imagenes/CorrPearson.png?raw=true)
 
-Continuando el tratamiento de correlaciones, graficamos una matriz de correlaciones, a través de la cual detectamos puntos calientes de interés. Uno de los principales focos donde se concentra la colinealidades elevadas se encuentra en los atributos relacionados con las distancias, sin embargo, dada nuestra intención de ajustar estos atributos y reducir su dimensionalidad con un **PCA**, ignoramos estos features para más adelante.
+Continuando el tratamiento de correlaciones, graficamos una matriz de correlaciones, a través de la cual detectamos puntos calientes de interés. Uno de los principales focos donde se concentran las colinealidades elevadas se encuentran los atributos relacionados con las distancias, sin embargo, dada nuestra intención de ajustar estos atributos y reducir su dimensionalidad con un **PCA**, ignoramos estos features para más adelante.
 
 ![](/imagenes/MatrizCorr.png?raw=true)
 
-Por otro lado, encontramos una correlación mayor de 80% entre las variables de **Beds, Accommmodates, Bedrooms**, como era de esperar debido a la naturaleza de su relación. Por último, curiosamente los **Restaurantes Cercanos** y las **Salas de Música Cercanas** tiene una correlación de 86%. Dada su relación más débil con la variable precio, eliminamos las variables que recogen Beds, Bedrooms y las Salas de Música Cercanas.
+Por otro lado, encontramos una correlación mayor de 80% entre las variables de **Beds, Accommmodates, Bedrooms**, como era de esperar debido a la naturaleza de su relación. Evidentemente, el número de huéspedes se presentó como el feature de mayor peso en la predicción de precios, por lo que a pesar de la clara influencia de **Beds** y **Bedrooms**, optamos por eliminarlas en favor de **LogAccommodates**. Por último, curiosamente los **Restaurantes Cercanos** y las **Salas de Música Cercanas** tiene una correlación de 86%, dada su relación más débil con la variable precio se eliminó la variable que recogía el número de salas de múscia cercanas.
 
 ##  Modelado
 
@@ -432,15 +433,15 @@ Por otro lado, encontramos una correlación mayor de 80% entre las variables de 
 
 **INPUTS:** DatosModelar.csv **OUTPUTS:** xxxxxx
 
-La última sección del TFM consta del modelado y utilización de varios algoritmos de **Machine Learning**, donde se perseguirá la obtención de predicciones lo más aproximadas posbiles respecto a la variable dependiente **goodprice**, o en su defecto **LogGoodprice**.
+La última sección del TFM consta del modelado y utilización de varios algoritmos de **Machine Learning**, donde se perseguirá la obtención de predicciones lo más aproximadas posibles respecto a la variable dependiente **goodprice**, o en su defecto **LogGoodprice**.
 
-Los datos utilizados para esta parte final provienen del dataset previamente analizado y tratado en la **Sección 2- Exploración General**. A partir de este, se llevarán a cabo ajustes tanto con **Modelos de Regresión Lineal** como **Modelos de Árbol** y **Redes Neuronales**, así como un **PCA** y procesos de tuneado de hiperparámetros mediante varias metodologías.
+Los datos utilizados para esta parte final provienen del dataset previamente analizado y tratado en la **Sección 2- Exploración General**. A partir de este, se llevarán a cabo ajustes tanto con **Modelos de Regresión Lineal** como **Modelos de Árbol** y **Redes Neuronales**, así como un **PCA** y procesos de tuneado de hiperparámetros mediante varias metodologías, realizando tareas de **Estandarización** de las variables previamente al ajuste de los algoritmos.
 
-Así mismo, como herramienta de comparación entre modelos se definió la función **evaluadorDeModelos**, la cual imprime la dos métricas elegidas para analizar el desempeño (**MAE** y **R²**) además de graficar la relación lineal entre valores pronosticados vs reales y el valor de los residuos de cada predicción.
+Así mismo, como herramienta de comparación entre modelos se definió la función **evaluadorDeModelos**, la cual imprime la dos métricas elegidas para analizar el desempeño (**MAE**, como función de pérdida, y **R²**, como 'accuracy') además de graficar la relación lineal entre valores pronosticados vs reales y el valor de los residuos de cada predicción.
 
 ### **Baseline con Regresión Lineal y Lasso**
 
-Como Baseline se decidió utilizar una **Regresión Lineal Múltiple** ya que la sección de análisis exploratorio se centro en estudiar las relaciones lineales entre las variables independientes y la dependiente, además de ser un algoritmo bastante rápido y sencillo de aplicar así como de comprender su funcionamiento.
+Como Baseline se decidió utilizar una **Regresión Lineal Múltiple** ya que la sección de análisis exploratorio se centró en estudiar las relaciones lineales entre las variables independientes y la dependiente, además de ser un algoritmo bastante rápido y sencillo de aplicar así como de comprender su funcionamiento.
 
 ### **Regresion Lineal Múltiple y Lasso**
 
@@ -448,21 +449,25 @@ Un primer ajuste del modelo nos revela un **Coeficiente de Determinación** de 6
 
 ![](/imagenes/RegresionLinealBase1.png?raw=true)
 
+Haciendo uso del evaluador de modelos observamos como la Regresión Lineal Múltiple tiende a subestimar los precios a medida que nos acercamos a cotas más altas, mientras que, aunque en menor medida, encontramos precios ligeramente sobreestimados entre los valores reales más bajos. Un rápido vistazo a los errores de predicción muestra la existencia de posibles datos atípicos u **outliers** que no fueron detectados en la fase de Exploración, no obstante, más allá de este problema los residuos se distribuyen normalmente alrededor del valor 0.
+
 ![](/imagenes/RegresionLinealBase2.png?raw=true)
 
-Como siguiente paso, se añadió a la función de coste de la regresión, ![equation](https://latex.codecogs.com/gif.latex?%5Cinline%20J%20%3D%20%5Cfrac%7B1%7D%7B2m%7D%5Csum_%7Bi%3D1%7D%5Em%20%28y_%7Bi%7D-%20%5Chat%7By_%7Bi%7D%7D%29%5E2) una regurlarización L1 o Lasso, ![equation](https://latex.codecogs.com/gif.latex?%5Cinline%20&plus;%5Calpha%5Ccdot%5Cfrac%7B1%7D%7Bn%7D%5Csum_%7Bj%3D1%7D%5En%7C%5Ctheta_j%7C) a fin de reducir el valor de los coeficientes y discriminar los coeficientes/atributos que no aportan apenas información a las predicciones del modelo. Un alfa curiosamente bajo es suficiente para detectar 8 atributos con pesos de valor igual a 0 manteniendo el mismo Coeficiente de Determinación (una pérdida de pocas décimas). 
+Como siguiente paso, se añadió a la función de coste de la regresión, ![equation](https://latex.codecogs.com/gif.latex?%5Cinline%20J%20%3D%20%5Cfrac%7B1%7D%7B2m%7D%5Csum_%7Bi%3D1%7D%5Em%20%28y_%7Bi%7D-%20%5Chat%7By_%7Bi%7D%7D%29%5E2) una regurlarización L1 o Lasso, ![equation](https://latex.codecogs.com/gif.latex?%5Cinline%20&plus;%5Calpha%5Ccdot%5Cfrac%7B1%7D%7Bn%7D%5Csum_%7Bj%3D1%7D%5En%7C%5Ctheta_j%7C) a fin de reducir el valor de los coeficientes y discriminar los coeficientes/atributos que no aportan apenas información a las predicciones del modelo. Un alfa curiosamente bajo es suficiente para detectar 9 atributos con pesos de valor igual a 0 manteniendo el mismo Coeficiente de Determinación (una pérdida de pocas décimas). 
 
 ![](/imagenes/RegresionLasso1.png?raw=true)
 
 ![](/imagenes/RegresionLasso2.png?raw=true)
 
-La esquematización de los pesos de cada feature nos permite vislumbrar que las columnas eliminadas son aquellas que presentan colineanlidad entre ellas y no fueron eliminadas en su momento, es decir las distancias, así como otras que en principo ya sospechábamos poco importantes, como **id** ( de asignación completamnete aleatoria) o **latitude** (dada la disposición de la ciudad).
+La esquematización de los pesos de cada feature nos permite vislumbrar que las columnas eliminadas son aquellas que presentan colineanlidad entre ellas y no fueron eliminadas en su momento, es decir las distancias, así como otras que en principio ya sospechábamos poco importantes, como **latitude** (dada la disposición de la ciudad). Como era de esperar, atributos como **LogAccommodates** o la existencia de aire acondicionado en el listing (**Air conditioning**) presentan pesos positivos importantes en el modelo, mientras que **room_type_Private Room** o **room_type_Shared Room** tienen un peso negativo al ser contrapartida de **room_type_Entire Home**. Sorprendentemente, una gran porción de features relacionados con la Geoexploración juegan un papel relevante en las predicciones.
 
 ![](/imagenes/PesosRegresionLasso.png?raw=true)
 
 A fin de reducir la dimensionalidad de los atributos eliminamos esos features de la matriz **X** y se volvió a ajustar la regresión lineal, logrando un R² prácticamente idéntico al conseguido con todos los atributos disponibles en el dataset, 66%. 
 
-[REGRESION LINEAL FILTRADO IMAGENES]
+![](/imagenes/RegresionLinealFiltrada.png?raw=true)
+
+![](/imagenes/RegresionFiltrada2.png?raw=true)
 
 ### **Regresión Lineal con PCA**
 
@@ -476,7 +481,7 @@ X_trainpca = X_train[distancias]
 X_testpca = X_test[distancias]
 ```
 
-En este caso, seleccionamos de X_train, y X_test los atributos relacionados con las distancias. Escalamos la variables y realizamos el ajuste del PCA sin límite de componenetes para analizar visualmente el número de atributos a seleccionar.
+En este caso, seleccionamos de X_train, y X_test los atributos relacionados con las distancias. Escalamos la variables y realizamos el ajuste del PCA sin límite de componentes para analizar visualmente el número de atributos a seleccionar.
 
 ![](/imagenes/PCA.png?raw=true)
 
@@ -498,11 +503,17 @@ X = np.append(X_train, X_test, axis = 0)
 y = np.append(y_train, y_test, axis = 0)
 ```
 
+Volvemos a ajustar el modelo de Regresión Lineal Múltiple y observamos una caída del 5% del **Coeficiente de Determinación** respecto al ajuste inicial.
+
 ![](/imagenes/RegresionLinealPCA.png?raw=true)
 
 ![](/imagenes/RegresionLinealPCA2.png?raw=true)
 
-Volvemos a ajustar el modelo de Regresión Lineal Múltiple y observamos una caída del 5% del **Coeficiente de Determinación** respecto al ajuste inicial. No obstante, si llevamos a cabo una validación cruzada con todo el dataset observamos muy poca diferencia entre las dos alternativas, quedando esta nueva opción muy levemente por debajo a nivel de performance (Sin PCA obtenemos un 65.8  de media y con PCA 65.4), es por ello que optamos por las ventajas del **PCA** (eliminamos 13 features y aceleramos el ajuste del modelo) a pesar de que nos suponga un baseline más pobre en la parte de test. **Cabe destacar que para la validación cruzada  definimos una función propia para dadas las particularidades de nuestro enfoque**.
+Un nueva ojeada a los valores de los coeficientes manifiesta unos valores sorprendentemente bajos para los Componentes creados con el PCA. Por lo demás, los features presentan el mismo comportamiento observados en los ajustes anteriores.
+
+![](/imagenes/PesosRegresionLinealPCA.png?raw=true)
+
+No obstante, si llevamos a cabo una validación cruzada con todo el dataset observamos muy poca diferencia entre las dos alternativas, quedando esta nueva opción muy levemente por debajo a nivel de performance (Sin PCA obtenemos un 65.8  de media y con PCA 65.4), es por ello que optamos por las ventajas del **PCA** (eliminamos 13 features y aceleramos el ajuste del modelo) a pesar de que nos suponga un baseline más pobre en la parte de test. **Cabe destacar que para la validación cruzada  definimos una función propia para dadas las particularidades de nuestro enfoque**.
 
 ```python
 
@@ -556,22 +567,31 @@ def PCA_cross_validation(model, X, y, cv = 5, scoring = 'r2', standarization = T
 #### **Comparativa CatBoost y XGBoost**
 
 Existen varios modelos en estado del arte en cuanto a algoritmo de árboles. Particularmente, se escogió dos de las opciones estrella actualmente, **XGBoost** y **CatBoost**, ya que al construir árboles de forma secuencial, cada nuevo árbol ayuda a corregir los errores cometidos por el anterior.
-XGBoost, a pesar de ser un algoritmo algo más antiguo que CatBoost sigue siendo un referente en las competiciones en páginas web como [Kaggle](https://www.kaggle.com/competitions). No obstante, CatBoost presenta ciertas mejoras que lo hacen una alternativa bastante aconsejable, menor tiempo de entrenamiento, manejo de las variables categoricas y missing values. Con el objetivo de escorge una de las dos opciones, se jugó tocando manualmente los hiperparámetros hasta encontrar dos predicciones lo más acertadas posibles.
+XGBoost, a pesar de ser un algoritmo algo más antiguo que CatBoost sigue siendo un referente en las competiciones en páginas web como [Kaggle](https://www.kaggle.com/competitions), unos de los algoritmos más populares para aplicar a datos tabulares. No obstante, CatBoost presenta ciertas mejoras que lo hacen una alternativa bastante aconsejable, menor tiempo de entrenamiento, manejo de las variables categóricas y missing values. Con el objetivo de escoger una de las dos opciones, se determinaron manualmente los hiperparámetros hasta encontrar dos predicciones lo más acertadas posibles.
 
-[IMAGEN DE CATBOOST Y XGBOOST]
+![](/imagenes/XGboost.png?raw=true)
+
+
+![](/imagenes/XGBoost2.png?raw=true)
+
+Aunque a priori el modelo **CatBoost** se mostraba como favorito en esta primera comparación, **XGBoost** demostró tener mayor facilidad para obtener predicciones mucho más acertadas tras varias pruebas y cambios manuales de hiperparámetros, llegando a superar en más de un 3% el performance en el R² de test (93.04 de Test frente al 96.7 de Train). Entre las ventajas de CatBoost, dado nuestro enfoque con los datasets en fases anteriores, la única interesante residía en la velocidad de ajuste, de lo cual no encontramos una mejora tan significativa como para considerarla relevante. Es por ello que se optó por XGBoost como modelo de árboles a optimizar. 
+
+![](/imagenes/Catboost.png?raw=true)
+
+![](/imagenes/CatBoost2.png?raw=true)
 
 
 #### **Optimización de Hiperparámetros de XGBoost**
 
-Tras haber determinado XGBoost como la alternativa más viable, se procedió a realizar el método de optimización conocido como **Coarse to Fine Tuning** para el tuneado de hiperparámetros. Esta metodología se basa en combinar el **Random Search** y el **Grid Search**, el primer utilizado para reconocer zonas 'prometedores' donde hacer un búsqueda más exhaustiva de combinaciones de hiperarámetros, de lo cual se encarga el segundo.
+Tras haber determinado XGBoost como la alternativa más viable, se procedió a realizar el método de optimización conocido como **Coarse to Fine Tuning** para el tuneado de hiperparámetros. Esta metodología se basa en combinar el **Random Search** y el **Grid Search**, el primero utilizado para reconocer zonas 'prometedoras' donde hacer un búsqueda más exhaustiva de combinaciones de hiperarámetros, de lo cual se encarga el segundo.
 
-En primer lugar, el Random Search realiza 20 **cross validations** combinando aleatoriamente los hiperparámetros **learning rate**, **gamma**, **max depth** y **min child weight**, los más recomendados para tunear. Como resultado, observamos que valores muy altos de gamma perjudica a test más que lo ayuda a pesar de ser un regularizador, min child weight no tiene importancia alguna en el score final, mientras que valores alrededor de 0.16 y 25 son bastante óptimos para el **learning rate** y para el **max depth** respectivamente.
+En primer lugar, el Random Search realiza 10 **cross validations** combinando aleatoriamente los hiperparámetros **learning rate**, **gamma**, **max depth** y **min child weight**, los más recomendados para tunear. Como resultado, observamos que valores muy altos de gamma perjudica a test más que lo ayuda a pesar de ser un regularizador, min child weight no tiene importancia alguna en el score final, mientras que valores alrededor de 0.16 y 25 son bastante óptimos para el **learning rate** y para el **max depth** respectivamente.
 
 ```python
 xgbcv = xgb.XGBRegressor(seed=1997, n_jobs = -1, verbose = 10, verbosity = 1, n_estimators = 50) 
 
 param_dist = {"learning_rate": sp.stats.uniform(0.1, 0.5),
-              "gamma": sp.stats.uniform(0, 1),
+              "reg_lambda": sp.stats.uniform(0.3, 1.5),
               "max_depth": range(20, 30),
               "min_child_weight": range(1,10)}
 
@@ -586,8 +606,8 @@ Una vez encontrado un rango de hiperparámetros viable, se establecen valores de
 ```python
 xgbcv = xgb.XGBRegressor(seed=1997, n_jobs = -1, verbose = 10, verbosity = 1, n_estimators = 50, min_child_weight=5)
 
-gparameters = {'learning_rate': [0.12, 0.15, 0.17], 'max_depth': [25, 27, 30],
-               'gamma': [0, 0.05, 0.08]}
+gparameters = {'learning_rate': [0.13, 0.17, 0.21], 'max_depth': [25, 27, 30],
+               'reg_lambda': [0.5, 0.9, 1.3]}
 
 GridSearch = GridSearchCV(xgbcv, param_grid = gparameters, scoring='neg_mean_absolute_error',
                           verbose = 10, cv = 3, iid = True)
@@ -595,23 +615,9 @@ GridSearch = GridSearchCV(xgbcv, param_grid = gparameters, scoring='neg_mean_abs
 GridSearch.fit(X_train, y_train)
 ```
 
-El GridSearch nos deja con un modelo bastante similar al que de por sí ya habiamos obtenido en la comparativa entre CatBoost y XGBoost, lo cual es comprensible dado que de base ya tenemos un score muy difícil de superar.
+El GridSearch nos deja con un modelo bastante similar al que de por sí ya habíamos obtenido en la comparativa entre CatBoost y XGBoost, esta vez alcanzando un Coeficiente de Determinación del 97%, lo cual es comprensible dado que de base ya tenemos un score muy difícil de superar.
 
-![](/imagenes/XGBoost1.png?raw=true)
-
--
-
-![](/imagenes/XGBoost2.png?raw=true)
-
-[ELABORAR LA COMPARATIVA]
-
-![](/imagenes/CatBoost.png?raw=true)
-
--
-
-![](/imagenes/CatBoost2.png?raw=true)
-
-Tras finalizar el Grid Search y por tanto el proceso de **Coarse to Fine Tunning**. optamos por la **Optimización Bayesiana**, una metología mucho más eficiente utilizando un modelo probabilístico de la función de coste (concretamente hablamos de un proceso Gaussiano), el cual va actualizando los parámetros de forma automática, por lo que podríamos optener unos parámetros mejor optimizados y un modelo más acertado en sus predicciones.
+Tras finalizar el Grid Search y por tanto el proceso de **Coarse to Fine Tunning**. optamos por la **Optimización Bayesiana**, una metodología mucho más eficiente utilizando un modelo probabilístico de la función de coste (concretamente hablamos de un proceso Gaussiano), el cual va actualizando los parámetros de forma automática, por lo que podríamos obtener unos parámetros mejor optimizados y un modelo más acertado en sus predicciones.
 
 Para la implementación de este tipo de optimizadores debemos crear una función objetivo (en esta caso de coste) que llamaremos **crossVal_score**, siendo esta una validación cruzada de 3-Folds con función de pérdida **MAE**.
 
@@ -646,19 +652,64 @@ optimizer = BayesianOptimization(f=crossVal_score,
 optimizer.run_optimization(max_iter=5)
 ```
 
-[IMAGEN DE XGBOOST BAYESIANO]
+![](/imagenes/XGBoostBayes.png?raw=true)
+
+El modelo optimizado a través del método bayesiano nos dejó el mejor ajuste que se pudo encontrar, alcanzando casi la perfección en train, **99.93%**,  pero quedando un poco por detrás en la evaluación de test, **97.24%** (overfitting que no hemos sido capaces de evitar en pro de minimizar la función de pérdida en la medida de lo posible). Una validación cruzada de 5-folds nos dejó de media un **97.3%** de R².
+
+![](/imagenes/XGBoostBayes2.png?raw=true)
+
+Con el objetivo de asegurar la interpretabilidad del algoritmo de **XGBoost**, utilizamos los valores **Shap (Shapley Additive exPlanations)**, es decir, los valores medios de la contribución marginal a través de todas las permutaciones posibles, ya que la *interpretabilidad global* del algoritmo nos permite mostrar cuanto contribuye cada uno de los features (y no solo la importancia del feature sino su influencia positiva o negativa con la predicción).
+
+![](/imagenes/PesosXGBoost.png?raw=true)
+
+La importancia de los features en algoritmos basados en árboles nos indica el valor de cada uno de los features utilizados en las predicciones (ya que hablamos de contribuciones marginales, cuanto más se usa un atributo en la construcción secuencial de árboles, mayor será su importancia). A pesar de que tan sólo graficamos 30 de los 60 atributos disponibles, es evidente la tendencia a valores muy próximos a cero a partir de la última feature gráficada, revelando la posibilidad de eliminar practicamente la mitad de columnas de nuestro dataset sin perjudicar en gran medida las predicciones de nuestro modelo.
+
+Entre los 7 atributos más importantes encontramos:
+
+**Private Room**: La variable dummy que indica si el alojamiento es una habitación privada o no. Desde un principio esta variable era una evidente pieza clave, ya que la mayoría de los listings se dividen en Habitaciones Privadas y Casa Enteras, siendo este primero la alternativa de menor precio.
+
+**LogAccommodates**: El atributo de huéspedes en escala logarítmica. Obviamente, cuanto mayor el número de huéspedes, mayor el precio por noche, como ya se observaba analizando las relaciones lineales.
+
+**minimum_nights**: Aunque en un principio no presentaba una relación lineal muy evidente, ya se observó en el baseline su influencia negativa en el precio, suponemos que alquileres de mayor duración son menos atractivos y repercuten en unos precios menores por parte de lo host.
+
+**extra_people**: Coste del alojamiento añadido por cada huésped más allá del establecido en **Accommodates**. De nuevo, esta variable es obviamente importante en la determinación del precio.
+
+**Air Conditioning**: Variable dicotómica que indica la existencia o no de aire accondicionado en el alojamiento. Juega un papel muy importante en la determinación de precios tanto en los modelos lineales como de árboles, probablemente relacionado con la estacionalidad de la subida de precios en verano en los que tener A/C es un valor añadido buscado por los usuarios.
+
+**PCA_component_1**: El primer componente que se obtiene del PCA sobre las variables de distancias. No volvemos a ver el siguiente componente hasta pasados unos cuantos atributos, por lo que nos preguntamos si ajustando de nuevo sin PCA las variables de distancia tendrían una influencia mayor.
+
+**month**: De entre todas las variables esta es la más destacable de todas, ya que se demuestra como, a diferencia de los modelos lineales, el **XGBoost** ha sido capaz de capturar la estacionalidad que mostrábamos en la Fase de Exploración y el valor que tiene tener en cuenta el mes en el momento de determinar un precio.
+
+![](/imagenes/ShapXGBoost.png?raw=true)
+
+Un gráfico más elaborado nos permite confirmar lo que se comentaba anteriormente *(se realizó con una muestra aleatoria de 10000 samples debido a capacidad computacional)*. El eje horizontal muestra si el efecto del feature para esa predicción fue positivo (aumento el valor de la predicción) o viceversa, mientras que el color muestra el valor del feature en dicha predicción (para variables dicotómicas azul implica un valor de 0 y el rojo de 1). 
+
+Advertimos como los valores de Private Room positivo empujan los precios hacia abajo confirmando nuesta hipótesis anterior, además de la relación positiva entre Accommodates y Price, así como la negativa entre minimum_nights y price. 
+
+Features como **month** demuestran como valores intermedios (6, 7 y 8, es decir, meses de Verano) en su mayoría "empujan las predicciones hacia arriba" mientras que valores extremos relativos a los meses de Invierno por norma general tienen el efecto contrario. Por otra parte, **PCA_Component_1** recoge como esperabamos el comportamiento propio de variables relacionadas con distancias, menor distancia mayor precio.
 
 ### **Redes Neuronales**
 
 #### **Creación de Redes Neuronales**
 
-Pór último, abordamos esta fase de modelado con redes neuronales. Concretamente, utilizaremos **Artificial Neural Networks** de poco tamaño (no más de 4/5 fully connected layers de 256/512 neuronas por capa) y jugaremos con las funciones de activación para encontrar una arquitectura que pueda compertir con el XGBoost. Para la compilación de las redes utilizarmos de nuevo el **MAE** como función de pérdida, así como el optimizador **ADAM** (el que consideramos más completo dadas las alternativas que disponemos).
+Por último, abordamos esta fase de modelado con redes neuronales. Concretamente, utilizaremos **Artificial Neural Networks** de poco tamaño (no más de 4/5 fully connected layers de 256/512 neuronas por capa) y jugaremos con las funciones de activación para encontrar una arquitectura que pueda competir con el XGBoost. Para la compilación de las redes utilizamos de nuevo el **MAE** como función de pérdida, así como el optimizador **ADAM** (el que consideramos más completo dadas las alternativas que disponemos).
 
-[IMAGEN ESQUEMA DE NN]
+Como primera arquitectura se creó una **Shallow Neural Network** de cuatro capas ocultas (128 nodos en las capas más cercanas a las de Input y Output, 256 para el resto) en las que utilizamos una función sigmoide de activación para las tres primeras y un **REctificador Lineal Unitario (RELU)** para la última. La capa del output utiliza una función de activación **Lineal** (no realiza ninguna transformación), ya que tratabamos un problema de regresión.
+ 
+![](/imagenes/RedNeuronal1.png?raw=true)
 
-[IMAGEN EVALUADOR DE MODELOS NN]
+Este primer ajuste exhibió unos resultados prometedores. Un **91.5%** en Test y **92.75%** en Train, así como una reducción del **MAE** bastante acorde entre los dos, demuestra una buena generalización por parte del modelo, por lo que la **regularización** no parecía precisa.
 
-Si comparamos los resultados con el XGBoost observamos que las redes neuronales no llegan a alcanzar el mismo perfomance, aunque presentan un menor overfitting que dicho modelo. Por tanto, se plantea la posiblidad de que una Red Neuronal Artificial presente la oportunidad de conseguir mejores predicciones manteniendo un menor overfitting que el XGBoost, es decir, un modelo mejor generalizado. Es por ello que damos paso a la Optimización de Redes Neuronales.
+![](/imagenes/EvaluaRedNeuronal1.png?raw=true)
+
+A fin de lograr reducir aún más el **MAE** y aproximar la performance al **XGBoost**, aumentamos la complejidad del modelo añadiendo una capa más en la arquitectura. Cambiando manualmente las funciones de activación encontramos que una combinación de **tangentes hiperbólicas** y **RELU**s presenta un mejor ajuste qu el anterior.
+
+![](/imagenes/RedNeuronal2.png?raw=true)
+
+Manualmente logramos mejorar el ajuste unas décimas. Sin embargo, si comparamos los resultados con el XGBoost observamos que las redes neuronales no llegan a alcanzar el mismo perfomance, aunque presentan un menor overfitting que dicho modelo. Por tanto, se plantea la posibilidad de que una Red Neuronal Artificial presente la oportunidad de conseguir mejores predicciones manteniendo un menor overfitting que el XGBoost, es decir, un modelo mejor generalizado. Es por ello que damos paso a la Optimización de Redes Neuronales.
+
+![](/imagenes/EvaluaRedNeuronal2.png?raw=true)
+
 
 #### **Optimización de Redes Neuronales**
 
@@ -676,47 +727,32 @@ class ANNRegressor(HyperModel):
         Dense(units = hp.Int('units_1', min_value = 32, max_value = 256,
                              step = 16, default = 128),
               activation = hp.Choice('dense_activation_1', values = ['relu', 'sigmoid', 'tanh'],
-                                     default = 'tanh')
-              )
-      )
+                                     default = 'tanh'))
+        )
     
     model.add(
         Dense(units = hp.Int('units_2', min_value = 32, max_value = 512,
                              step = 16, default = 256),
               activation = hp.Choice('dense_activation_2', values = ['relu', 'sigmoid', 'tanh'],
-                                     default = 'relu')
-              )
-      )
+                                     default = 'relu'))
+        )
     
     model.add(
         Dense(units = hp.Int('units_3', min_value = 32, max_value = 512,
                              step = 16, default = 256),
               activation = hp.Choice('dense_activation_3', values = ['relu', 'sigmoid', 'tanh'],
-                                     default = 'tanh')
-              )
-      )
+                                     default = 'tanh'))
+        )
     
     model.add(
         Dense(units = hp.Int('units_4', min_value = 32, max_value = 256,
                              step = 16, default = 256),
               activation = hp.Choice('dense_activation_4', values = ['relu', 'sigmoid', 'tanh'],
-                                     default = 'relu')
-              )
-      )
+                                     default = 'relu'))
+        )
     
     model.add(
-        Dense(units = hp.Int('units_5', min_value = 32, max_value = 256,
-                             step = 16, default = 128),
-              activation = hp.Choice('dense_activation_5', values = ['relu', 'sigmoid', 'tanh'],
-                                     default = 'relu')
-              )
-      )
-    
-    model.add(
-        Dense(units = hp.Int('units_6', min_value = 1, max_value = 1, 
-                             default = 1), 
-              activation = 'linear'
-              )
+        Dense(units = 1, activation = 'linear')
       )
     
     model.compile(optimizer = keras.optimizers.Adam(
@@ -744,29 +780,36 @@ tuner = KerasBayesianOptimization(
 )
 ```
 
-[IMAGEN DEL RESUMEN DEL TUNEADOR]
+![](/imagenes/Summary.png?raw=true)
 
-Tras un largo proceso de tuneado el resumen de resultados nos muestra como mejor candidato una combinación de tangentes hiperbólicas y rectificadores lineales en una arquitectura con el número máximo de nodos que se había planteado en un principio excepto para la capa conectada con la del ouput **(units_5)**. Una vez expuesto el mejor modelo, lo ajustamos a nuestros datos para elaborar las predicciones.
+Tras un largo proceso de tuneado el resumen de resultados nos muestra como mejor candidato una combinación de tangentes hiperbólicas y rectificadores lineales en una arquitectura con el número máximo de nodos que se había planteado en un principio excepto para la capa conectada con la del output **(units_5)**. Una vez expuesto el mejor modelo, lo ajustamos a nuestros datos para elaborar las predicciones.
 
-[IMAGEN DE EVALUADOR DE LA NN OPTIMIZADA]
+![](/imagenes/RedNeuronalOpt.png?raw=true)
+
+Últimando esta fase alcazamos una Red Neuronal bastante próxima a nivel de performance al **XGBoost**, con un **97.69%** de Coeficiente de Determinación en Train y **95.45%** en Test. Intentos de optimización con redes más complejas llevaron a peores resultados, por lo que se desestimó esta alternativa. 
+
+![](/imagenes/EvaluaciónRedNeuronalOpt.png?raw=true)
 
 ##  Visualización y Dashboard
 
-Tras finalizar todo el proceso de limpieza, exploración y modelización, la visualización es otro de los aspectos relevantes dentro del Data Science. De hecho se ha convertido en un punto clave para comunicar y, desde nuestro punto de vista, es relevante para poder trasladar la comprensión y la importancia de los datos con los que hemos trabajado durante todo el proyecto desde un contexto visual.
+Finalizado el proceso de limpieza, exploración y modelización, la visualización y comunicación de resultados se presenta como la última fase del proyecto, un punto clave poder trasladar al usuario final el conocimiento e información obtenida durante el tratamiento de los datos a lo largo de las fases anteriores, utilizando siempre un contexto visual para facilitar su entendimiento.
 
-La visualización que os presentamos en tableau, pretende acercarnos a los usuarios para poder contextualizar de forma interactiva, cuáles son los datos que hemos ido incorporando en los modelos que os hemos ido presentando en los anteriores puntos.
+Con el objetivo de acercar a los usuarios a una interfaz interactiva en la que puedan comprobar por cuenta propia los resultados presentados, se realizó una serie de **Dashboards** en **Tableau**. Con él pretendemos que el usuario tenga la posiblidad de contextualizar los datos que han sido incorporados a lo largo de todo el proyecto, e introducidos en los modelos presentados en la fase de modelado.
 
-El dashboard consta de 3 bloques principales.
+Un primer vistazo al dashboard central nos revela una división en 3 bloques principales.
 
-El primer bloque muestra de manera interactiva cuáles son los datos de los que disponemos de la base de Datos de Inside Airbnb. Las características de todos aquellos registros que hemos utilizado para el modelado. 
+El primer de ellos presenta los datos obtenidos de la web de Inside Airbnb. Concretamente, las variables de todos aquellos registros con influencia relevante en la predicción de los modelos: 
 
-En un primer lugar podremos observar el número de pisos únicos dados de alta en AirBNB durante los años 2017 a 2020, así como la evolución de los precios de todos los ellos. El precio es una variable que hemos querido visualizar al inicio del Dashboard dada su relevancia dentro de nuestro proyecto como variable a predecir por nuestros modelos.
+En la parte superior podremos observar el número de pisos únicos dados de alta en AirBNB durante los años 2017 a 2020, así como la evolución de los precios de todos los ellos, variable a predecir como objetivo de nuestro proyecto.
 
-Una vez comprendido el número de registros y el nivel de precios promedio de los que hablamos, pasamos a analizar la estructura de los alojamientos a nivel de qué tipo de propiedades son y cuál es el grado de alquiler en cuanto a si es toda la propiedad o solo una habitación, y, otros aspectos relevantes que son los primeros a ser consultados por los usuarios cuando navegas por tipos de apps/web como Airbnb que son, el número de habitaciones, camas e incluso baños.
+A continuación, un análisis de las principales características los alojamientos nos permite analizar mediante filtros como cambia la evolución de precios dependiendo de distintos atributos: Tipo de propiedad, tipo de alquiler (E.G. toda la propiedad o solo una habitación), y otros aspectos relevantes que durante el proyecto han resultado ser relevantes en las predicciones, además de ser las primeras a ser consultadas por los usuarios cuando navegas por webs como **AirBNB**, como el número de habitaciones, camas o baños.
 
-Por otro lado, y cada vez más, nos gusta saber la ubicación de las cosas que buscamos. Es por ello que consideramos incluir un mapa donde se pudieran visualizar dos cosas, los barrios en los que se distribuyen los alojamientos, y otra opción que hemos añadido como visaluzación del mapa, el nivel de densidad en los que se distribuye la oferta de alojamientos en Barcelona.
 
-Normalmente, el tipo de propiedad y si se alquila de forma completa o parcial, es una de las cosas que previamente a la búsqueda del aliojamiento ideal ya tenemos pensados en base al tipo de viaje o escapada que queremos realizar. Es por ello que hemos considerado que la variable debería ser usada com filtro de visualización. Hacer click en cada uno de las opciones que ofrece el gráfico en forma de barra, permite que la visualización del resto de variables cambie, desde los precios, hasta el tamaño del alojammiento, los mapas e incluso variables que explicaremos a continuación.
+[HASTA AQUÍ REVISADO]
+
+Por otro lado, y cada vez más, nos gusta saber la ubicación de las cosas que buscamos. Es por ello que consideramos incluir un mapa donde se pudieran visualizar dos cosas, los barrios en los que se distribuyen los alojamientos, y otra opción que hemos añadido como visualización del mapa, el nivel de densidad en los que se distribuye la oferta de alojamientos en Barcelona.
+
+Normalmente, el tipo de propiedad y si se alquila de forma completa o parcial, es una de las cosas que previamente a la búsqueda del alojamiento ideal ya tenemos pensados en base al tipo de viaje o escapada que queremos realizar. Es por ello que hemos considerado que la variable debería ser usada con filtro de visualización. Hacer click en cada uno de las opciones que ofrece el gráfico en forma de barra, permite que la visualización del resto de variables cambie, desde los precios, hasta el tamaño del alojamiento, los mapas e incluso variables que explicaremos a continuación.
 
 ![](/imagenes/TFMAirBNBTableau1.png?raw=true)
 ![](/imagenes/TFMAirBNBTableau1b.png?raw=true)
@@ -777,7 +820,7 @@ Una vez vista la primera parte del Dashboard, donde hemos podido ver las primera
 
 Finalmente, en el tercer bloque del Dashboard,encontramos una visualización que pretende mostrar el tipo de datos obtenidos a raíz del procesado de datasets externos que nos han permitido nutrir de información adicional los modelos de predicción.
 
-Encontramos dos mapas, en un primer lugar y, a raíz de datos extraídos de Open Data Barcelona a nivel de transportes y servicios, se muestra los servicios y oferta turística alredador de cada uno de los alojamientos con un density map. Un parámetro en la parte superior del mapa nos permite cambiar la visualización en base a lo que queramos visualizar y analizar.
+Encontramos dos mapas, en un primer lugar y, a raíz de datos extraídos de Open Data Barcelona a nivel de transportes y servicios, se muestra los servicios y oferta turística alrededor de cada uno de los alojamientos con un density map. Un parámetro en la parte superior del mapa nos permite cambiar la visualización en base a lo que queramos visualizar y analizar.
 
 En segundo lugar encontramos el mapa donde podemos ver los landmarks de Barcelona. Esta visualización ha sido posible gracias al dataset de fotografias geolocalizadas de una API de Flickr y la aplicación del modelo de aprendizaje no supervisado de clusterización. Este mapa es más ilustrativo y lo que pretende es aportar una visualización de los puntos más relevantes con su icono asociado.
 

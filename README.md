@@ -5,7 +5,7 @@
 
 # Introducción y Motivación
 
-El sitio web AirBNB permite a propietarios de apartamentos convertirse en 'hosts' de la plataforma y ofertar sus propiedades, llamadas 'listings', online a fin de cobrar un alquiler vacacional. En un mercado de competencia perfecta como el alquiler vacacional (muchos ofertantes, productos muy similares, fácil acceso a información del mercado y pocas barreras de entrada), determinar el precio del alojamiento puede ser una tarea difícil, mucho más en ciudades con tanta competencia como Barcelona, si lo que se busca es maximizar el beneficio/ocupación de tu listing. Además, a pesar de que ya existen plataformas como AirDNA ofreciendo asesoramiento en este aspecto, o bien son demasiado caros para el usuario medio u ofrecen predicciones poco convincentes.
+El sitio web AirBNB permite a propietarios de apartamentos convertirse en 'hosts' de la plataforma y ofertar sus propiedades, llamadas 'listings', online a fin de cobrar un alquiler vacacional. En un mercado de competencia perfecta como este (muchos ofertantes, productos muy similares, fácil acceso a información del mercado y pocas barreras de entrada), determinar el precio del alojamiento puede ser una tarea difícil, mucho más en ciudades con tanta competencia como Barcelona, si lo que se busca es maximizar el beneficio/ocupación de tu listing. Además, a pesar de que ya existen plataformas como AirDNA ofreciendo asesoramiento en este aspecto, son demasiado caros para el usuario medio y no es habitual el uso de estas plataformas por parte de particulares.
 
 ![](/imagenes/AirBNBweb.png?raw=true)
 
@@ -23,7 +23,7 @@ El dataset principal consta de csv y geojson obtenidos desde la web de [Inside A
 
 ### Listings.csv
 
-Es el archivo más importante de los tres, en este csv encontramos toda la información disponible en la página específica de cada uno de los listings, desde descripciones propias del host hasta cuantos servicios o comodidades adicionales ofrece el listing. Para nuestro análisis se utilizaron datos de los meses de Abril y Octubre (para tener una visión general del año). A continuación se describen brevemente las principales columnas del dataset.
+Es el archivo más importante de los tres. En este csv encontramos toda la información disponible en la página específica de cada uno de los listings, desde descripciones propias del host, hasta cuantos servicios o comodidades adicionales ofrece el listing. Para nuestro análisis se utilizaron datos de los meses de Abril y Octubre (para tener una visión general del año). A continuación se describen brevemente las principales columnas del dataset.
 
 | Columna       | Descripción          
 | ------------- |------------- | 
@@ -33,7 +33,7 @@ Es el archivo más importante de los tres, en este csv encontramos toda la infor
 | host_is_superhost | Superhost es una señal de veterania y experiencia en la plataforma|
 | host_verifications | Formas de contacto e identificación verificadas por el host y AirBNB|
 | neighbourhood_group_cleansed | Vecindario/distrito del listing |
-| property_type | Columna del tipo de propiedad generalizada a cuatro categorías (Apartment, House, Hotel y Other|
+| property_type | Tipo de propiedad, generalizada a cuatro categorías (Apartment, House, Hotel y Other|
 | room_type | Tipo de habitación (Private, Hotel, Shared Room o bien Entire Home) |
 | ammenities | Diccionario de servicios/comodidades adicionales que ofrece el alojamiento |
 | price | Variable a predecir y (en su mayoría) precio por noche del listing |
@@ -49,7 +49,7 @@ Es el archivo más importante de los tres, en este csv encontramos toda la infor
 | guests_included | Nº de huéspedes incluidos en el precio base |
 | minimum_nights | Nº mínimo de noches para la reserva |
 | maximum_nights | Nº máximo de noches permitidas de reserva |
-| availability_x | disponibilidad del listing los siguientes x días (30, 60, 90, 365)|
+| availability_x | Disponibilidad del listing los siguientes 'x' días (30, 60, 90, 365)|
 | reviews_per_month| Media calculada de nº de reviews por mes |
 | number_of_reviews| Nº total de reviews de cada listing |
 | reviews_scores_rating| Calificación total del alojamiento proporcionada por los usuarios |
@@ -71,7 +71,7 @@ El dataset de calendar nos proporciona información diaria sobre cómo se compor
 
 ## Dataset de Flickr
 
-Dataset que recoge las coordenadas de la ciudad de Barcelona donde se han tomado fotos relacionadas con algún monumento o lugar de interés de la ciudad (los cuáles llamaremos **landmarks**). Este dataset tan solo presenta la latitud y longitud sin especificar de que landmark se trata ninguno de los puntos, estando sujeto a un problema de tipo no supervisado, concretamente **clustering**, y se trabajará con coordenadas en grados **(Código EPSG 4326)**.
+Dataset que recoge las coordenadas de la ciudad de Barcelona donde se han tomado fotos relacionadas con algún monumento o lugar de interés de la ciudad (los cuáles llamaremos **landmarks**). Este dataset tan solo presenta la latitud y longitud sin especificar de qué landmark se trata ninguno de los puntos, estando sujeto a un problema de tipo no supervisado, concretamente **clustering**, y se trabajará con coordenadas en grados **(Código EPSG 4326)**.
 
 ## Datasets de Transportes
 
@@ -121,7 +121,7 @@ $ conda env create -f TFMenvironment.yml
 
 La primera Fase de este proyecto consiste en la limpieza y análisis superficial de los datasets base para la evolución del TFM, listings.csv y calendar.csv. 
 
-Un primer barrido de eliminación de columnas suprimió del proceso todas las variables relacionadas con urls, así como descripciones tanto del host como del alojamiento (se planteó el uso de NLP en estas columnas a fin de encontrar nuevos atributos útiles pero finalmente, dado que los algoritmos ya estaban dando muy buenos resultados, se decidió seguir un camino distinto). Por otro lado, también fueron eliminadas columnas con más de un **60%** de Nulls dada su relativamente baja importancia y el riesgo a introducir un sesgo grande por medio de la imputación de valores (tanto predichos a través de modelos lineales como medianas o medias).
+Un primer barrido de eliminación de columnas suprimió del proceso todas las variables relacionadas con urls, así como descripciones tanto del host como del alojamiento (se planteó el uso de NLP en estas columnas a fin de encontrar nuevos atributos útiles pero finalmente, dado que los algoritmos ya estaban dando muy buenos resultados, se decidió seguir un camino distinto). Por otro lado, también fueron eliminadas columnas con más de un **60%** de Nulls dada su relativa baja importancia y el riesgo a introducir un sesgo grande por medio de la imputación de valores (tanto predichos a través de modelos lineales como medianas o medias).
 
 ```python
 nulls = df.isnull().sum() / df.shape[0]
@@ -235,7 +235,7 @@ Concretamente, el **coeficiente de asimetría de Fisher** resulta ser de 0.404, 
 
 ![](/imagenes/QQplot.png?raw=true)
 
-Para finalizar el análisis de la variable dependiente, se realizó un estudio de la evolución de los precios medios a fin de encontrar una posible tendencia o estacionalidad a lo largo de los meses y años. Para ello se procedió a gráficar los precios medios por mes junto a sus intervalos de confianza.
+Para finalizar el análisis de la variable dependiente, se realizó un estudio de la evolución de los precios medios a fin de encontrar una posible tendencia o estacionalidad a lo largo de los meses y años. Para ello se procedió a graficar los precios medios por mes junto a sus intervalos de confianza.
 
 ```python
 def intervalosConfianza(agrupacion, variable):
@@ -281,7 +281,7 @@ No obstante, de esta última parte del análisis solo podemos destacar la posibl
 
 **INPUTS:** DatosLimpios.csv **OUTPUTS:** Distancias.csv, DistanciasTurismo.csv
 
-La Geoexploración supone un interludio dentro la fase de exploración, una breve desviación que hemos decidido tratar en un notebook distinto debido a que tiene una temática distinta a la que tratamos en la exploración más general. Esta fase del proyecto se divide en dos enfoques distintos centrados en datos geoespaciales, en primer lugar la determinación de localizaciones de **Landmarks** a través del calculo de centroides y el cálculo de distancias entre landmark y alojamiento, y por otro lado el cálculo, o bien de distancias a paradas de transporte cercanas, o bien el número de paradas cercanas a un alojamiento.
+La Geoexploración supone un interludio dentro la fase de exploración, una breve desviación que hemos decidido tratar en un notebook distinto debido a que tiene una temática distinta a la que tratamos en la exploración más general. Esta fase del proyecto se divide en dos enfoques distintos centrados en datos geoespaciales, en primer lugar la determinación de localizaciones de **Landmarks** a través del cálculo de centroides y el cálculo de distancias entre landmark y alojamiento, y por otro lado el cálculo, o bien de distancias a paradas de transporte cercanas, o bien el número de paradas cercanas a un alojamiento.
 
 ### **Centroides a partir de datos de Flickr**
 
@@ -366,7 +366,7 @@ Para este primer enfoque abordamos el análisis de las variables numéricas a pa
 
 ### **Variables Categóricas**
 
-Los atributos categóricos fueron tratados en primer lugar con **Boxplots** y **Barplots** para obtener una visión general de como se distribuían, así como influenciaban al precio en caso de tener algún peso sobre este. Esta vez en lugar de ser transformadas (se iban a transformar en variables dummy), nuestro objetivo era determinar si deberían incluirse en la etapa de modelado o no.
+Los atributos categóricos fueron tratados en primer lugar con **Boxplots** y **Barplots** para obtener una visión general de cómo se distribuían, así como influenciaban al precio en caso de tener algún peso sobre este. Esta vez en lugar de ser transformadas (se iban a transformar en variables dummy), nuestro objetivo era determinar si deberían incluirse en la etapa de modelado o no.
 
 ![](/imagenes/BarplotCat.png?raw=true)
 
@@ -380,13 +380,13 @@ Un elevado número de variables de nuestro dataset presentan tan solo valores bo
 
 ![](/imagenes/BarplotDic.png?raw=true)
 
-De nuevo, graficamos la evolución de precios medios respecto a las alternativas dicotomicas. Como resultado encontramos que la relación entre precios y dichos atributos varian dependiendo del año y mes, llegando incluso a igualarse la media de precios de ambas categorías, por lo que el peso de estos atributos puede no llegar a ser tan relevante como considerábamos en principio. No obstante, en algunos caso las diferencias en vez de igualarse, pueden incluso duplicarse, por lo que también podemos estar subestimando la importancia de ciertas variables.
+De nuevo, graficamos la evolución de precios medios respecto a las alternativas dicotómicas. Como resultado encontramos que la relación entre precios y dichos atributos varian dependiendo del año y mes, llegando incluso a igualarse la media de precios de ambas categorías, por lo que el peso de estos atributos puede no llegar a ser tan relevante como considerábamos al principio. No obstante, en algunos casos las diferencias en vez de igualarse, pueden incluso duplicarse, por lo que también podemos estar subestimando la importancia de ciertas variables.
 
 ![](/imagenes/EvoDic.png?raw=true)
 
 ### **Landmarks**
 
-En general las distancias a los landmarks se aproximan o bien a una forma uniforme o normal, acumulando la mayoría de registros en el intervalo de 1000 a 5000 metros. Para este tipo de distancia hemos seguido el mismo proceso que con las anteriores variables numéricas, combinar gráficos de colmena con una regresión y la distribución de sus marginales. Con ello observamos que todos y cada uno de los atributos relacionados con este tipo de distancias presentan en mayor o menor medida, una tendencia negativa, es de suponer ya que la proximidad a un Landmark debería influenciar al alza, en cierta medida, a los precios de un alojamiento turístico. 
+En general las distancias a los landmarks se aproximan o bien a una forma uniforme o normal, acumulando la mayoría de registros en el intervalo de 1000 a 5000 metros. Para este tipo de distancias hemos seguido el mismo proceso que con las anteriores variables numéricas, combinar gráficos de colmena con una regresión y la distribución de sus marginales. Con ello observamos que todos y cada uno de los atributos relacionados con este tipo de distancias presentan, en mayor o menor medida, una tendencia negativa. Es de suponer ya que la proximidad a un Landmark debería influenciar al alza, en cierta medida, a los precios de un alojamiento turístico. 
 
 ![](/imagenes/LandmarksDistancia.png?raw=true)
 
@@ -395,7 +395,7 @@ No obstante, es evidente que dicha relación lineal es muy débil. Calculada a p
 
 ### **Transportes**
 
-De nuevo los gráficos en colmena revelan unas cuantas distancias o features de paradas cercanas que carecen de importancia, a causa de la gran red de transportes públicos que ofrece Barcelona, especialmente en cuanto a metros y autobuses, por lo que cualquier alojamiento tiene una o varias paradas cercanas y la proximidad o el número de paradas próximas de este tipo de transportes no es relevante a la hora de elegir o no una residencia turística. A pesar de esta cuestión, si que encontramos distancias a transportes con una leve relación lineal negativa respecto a los precios, sobretodo si hablamos de distancia a las paradas de bus al aeropuerto o distancia a las estaciones de Ferrorcarril. Una vez más, hemos intentado encontrar alguna transformación que aplicada a los datos aumentara la relación con el precio, aunque solo se ha encontrado alguna mejora en unos pocos features aplicando una transformación logarítmica.
+De nuevo los gráficos en colmena revelan unas cuantas distancias o features de paradas cercanas que carecen de importancia, a causa de la gran red de transportes públicos que ofrece Barcelona, especialmente en cuanto a metros y autobuses, por lo que cualquier alojamiento tiene una o varias paradas cercanas y la proximidad o el número de paradas próximas de este tipo de transportes no es relevante a la hora de elegir o no una residencia turística. A pesar de esta cuestión, si que encontramos distancias a transportes con una leve relación lineal negativa respecto a los precios, sobretodo si hablamos de distancia a las paradas de bus al aeropuerto o distancia a las estaciones de Ferrocarril. Una vez más, hemos intentado encontrar alguna transformación que aplicada a los datos aumentara la relación con el precio, aunque solo se ha encontrado alguna mejora en unos pocos features aplicando una transformación logarítmica.
 
 ![](/imagenes/FerrocarrilExploracion.png?raw=true)
 
@@ -421,7 +421,7 @@ A continuación, calculamos los Coeficiente de Correlación y los graficamos a m
 
 ![](/imagenes/CorrPearson.png?raw=true)
 
-Continuando el tratamiento de correlaciones, graficamos una matriz de correlaciones, a través de la cual detectamos puntos calientes de interés. Uno de los principales focos donde se concentra la colinealidades elevadas se encuentra en los atributos relacionados con las distancias, sin embargo, dada nuestra intención de ajustar estos atributos y reducir su dimensionalidad con un **PCA**, ignoramos estos features para más adelante.
+Continuando el tratamiento de correlaciones, graficamos una matriz de correlaciones, a través de la cual detectamos puntos calientes de interés. Uno de los principales focos donde se concentran las colinealidades elevadas se encuentran los atributos relacionados con las distancias, sin embargo, dada nuestra intención de ajustar estos atributos y reducir su dimensionalidad con un **PCA**, ignoramos estos features para más adelante.
 
 ![](/imagenes/MatrizCorr.png?raw=true)
 
@@ -435,13 +435,13 @@ Por otro lado, encontramos una correlación mayor de 80% entre las variables de 
 
 La última sección del TFM consta del modelado y utilización de varios algoritmos de **Machine Learning**, donde se perseguirá la obtención de predicciones lo más aproximadas posibles respecto a la variable dependiente **goodprice**, o en su defecto **LogGoodprice**.
 
-Los datos utilizados para esta parte final provienen del dataset previamente analizado y tratado en la **Sección 2- Exploración General**. A partir de este, se llevarán a cabo ajustes tanto con **Modelos de Regresión Lineal** como **Modelos de Árbol** y **Redes Neuronales**, así como un **PCA** y procesos de tuneado de hiperparámetros mediante varias metodologías, realizando tareas de **Estandarización** de las variables previamente al ajuste de los algoritmos que .
+Los datos utilizados para esta parte final provienen del dataset previamente analizado y tratado en la **Sección 2- Exploración General**. A partir de este, se llevarán a cabo ajustes tanto con **Modelos de Regresión Lineal** como **Modelos de Árbol** y **Redes Neuronales**, así como un **PCA** y procesos de tuneado de hiperparámetros mediante varias metodologías, realizando tareas de **Estandarización** de las variables previamente al ajuste de los algoritmos.
 
 Así mismo, como herramienta de comparación entre modelos se definió la función **evaluadorDeModelos**, la cual imprime la dos métricas elegidas para analizar el desempeño (**MAE**, como función de pérdida, y **R²**, como 'accuracy') además de graficar la relación lineal entre valores pronosticados vs reales y el valor de los residuos de cada predicción.
 
 ### **Baseline con Regresión Lineal y Lasso**
 
-Como Baseline se decidió utilizar una **Regresión Lineal Múltiple** ya que la sección de análisis exploratorio se centro en estudiar las relaciones lineales entre las variables independientes y la dependiente, además de ser un algoritmo bastante rápido y sencillo de aplicar así como de comprender su funcionamiento.
+Como Baseline se decidió utilizar una **Regresión Lineal Múltiple** ya que la sección de análisis exploratorio se centró en estudiar las relaciones lineales entre las variables independientes y la dependiente, además de ser un algoritmo bastante rápido y sencillo de aplicar así como de comprender su funcionamiento.
 
 ### **Regresion Lineal Múltiple y Lasso**
 
@@ -567,7 +567,7 @@ def PCA_cross_validation(model, X, y, cv = 5, scoring = 'r2', standarization = T
 #### **Comparativa CatBoost y XGBoost**
 
 Existen varios modelos en estado del arte en cuanto a algoritmo de árboles. Particularmente, se escogió dos de las opciones estrella actualmente, **XGBoost** y **CatBoost**, ya que al construir árboles de forma secuencial, cada nuevo árbol ayuda a corregir los errores cometidos por el anterior.
-XGBoost, a pesar de ser un algoritmo algo más antiguo que CatBoost sigue siendo un referente en las competiciones en páginas web como [Kaggle](https://www.kaggle.com/competitions), unos de los algoritmos más populares para aplicar a datos tabulares. No obstante, CatBoost presenta ciertas mejoras que lo hacen una alternativa bastante aconsejable, menor tiempo de entrenamiento, manejo de las variables categóricas y missing values. Con el objetivo de escoger una de las dos opciones, se jugó tocando manualmente los hiperparámetros hasta encontrar dos predicciones lo más acertadas posibles.
+XGBoost, a pesar de ser un algoritmo algo más antiguo que CatBoost sigue siendo un referente en las competiciones en páginas web como [Kaggle](https://www.kaggle.com/competitions), unos de los algoritmos más populares para aplicar a datos tabulares. No obstante, CatBoost presenta ciertas mejoras que lo hacen una alternativa bastante aconsejable, menor tiempo de entrenamiento, manejo de las variables categóricas y missing values. Con el objetivo de escoger una de las dos opciones, se determinaron manualmente los hiperparámetros hasta encontrar dos predicciones lo más acertadas posibles.
 
 ![](/imagenes/XGboost.png?raw=true)
 
@@ -658,7 +658,7 @@ El modelo optimizado a través del método bayesiano nos dejó el mejor ajuste q
 
 ![](/imagenes/XGBoostBayes2.png?raw=true)
 
-Con el objetivo de asegurar la interpretabilidad del algoritmo de **XGBoost**, utilizamos los valores **Shap (Shapley Additive exPlanations)**, es decir los valores medios de la contribución marginal a través de todas las permutaciones posibles, ya que la *interpretabilidad global* del algoritmo nos permite mostrar cuanto contribuye cada uno de los features (y no solo la importancia del feature sino su influencia positiva o negativa con la predicción).
+Con el objetivo de asegurar la interpretabilidad del algoritmo de **XGBoost**, utilizamos los valores **Shap (Shapley Additive exPlanations)**, es decir, los valores medios de la contribución marginal a través de todas las permutaciones posibles, ya que la *interpretabilidad global* del algoritmo nos permite mostrar cuanto contribuye cada uno de los features (y no solo la importancia del feature sino su influencia positiva o negativa con la predicción).
 
 ![](/imagenes/PesosXGBoost.png?raw=true)
 
@@ -670,11 +670,11 @@ Entre los 7 atributos más importantes encontramos:
 
 **LogAccommodates**: El atributo de huéspedes en escala logarítmica. Obviamente, cuanto mayor el número de huéspedes, mayor el precio por noche, como ya se observaba analizando las relaciones lineales.
 
-**minimum_nights**: Aunque en un principio no presentaba una relación lineal muy evidente, ya se observó en el baseline su influencia negativa en el precio, suponemos que alquileres de mayor duración son menos atractivas y repercuten en unos precios menores por parte de lo host.
+**minimum_nights**: Aunque en un principio no presentaba una relación lineal muy evidente, ya se observó en el baseline su influencia negativa en el precio, suponemos que alquileres de mayor duración son menos atractivos y repercuten en unos precios menores por parte de lo host.
 
 **extra_people**: Coste del alojamiento añadido por cada huésped más allá del establecido en **Accommodates**. De nuevo, esta variable es obviamente importante en la determinación del precio.
 
-**Air Conditioning**: Variable dicotómica que indica la existencia o no de aire accondicionado en el alojamiento. Curiosamente, juega un papel muy importante en la determinación de precios tanto en los modelos lineales como de árboles.
+**Air Conditioning**: Variable dicotómica que indica la existencia o no de aire accondicionado en el alojamiento. Juega un papel muy importante en la determinación de precios tanto en los modelos lineales como de árboles, probablemente relacionado con la estacionalidad de la subida de precios en verano en los que tener A/C es un valor añadido buscado por los usuarios.
 
 **PCA_component_1**: El primer componente que se obtiene del PCA sobre las variables de distancias. No volvemos a ver el siguiente componente hasta pasados unos cuantos atributos, por lo que nos preguntamos si ajustando de nuevo sin PCA las variables de distancia tendrían una influencia mayor.
 
@@ -684,7 +684,7 @@ Entre los 7 atributos más importantes encontramos:
 
 Un gráfico más elaborado nos permite confirmar lo que se comentaba anteriormente *(se realizó con una muestra aleatoria de 10000 samples debido a capacidad computacional)*. El eje horizontal muestra si el efecto del feature para esa predicción fue positivo (aumento el valor de la predicción) o viceversa, mientras que el color muestra el valor del feature en dicha predicción (para variables dicotómicas azul implica un valor de 0 y el rojo de 1). 
 
-Advertimos como los valores de Private Room positivo empujan los precios hacia abajo confirmando nuesta tesis anterior, además de la relación positiva entre Accommodates y Price, así como la negativa entre minimum_nights y price. 
+Advertimos como los valores de Private Room positivo empujan los precios hacia abajo confirmando nuesta hipótesis anterior, además de la relación positiva entre Accommodates y Price, así como la negativa entre minimum_nights y price. 
 
 Features como **month** demuestran como valores intermedios (6, 7 y 8, es decir, meses de Verano) en su mayoría "empujan las predicciones hacia arriba" mientras que valores extremos relativos a los meses de Invierno por norma general tienen el efecto contrario. Por otra parte, **PCA_Component_1** recoge como esperabamos el comportamiento propio de variables relacionadas con distancias, menor distancia mayor precio.
 
