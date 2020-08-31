@@ -1,4 +1,9 @@
 # Análisis y predicción de precios de alojamientos en AIRBNB
+
+<p align="center">
+  ![](/imagenes/logoAirBNB.jpeg?raw=true)
+</p>
+
 ## TFM / Máster en Data Science / KSCHOOL
 #### **Guillem Rochina Aguas y Helena Saigí Aguas**
 #### 04/09/2020
@@ -380,7 +385,7 @@ Un elevado número de variables de nuestro dataset presentan tan solo valores bo
 
 ![](/imagenes/BarplotDic.png?raw=true)
 
-De nuevo, graficamos la evolución de precios medios respecto a las alternativas dicotómicas. Como resultado encontramos que la relación entre precios y dichos atributos varian dependiendo del año y mes, llegando incluso a igualarse la media de precios de ambas categorías, por lo que el peso de estos atributos puede no llegar a ser tan relevante como considerábamos al principio. No obstante, en algunos casos las diferencias en vez de igualarse, pueden incluso duplicarse, por lo que también podemos estar subestimando la importancia de ciertas variables.
+De nuevo, graficamos la evolución de precios medios respecto a las alternativas dicotómicas. Como resultado encontramos que la relación entre precios y dichos atributos varían dependiendo del año y mes, llegando incluso a igualarse la media de precios de ambas categorías, por lo que el peso de estos atributos puede no llegar a ser tan relevante como considerábamos al principio. No obstante, en algunos casos las diferencias en vez de igualarse, pueden incluso duplicarse, por lo que también podemos estar subestimando la importancia de ciertas variables.
 
 ![](/imagenes/EvoDic.png?raw=true)
 
@@ -449,7 +454,7 @@ Un primer ajuste del modelo nos revela un **Coeficiente de Determinación** de 6
 
 ![](/imagenes/RegresionLinealBase1.png?raw=true)
 
-Haciendo uso del evaluador de modelos observamos como la Regresión Lineal Múltiple tiende a subestimar los precios a medida que nos acercamos a cotas más altas, mientras que, aunque en menor medida, encontramos precios ligeramente sobreestimados entre los valores reales más bajos. Un rápido vistazo a los errores de predicción muestra la existencia de posibles datos atípicos u **outliers** que no fueron detectados en la fase de Exploración, no obstante, más allá de este problema los residuos se distribuyen normalmente alrededor del valor 0.
+Haciendo uso del evaluador de modelos observamos como la Regresión Lineal Múltiple tiende a subestimar los precios a medida que nos acercamos a cotas más altas, mientras que, aunque en menor medida, encontramos precios ligeramente sobrestimados entre los valores reales más bajos. Un rápido vistazo a los errores de predicción muestra la existencia de posibles datos atípicos u **outliers** que no fueron detectados en la fase de Exploración, no obstante, más allá de este problema los residuos se distribuyen normalmente alrededor del valor 0.
 
 ![](/imagenes/RegresionLinealBase2.png?raw=true)
 
@@ -662,7 +667,7 @@ Con el objetivo de asegurar la interpretabilidad del algoritmo de **XGBoost**, u
 
 ![](/imagenes/PesosXGBoost.png?raw=true)
 
-La importancia de los features en algoritmos basados en árboles nos indica el valor de cada uno de los features utilizados en las predicciones (ya que hablamos de contribuciones marginales, cuanto más se usa un atributo en la construcción secuencial de árboles, mayor será su importancia). A pesar de que tan sólo graficamos 30 de los 60 atributos disponibles, es evidente la tendencia a valores muy próximos a cero a partir de la última feature gráficada, revelando la posibilidad de eliminar practicamente la mitad de columnas de nuestro dataset sin perjudicar en gran medida las predicciones de nuestro modelo.
+La importancia de los features en algoritmos basados en árboles nos indica el valor de cada uno de los features utilizados en las predicciones (ya que hablamos de contribuciones marginales, cuanto más se usa un atributo en la construcción secuencial de árboles, mayor será su importancia). A pesar de que tan sólo graficamos 30 de los 60 atributos disponibles, es evidente la tendencia a valores muy próximos a cero a partir de la última feature graficada, revelando la posibilidad de eliminar prácticamente la mitad de columnas de nuestro dataset sin perjudicar en gran medida las predicciones de nuestro modelo.
 
 Entre los 7 atributos más importantes encontramos:
 
@@ -674,7 +679,7 @@ Entre los 7 atributos más importantes encontramos:
 
 **extra_people**: Coste del alojamiento añadido por cada huésped más allá del establecido en **Accommodates**. De nuevo, esta variable es obviamente importante en la determinación del precio.
 
-**Air Conditioning**: Variable dicotómica que indica la existencia o no de aire accondicionado en el alojamiento. Juega un papel muy importante en la determinación de precios tanto en los modelos lineales como de árboles, probablemente relacionado con la estacionalidad de la subida de precios en verano en los que tener A/C es un valor añadido buscado por los usuarios.
+**Air Conditioning**: Variable dicotómica que indica la existencia o no de aire acondicionado en el alojamiento. Juega un papel muy importante en la determinación de precios tanto en los modelos lineales como de árboles, probablemente relacionado con la estacionalidad de la subida de precios en verano en los que tener A/C es un valor añadido buscado por los usuarios.
 
 **PCA_component_1**: El primer componente que se obtiene del PCA sobre las variables de distancias. No volvemos a ver el siguiente componente hasta pasados unos cuantos atributos, por lo que nos preguntamos si ajustando de nuevo sin PCA las variables de distancia tendrían una influencia mayor.
 
@@ -684,9 +689,9 @@ Entre los 7 atributos más importantes encontramos:
 
 Un gráfico más elaborado nos permite confirmar lo que se comentaba anteriormente *(se realizó con una muestra aleatoria de 10000 samples debido a capacidad computacional)*. El eje horizontal muestra si el efecto del feature para esa predicción fue positivo (aumento el valor de la predicción) o viceversa, mientras que el color muestra el valor del feature en dicha predicción (para variables dicotómicas azul implica un valor de 0 y el rojo de 1). 
 
-Advertimos como los valores de Private Room positivo empujan los precios hacia abajo confirmando nuesta hipótesis anterior, además de la relación positiva entre Accommodates y Price, así como la negativa entre minimum_nights y price. 
+Advertimos como los valores de Private Room positivo empujan los precios hacia abajo confirmando nuestra hipótesis anterior, además de la relación positiva entre Accommodates y Price, así como la negativa entre minimum_nights y price. 
 
-Features como **month** demuestran como valores intermedios (6, 7 y 8, es decir, meses de Verano) en su mayoría "empujan las predicciones hacia arriba" mientras que valores extremos relativos a los meses de Invierno por norma general tienen el efecto contrario. Por otra parte, **PCA_Component_1** recoge como esperabamos el comportamiento propio de variables relacionadas con distancias, menor distancia mayor precio.
+Features como **month** demuestran como valores intermedios (6, 7 y 8, es decir, meses de Verano) en su mayoría "empujan las predicciones hacia arriba" mientras que valores extremos relativos a los meses de Invierno por norma general tienen el efecto contrario. Por otra parte, **PCA_Component_1** recoge como esperábamos el comportamiento propio de variables relacionadas con distancias, menor distancia mayor precio.
 
 ### **Redes Neuronales**
 
@@ -694,7 +699,7 @@ Features como **month** demuestran como valores intermedios (6, 7 y 8, es decir,
 
 Por último, abordamos esta fase de modelado con redes neuronales. Concretamente, utilizaremos **Artificial Neural Networks** de poco tamaño (no más de 4/5 fully connected layers de 256/512 neuronas por capa) y jugaremos con las funciones de activación para encontrar una arquitectura que pueda competir con el XGBoost. Para la compilación de las redes utilizamos de nuevo el **MAE** como función de pérdida, así como el optimizador **ADAM** (el que consideramos más completo dadas las alternativas que disponemos).
 
-Como primera arquitectura se creó una **Shallow Neural Network** de cuatro capas ocultas (128 nodos en las capas más cercanas a las de Input y Output, 256 para el resto) en las que utilizamos una función sigmoide de activación para las tres primeras y un **REctificador Lineal Unitario (RELU)** para la última. La capa del output utiliza una función de activación **Lineal** (no realiza ninguna transformación), ya que tratabamos un problema de regresión.
+Como primera arquitectura se creó una **Shallow Neural Network** de cuatro capas ocultas (128 nodos en las capas más cercanas a las de Input y Output, 256 para el resto) en las que utilizamos una función sigmoide de activación para las tres primeras y un **REctificador Lineal Unitario (RELU)** para la última. La capa del output utiliza una función de activación **Lineal** (no realiza ninguna transformación), ya que tratábamos un problema de regresión.
  
 ![](/imagenes/RedNeuronal1.png?raw=true)
 
@@ -786,15 +791,59 @@ Tras un largo proceso de tuneado el resumen de resultados nos muestra como mejor
 
 ![](/imagenes/RedNeuronalOpt.png?raw=true)
 
-Últimando esta fase alcazamos una Red Neuronal bastante próxima a nivel de performance al **XGBoost**, con un **97.69%** de Coeficiente de Determinación en Train y **95.45%** en Test. Intentos de optimización con redes más complejas llevaron a peores resultados, por lo que se desestimó esta alternativa. 
+Últimando esta fase alcanzamos una Red Neuronal bastante próxima a nivel de performance al **XGBoost**, con un **97.69%** de Coeficiente de Determinación en Train y **95.45%** en Test. Intentos de optimización con redes más complejas llevaron a peores resultados, por lo que se desestimó esta alternativa. 
 
 ![](/imagenes/EvaluaciónRedNeuronalOpt.png?raw=true)
+
+### Discusión final de modelado
+
+Acabado ya todo el proceso se dio paso a un pequeña comparativa entre los dos modelos predictivos principales de este proyecto.
+
+En primer lugar, se aborda este apartado final con una comparativa de la evolución de precios pronosticada, se escoge de forma aleatoria 2 muestras (varias veces, enseñamos sólo una de ellas por resumir) de las que son graficadas su precio real y la predicción de cada uno de los modelos **[ Se debe tener en cuenta que cada predicción es independiente (en la parte A de la exploración general se explica el porqué de este enfoque) por lo que esta visualización se utiliza para tener una visión más global del comportamiento del algoritmo, ya que no podemos diferenciar entre predicciones de train (más precisas) y test. ]** En caso del **Baseline** queda demostrada su incapacidad para registrar la influencia de la estacionalidad en la evolución de los precios, así como la tendencia creciente que se presentaba a lo largo de los años. Además, encontramos mayor dificultad (y error) a medida que los precios a predecir son más elevados. 
+
+![](/imagenes/LinearRegresionFinal.png.png?raw=true)
+
+Con la **Red Neuronal** ya encontramos una mejora bastante significativa con respecto al **Baseline**. Esta ya logra registrar los efectos de la estacionalidad así como la tendencia de cada año, además de manejar las predicciones de precios sin mayor problema que con el resto. No obstante, los cambios más bruscos de precio, y como contrapartida los precios que se mantienen constantes a lo largo del tiempo, no logra acabar de registrarlos correctamente.
+
+![](/imagenes/NNFinal.png?raw=true)
+
+Finalmente, el modelo estrella de este proyecto, el **XGBoost** supera completamente los problemas para registrar la influencia del mes y el año a la hora de predecir los precios (como ya se observa con los Shap Values). En estos gráficos ya se vislumbra más fácilmente las predicciones provenientes de train en los puntos donde se solapan las curvas.
+
+![](/imagenes/XGBoostFinal.png?raw=true)
+
+Para esclarecer un poco mejor la captura de la influencia del feature **month** graficamos la media de precios de todos los precios pronosticados, así como el real. Queda definitivamente demostrado como el modelo de **Baseline**, la Regresión Lineal Múltiple es incapaz de registrar con éxito el peso que tiene el mes en la determinación de precios.
+
+La Red Neuronal consigue captar la influencia de esta un poco mejor, pero no llega a registrar correctamente los picos ni los valores elevados en el mes de Febrero y Marzo. No obstante, los valores tan altos en meses como Febrero puede deberse a la existencia de outliers no detectados que han sido sobreajustados por el **XGBoost**, por lo que la Red Neuronal en realidad puede estar evitando este tipo de errores.
+
+![](/imagenes/PredictMeses.png?raw=true)
+
+Por otro lado, si hablamos de la variable **year**, observamos que tanto el XGBoost como la Red Neuronal han sido capaces en mayor o menor medida de capturar su influencia. El **Baseline**, a pesar de que ha podido capturar cierta influencia, su performance sigue siendo muy pobre en este aspecto también.
+
+![](/imagenes/PredictAño.png?raw=true)
+
+Un estudio más detallado de las diferencias entre predicción y valor real nos revelan más información de utilidad. El gráfico inferior visualiza la relación entre el precio real (eje horizontal), el precio pronosticado por **XGBoost** (eje vertical) y la diferencia entre el precio predicho por la **Red Neuronal** y el precio real (color y tamaño de los puntos). Como podemos observar, la Red Neuronal tiende a tener más problemas en la predicción de precios altos que el **XGBoost**, sobretodo a partir de los 800€.
+
+Por otro lado, detectamos que establecer una cota de 1200€ como tope superior en la Fase de Exploración General permitió colarse unos cuantos outliers producidos por la introducción errónea de los precios por parte de la web Inside AirBNB, como se observa en los círculos rojos a lo largo de los valores de 1000 en el eje y (aunque algunos de ellos XGBoost los predice sin mucho margen de error respecto al real, por lo que en ese caso deberiamos comprobrar si es debido a un sobre-ajuste u **overfitting** en Train o de verdad son predicciones acertadas).
+
+![](/imagenes/Errores.png?raw=true)
+
+Destripando un poco el gráfico anterior podemos delimitar tres áreas claras:
+
+**El Área Outlier**, capturando precios con una diferencia superior a los 100/120€, muestra precios sospechosamente distintos a las predicciones tanto del XGBoost como de la Red Neuronal. Los puntos existentes dentro de esta zona deberían recibir un análisis más detenido a fin de determinar el origen de tan gran diferencia y, en caso de ser erratas a causa de un mal registro, corregidos o bien eliminados para un nuevo ajuste de nuestros modelos.
+
+**El Área Ineficiente** recoge los precios con diferencias positivas entre 20 y 100 euros. Seria recomendable que los host con listings situados en estas áreas replantearan la asignación de su precio, ya que las predicciones plantean unos valores inferiores para los pisos de sus características si pretenden mejorar la eficiencia de ocupación en sus alquileres. Por otra parte, los usuarios en busca de apartamentos deberían evitar estos alojamientos a toda costa.
+
+**El Área Chollo** presenta los precios con valores pronosticados superiores a los precios reales de como mínimo 20€. Llamamos chollo a este área desde el punto de vista de un usuario no propietario, este tipo de consumidor deberia aprovechar este tipo de alojamientos a fin de pagar un precio inferior al valor real del alojamiento. Propietarios con listings en este área deberían elevar sus precios a fin de maximizar el beneficio lo máximo posible.
+
+Los puntos inferiores al Área Chollo los consideramos también outliers, a pesar de ser un número muy reducido, los cuales deberían ser revisados de nuevo al igual que los que se sitúan en el Área Outlier.
+
+![](/imagenes/erroresdestripado.png?raw=true)
 
 ##  Visualización y Dashboard
 
 Finalizado el proceso de limpieza, exploración y modelización, la visualización y comunicación de resultados se presenta como la última fase del proyecto, un punto clave poder trasladar al usuario final el conocimiento e información obtenida durante el tratamiento de los datos a lo largo de las fases anteriores, utilizando siempre un contexto visual para facilitar su entendimiento.
 
-Con el objetivo de acercar a los usuarios a una interfaz interactiva en la que puedan comprobar por cuenta propia los resultados presentados, se realizó una serie de **Dashboards** en **Tableau**. Con él pretendemos que el usuario tenga la posiblidad de contextualizar los datos que han sido incorporados a lo largo de todo el proyecto, e introducidos en los modelos presentados en la fase de modelado.
+Con el objetivo de acercar a los usuarios a una interfaz interactiva en la que puedan comprobar por cuenta propia los resultados presentados, se realizó una serie de **Dashboards** en **Tableau**. Con él pretendemos que el usuario tenga la posibilidad de contextualizar los datos que han sido incorporados a lo largo de todo el proyecto, e introducidos en los modelos presentados en la fase de modelado.
 
 Un primer vistazo al dashboard central nos revela una división en 3 bloques principales.
 
@@ -822,8 +871,23 @@ Finalmente, en el tercer bloque del Dashboard,encontramos una visualización que
 
 Encontramos dos mapas, en un primer lugar y, a raíz de datos extraídos de Open Data Barcelona a nivel de transportes y servicios, se muestra los servicios y oferta turística alrededor de cada uno de los alojamientos con un density map. Un parámetro en la parte superior del mapa nos permite cambiar la visualización en base a lo que queramos visualizar y analizar.
 
-En segundo lugar encontramos el mapa donde podemos ver los landmarks de Barcelona. Esta visualización ha sido posible gracias al dataset de fotografias geolocalizadas de una API de Flickr y la aplicación del modelo de aprendizaje no supervisado de clusterización. Este mapa es más ilustrativo y lo que pretende es aportar una visualización de los puntos más relevantes con su icono asociado.
+En segundo lugar encontramos el mapa donde podemos ver los landmarks de Barcelona. Esta visualización ha sido posible gracias al dataset de fotografías geolocalizadas de una API de Flickr y la aplicación del modelo de aprendizaje no supervisado de clusterización. Este mapa es más ilustrativo y lo que pretende es aportar una visualización de los puntos más relevantes con su icono asociado.
 
 ![](/imagenes/TFMAirBNBTableau3.png?raw=true)
 
 # Conclusiones y Mejoras
+
+Tras un largo proceso de limpieza, análisis y modelado de los datos hemos logrado un modelo capaz de predecir prácticamente un **97%** de la varianza de los precios con apenas un **0.07%** de **Mean Absolute Error**. El **XGBoost** se ha mostrado imbatible frente al gran alcance del campo del **Deep Learning**, lo cual demuestra por qué sigue siendo el rey de las competiciones de Kaggle a pesar de la existencia de alternativas más modernas y a priori más "potentes".
+
+Dado los resultados de nuestro proyecto nos encontramos muy poco margen de mejora dados los datos que estamos trabajando actualmente, dentro del cuál costaría mucho esfuerzo superar por pocas décimas el Coeficiente de Determinación ya obtenido. No obstante, podemos plantear una serie de mejoras que aporten valor añadido:
+
+- No se ha trabajado con **NLP** en pro de concentrar los esfuerzos en las variables **geoespaciales**. Dado que el dataset original cuenta con una serie de columnas relacionadas con descripciones, situación y normas del alojamiento, la búsqueda de palabras clave, aplicación de **Redes Neuronales** para análisis de sentimientos o la simple creación de features como la longitud de la descripción del listing puede aportarnos variables de influencia para futuras predicciones. Además, la disponibilidad de un dataset de **reviews** nos permitiría desarrollar un modelo en el que explicar como las opiniones de los usuarios pueden influenciar la evolución del precio de un alojamiento.
+
+- El proyecto se ha basado únicamente en alojamientos de la ciudad de Barcelona. Una alternativa atractiva podría ser la ampliación del foco del modelo a los alojamientos de toda España, con todas las consecuencias en la precisión que esto repercutiría.
+
+- Existen features con bastante influencia que un propietario nuevo no posee (como el Número de Reviews recibidas). Eliminar este tipo de variables e intentar mantener el mismo nivel en las predicciones plantea un desafío interesante.
+
+- Por último, el desarrollo de una aplicación web que permitiese introducir al usuario final los parámetros necesarios y este devolviese una predicción de los precios aconsejados, todo ello a través de un script de Python sería una forma óptima de hacer uso del proyecto en su totalidad.
+
+
+
