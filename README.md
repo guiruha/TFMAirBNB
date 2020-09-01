@@ -1,12 +1,36 @@
 # Análisis y predicción de precios de alojamientos en AIRBNB
 
 <p align="center">
-  ![](/imagenes/logoAirBNB.jpeg?raw=true)
+  <img src="/imagenes/logoAirBNB.jpeg" />
 </p>
 
 ## TFM / Máster en Data Science / KSCHOOL
 #### **Guillem Rochina Aguas y Helena Saigí Aguas**
 #### 04/09/2020
+
+# Índice
+
+* [Introducción y Motivación](https://github.com/guiruha/TFMAirBNB#introducci%C3%B3n-y-motivaci%C3%B3n)
+
+* [Descripción de los Datasets](https://github.com/guiruha/TFMAirBNB#descripci%C3%B3n-de-los-datasets)
+
+	- [Dataset Principal](https://github.com/guiruha/TFMAirBNB#dataset-principal)
+	- [Dataset de Flickr](https://github.com/guiruha/TFMAirBNB#dataset-de-flickr)
+	- [Datasets de Transportes](https://github.com/guiruha/TFMAirBNB#datasets-de-transportes)
+	- [Datasets de Sitios de Interés Turístico](https://github.com/guiruha/TFMAirBNB#datasets-de-sitios-de-inter%C3%A9s-tur%C3%ADstico)
+
+* [Desarrollo del Proyecto](https://github.com/guiruha/TFMAirBNB#desarrollo-del-proyecto)
+
+	- [Paquetes y Prerequisitos](https://github.com/guiruha/TFMAirBNB#paquetes-y-prerequsitos)
+	- [Limpieza](https://github.com/guiruha/TFMAirBNB#limpieza)
+	- [Exploración Parte A](https://github.com/guiruha/TFMAirBNB#exploraci%C3%B3n-parte-a)
+	- [Geoexploración](https://github.com/guiruha/TFMAirBNB#geoexploraci%C3%B3n)
+	- [Exploración Parte B](https://github.com/guiruha/TFMAirBNB#exploraci%C3%B3n-parte-b)
+	- [Modelado](https://github.com/guiruha/TFMAirBNB#modelado)
+
+* [Visualización y Dashboard](https://github.com/guiruha/TFMAirBNB#visualizaci%C3%B3n-y-dashboard)
+
+* [Conclusiones y Mejoras](https://github.com/guiruha/TFMAirBNB#conclusiones-y-mejoras)
 
 # Introducción y Motivación
 
@@ -230,7 +254,7 @@ En primer lugar se procedió a investigar los motivos de la existencia de precio
 
 Resultado de este filtrado de precios obtenemos un histograma con una gran asimetría positiva debido a que la gran mayoría de precios se acumulan en rangos inferiores a 100 euros/noche a pesar de que existen un cantidad considerable de precios que superan esta cota con creces.
 
-![](/imagenes/Prelog.png?raw=true)
+![](/imagenes/PreLog.png?raw=true)
 
 Es por ello que aplicamos un logaritmo neperiano como transformación de datos típica para "normalizar" nuestra variable dependiente. Una comparativa de una distribución normal generada a partir del paquete random nos muestra bastante semejanza a una distribución normal, a pesar de la ligera asimetría positiva.
 
@@ -345,15 +369,18 @@ map_df['fgc_distance'] = [min(haversine_distance(tlat, tlon, listlat, listlon) f
 Para el método del buffer, transformamos las geometrías de todos los listings a fin de crear puntos con un diámetro mucho mayor, basándonos en un criterio distinto en caso de los transportes y los sitios turísticos (300 metros de radio para paradas de transporte y 600 para sitios turísticos). Por cada uno de las localizaciones se realiza el cálculo de booleanos (True/False) a través de la función de geopandas **within**, la cual marca con True los lugares que se encuentran dentro del *área* del alojamiento y con False los que no se encuentran en ella. Posteriormente, estos se suman (asumiendo que los valores True equivalen a 1 y los False a 0).
 
 ```python
-map_df['tranvia_cercanos'] = [sum(i.within(j) 
-for i in tramvia.geometry) 
-for j in mapbuffer.geometry]
-
 map_df['museos_cercanos'] = [sum(i.within(j) 
 for i in museos.geometry) 
 for j in mapbuffer.geometry]
 ```
+
 ![](/imagenes/Museos.png?raw=true)
+
+```python
+map_df['tranvia_cercanos'] = [sum(i.within(j) 
+for i in tramvia.geometry) 
+for j in mapbuffer.geometry]
+```
 
 ![](/imagenes/ParadasCercanas.png?raw=true)
 
@@ -801,11 +828,11 @@ Acabado ya todo el proceso se dio paso a un pequeña comparativa entre los dos m
 
 En primer lugar, se aborda este apartado final con una comparativa de la evolución de precios pronosticada, se escoge de forma aleatoria 2 muestras (varias veces, enseñamos sólo una de ellas por resumir) de las que son graficadas su precio real y la predicción de cada uno de los modelos **[ Se debe tener en cuenta que cada predicción es independiente (en la parte A de la exploración general se explica el porqué de este enfoque) por lo que esta visualización se utiliza para tener una visión más global del comportamiento del algoritmo, ya que no podemos diferenciar entre predicciones de train (más precisas) y test. ]** En caso del **Baseline** queda demostrada su incapacidad para registrar la influencia de la estacionalidad en la evolución de los precios, así como la tendencia creciente que se presentaba a lo largo de los años. Además, encontramos mayor dificultad (y error) a medida que los precios a predecir son más elevados. 
 
-![](/imagenes/LinearRegresionFinal.png.png?raw=true)
+![](/imagenes/LinearRegresionFinal.png?raw=true)
 
 Con la **Red Neuronal** ya encontramos una mejora bastante significativa con respecto al **Baseline**. Esta ya logra registrar los efectos de la estacionalidad así como la tendencia de cada año, además de manejar las predicciones de precios sin mayor problema que con el resto. No obstante, los cambios más bruscos de precio, y como contrapartida los precios que se mantienen constantes a lo largo del tiempo, no logra acabar de registrarlos correctamente.
 
-![](/imagenes/NNFinal.png?raw=true)
+![](/imagenes/NNfinal.png?raw=true)
 
 Finalmente, el modelo estrella de este proyecto, el **XGBoost** supera completamente los problemas para registrar la influencia del mes y el año a la hora de predecir los precios (como ya se observa con los Shap Values). En estos gráficos ya se vislumbra más fácilmente las predicciones provenientes de train en los puntos donde se solapan las curvas.
 
@@ -845,35 +872,31 @@ Finalizado el proceso de limpieza, exploración y modelización, la visualizaci�
 
 Con el objetivo de acercar a los usuarios a una interfaz interactiva en la que puedan comprobar por cuenta propia los resultados presentados, se realizó una serie de **Dashboards** en **Tableau**. Con él pretendemos que el usuario tenga la posibilidad de contextualizar los datos que han sido incorporados a lo largo de todo el proyecto, e introducidos en los modelos presentados en la fase de modelado.
 
-Un primer vistazo al dashboard central nos revela una división en 3 bloques principales.
+Un rápido vistazo al dashboard base nos revela una división en 3 bloques principales.
 
-El primer de ellos presenta los datos obtenidos de la web de Inside Airbnb. Concretamente, las variables de todos aquellos registros con influencia relevante en la predicción de los modelos: 
+El primero de ellos presenta los datos obtenidos de la web de Inside Airbnb. Concretamente, las variables de todos aquellos registros con influencia relevante en la predicción de los modelos: 
 
-En la parte superior podremos observar el número de pisos únicos dados de alta en AirBNB durante los años 2017 a 2020, así como la evolución de los precios de todos los ellos, variable a predecir como objetivo de nuestro proyecto.
+En la parte superior, a modo de presentación podremos observar el número de pisos únicos dados de alta en AirBNB durante los años 2017 a 2020, así como la evolución de los precios medios a lo largo del tiempo.
 
-A continuación, un análisis de las principales características los alojamientos nos permite analizar mediante filtros como cambia la evolución de precios dependiendo de distintos atributos: Tipo de propiedad, tipo de alquiler (E.G. toda la propiedad o solo una habitación), y otros aspectos relevantes que durante el proyecto han resultado ser relevantes en las predicciones, además de ser las primeras a ser consultadas por los usuarios cuando navegas por webs como **AirBNB**, como el número de habitaciones, camas o baños.
+Bajo esta introducción, se muestra una selección de las principales características de los alojamientos, permitiéndonos esta analizar mediante filtros como cambia la evolución de precios dependiendo de distintos atributos: Tipo de propiedad, tipo de alquiler (E.G. toda la propiedad o solo una habitación), y otros aspectos relevantes que durante el proyecto han resultado ser relevantes en las predicciones, además de ser las primeras a ser consultadas por los usuarios cuando navegas por webs como **AirBNB**, como el número de habitaciones, camas o baños.
 
-
-[HASTA AQUÍ REVISADO]
-
-Por otro lado, y cada vez más, nos gusta saber la ubicación de las cosas que buscamos. Es por ello que consideramos incluir un mapa donde se pudieran visualizar dos cosas, los barrios en los que se distribuyen los alojamientos, y otra opción que hemos añadido como visualización del mapa, el nivel de densidad en los que se distribuye la oferta de alojamientos en Barcelona.
-
-Normalmente, el tipo de propiedad y si se alquila de forma completa o parcial, es una de las cosas que previamente a la búsqueda del alojamiento ideal ya tenemos pensados en base al tipo de viaje o escapada que queremos realizar. Es por ello que hemos considerado que la variable debería ser usada con filtro de visualización. Hacer click en cada uno de las opciones que ofrece el gráfico en forma de barra, permite que la visualización del resto de variables cambie, desde los precios, hasta el tamaño del alojamiento, los mapas e incluso variables que explicaremos a continuación.
+Junto a esta hallamos un mapa sensible también a los filtros anteriormente nombrados, cuya influencia puede ser analizada desde dos vertientes, un mapa de distribución de puntos **uno a uno**, donde se puede filtrar por barrio y otras variables continuas, o un mapa de densidad en forma de **colmena**, con el que visualizar los puntos "calientes" o de mayor densidad de cada una de las composiciones elegidas por el usuario final.
 
 ![](/imagenes/TFMAirBNBTableau1.png?raw=true)
 ![](/imagenes/TFMAirBNBTableau1b.png?raw=true)
 
-Una vez vista la primera parte del Dashboard, donde hemos podido ver las primeras características principales de los alojamientos, visualizamos aquellas variables que aportan un valor añadido a los alojamiento a alquilar como son los servicios que ofrecen, desde Aire Acondicionado hasta saber si tienen terraza o balcón, entender el tipo de póliza de cancelación que ofrecen así como el mínimo de noches necesarias para poder alquilar el tipo de alojamiento que queramos visualizar. Comentar que en estos tres gráficos, también influirá el filtro de tipo de propiedad que hayamos seleccionado, ya mencionado y explicado anteriormente.
+Un segundo bloque sirve para complementar las características principales del alojamiento. En ella encontramos todas a quellas variable que aportan un valor añadido al precio de los alojamientos, como son los servicios que ofrecen, desde la existencia de **Aire Acondicionado** en el alojamiento hasta si se **Permite Fumar**, el tipo de póliza de cancelación ofrecida así como el mínimo de noches necesarias para poder alquilar. Una vez más, estas tres alternativas también son utilizadas como filtro para la evolución de precios y mapas.
 
 ![](/imagenes/TFMAirBNBTableau2.png?raw=true)
 
-Finalmente, en el tercer bloque del Dashboard,encontramos una visualización que pretende mostrar el tipo de datos obtenidos a raíz del procesado de datasets externos que nos han permitido nutrir de información adicional los modelos de predicción.
+Finalmente, en la última parte del Dashboard base, encontramos una visualización que pretende mostrar el tipo de datos obtenidos a raíz del procesado de datasets externos, los cuáles nos han permitido nutrir de información adicional los modelos de predicción.
 
-Encontramos dos mapas, en un primer lugar y, a raíz de datos extraídos de Open Data Barcelona a nivel de transportes y servicios, se muestra los servicios y oferta turística alrededor de cada uno de los alojamientos con un density map. Un parámetro en la parte superior del mapa nos permite cambiar la visualización en base a lo que queramos visualizar y analizar.
+Específicamente nos topamos con dos mapas, uno a raíz de datos extraídos de Open Data Barcelona a nivel de transportes y servicios, mostramos los servicios y oferta turística alrededor de cada uno de los alojamientos con un density map. Un parámetro en la parte superior del mapa nos permite cambiar la visualización en base a lo que queramos visualizar y analizar.
 
-En segundo lugar encontramos el mapa donde podemos ver los landmarks de Barcelona. Esta visualización ha sido posible gracias al dataset de fotografías geolocalizadas de una API de Flickr y la aplicación del modelo de aprendizaje no supervisado de clusterización. Este mapa es más ilustrativo y lo que pretende es aportar una visualización de los puntos más relevantes con su icono asociado.
+Por otro lado encontramos el mapa donde podemos ver los landmarks de Barcelona. Esta visualización ha sido posible gracias al dataset de fotografías geolocalizadas de una API de Flickr y la aplicación del modelo de aprendizaje no supervisado de clusterización. El objetivo de este mapa es más ilustrativo y lo que pretende es aportar un contexto más visual de los puntos más relevantes con su icono asociado.
 
 ![](/imagenes/TFMAirBNBTableau3.png?raw=true)
+
 
 # Conclusiones y Mejoras
 
@@ -881,13 +904,17 @@ Tras un largo proceso de limpieza, análisis y modelado de los datos hemos logra
 
 Dado los resultados de nuestro proyecto nos encontramos muy poco margen de mejora dados los datos que estamos trabajando actualmente, dentro del cuál costaría mucho esfuerzo superar por pocas décimas el Coeficiente de Determinación ya obtenido. No obstante, podemos plantear una serie de mejoras que aporten valor añadido:
 
+- Mejorar la captura de datos de entrada desde el principio. A pesar de que la web Inside AirBNB realiza un trabajo excepcional de *Web Scrapping*, a menudo nos hemos encontrado con precios mal registrado (a pesar de haber realizado labores de limpieza con anterioridad). Realizar Web Scrapping de primera mano nos aseguraría unos registros más fiables (supondría "scrapear" datos cada mes para tener datos mensuales sobre el comportamiento de precios).
+
 - No se ha trabajado con **NLP** en pro de concentrar los esfuerzos en las variables **geoespaciales**. Dado que el dataset original cuenta con una serie de columnas relacionadas con descripciones, situación y normas del alojamiento, la búsqueda de palabras clave, aplicación de **Redes Neuronales** para análisis de sentimientos o la simple creación de features como la longitud de la descripción del listing puede aportarnos variables de influencia para futuras predicciones. Además, la disponibilidad de un dataset de **reviews** nos permitiría desarrollar un modelo en el que explicar como las opiniones de los usuarios pueden influenciar la evolución del precio de un alojamiento.
 
-- El proyecto se ha basado únicamente en alojamientos de la ciudad de Barcelona. Una alternativa atractiva podría ser la ampliación del foco del modelo a los alojamientos de toda España, con todas las consecuencias en la precisión que esto repercutiría.
+- El proyecto se ha basado únicamente en alojamientos de la ciudad de Barcelona. Una alternativa atractiva podría ser la ampliación del foco del modelo a los alojamientos de toda España, con todas las consecuencias en la calidad de la predicción que esto repercutiría.
 
 - Existen features con bastante influencia que un propietario nuevo no posee (como el Número de Reviews recibidas). Eliminar este tipo de variables e intentar mantener el mismo nivel en las predicciones plantea un desafío interesante.
 
 - Por último, el desarrollo de una aplicación web que permitiese introducir al usuario final los parámetros necesarios y este devolviese una predicción de los precios aconsejados, todo ello a través de un script de Python sería una forma óptima de hacer uso del proyecto en su totalidad.
+
+
 
 
 
