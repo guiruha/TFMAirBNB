@@ -1,7 +1,7 @@
 # Análisis y predicción de precios de alojamientos en AIRBNB
 
 <p align="center">
-  <img src="/imagenes/logoAirBNB.jpeg" />
+  <img src="/imagenes/logoAirBNB.png" />
 </p>
 
 ## TFM / Máster en Data Science / KSCHOOL
@@ -874,13 +874,19 @@ Con el objetivo de acercar a los usuarios a una interfaz interactiva en la que p
 
 Un rápido vistazo al dashboard base nos revela una división en 3 bloques principales.
 
+![](/imagenes/PresentacionTableau.gif)
+
 El primero de ellos presenta los datos obtenidos de la web de Inside Airbnb. Concretamente, las variables de todos aquellos registros con influencia relevante en la predicción de los modelos: 
 
 En la parte superior, a modo de presentación podremos observar el número de pisos únicos dados de alta en AirBNB durante los años 2017 a 2020, así como la evolución de los precios medios a lo largo del tiempo.
 
+![](/imagenes/SuperiorTableau.gif)
+
 Bajo esta introducción, se muestra una selección de las principales características de los alojamientos, permitiéndonos esta analizar mediante filtros como cambia la evolución de precios dependiendo de distintos atributos: Tipo de propiedad, tipo de alquiler (E.G. toda la propiedad o solo una habitación), y otros aspectos relevantes que durante el proyecto han resultado ser relevantes en las predicciones, además de ser las primeras a ser consultadas por los usuarios cuando navegas por webs como **AirBNB**, como el número de habitaciones, camas o baños.
 
 Junto a esta hallamos un mapa sensible también a los filtros anteriormente nombrados, cuya influencia puede ser analizada desde dos vertientes, un mapa de distribución de puntos **uno a uno**, donde se puede filtrar por barrio y otras variables continuas, o un mapa de densidad en forma de **colmena**, con el que visualizar los puntos "calientes" o de mayor densidad de cada una de las composiciones elegidas por el usuario final.
+
+![](/imagenes/MapaTableau.gif)
 
 ![](/imagenes/TFMAirBNBTableau1.png?raw=true)
 ![](/imagenes/TFMAirBNBTableau1b.png?raw=true)
