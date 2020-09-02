@@ -1,7 +1,7 @@
 # Análisis y predicción de precios de alojamientos en AIRBNB
 
 <p align="center">
-  <img src="/imagenes/logoAirBNB.png" />
+  <img src="/imagenes/LogoAirBNB.png" />
 </p>
 
 ## TFM / Máster en Data Science / KSCHOOL
@@ -893,11 +893,16 @@ Junto a esta hallamos un mapa sensible también a los filtros anteriormente nomb
 
 Un segundo bloque sirve para complementar las características principales del alojamiento. En ella encontramos todas a quellas variable que aportan un valor añadido al precio de los alojamientos, como son los servicios que ofrecen, desde la existencia de **Aire Acondicionado** en el alojamiento hasta si se **Permite Fumar**, el tipo de póliza de cancelación ofrecida así como el mínimo de noches necesarias para poder alquilar. Una vez más, estas tres alternativas también son utilizadas como filtro para la evolución de precios y mapas.
 
+
+![](/imagenes/Bloque2Tableau.gif)
+
 ![](/imagenes/TFMAirBNBTableau2.png?raw=true)
 
 Finalmente, en la última parte del Dashboard base, encontramos una visualización que pretende mostrar el tipo de datos obtenidos a raíz del procesado de datasets externos, los cuáles nos han permitido nutrir de información adicional los modelos de predicción.
 
 Específicamente nos topamos con dos mapas, uno a raíz de datos extraídos de Open Data Barcelona a nivel de transportes y servicios, mostramos los servicios y oferta turística alrededor de cada uno de los alojamientos con un density map. Un parámetro en la parte superior del mapa nos permite cambiar la visualización en base a lo que queramos visualizar y analizar.
+
+![](/imagenes/Mapa3Tableau.gif)
 
 Por otro lado encontramos el mapa donde podemos ver los landmarks de Barcelona. Esta visualización ha sido posible gracias al dataset de fotografías geolocalizadas de una API de Flickr y la aplicación del modelo de aprendizaje no supervisado de clusterización. El objetivo de este mapa es más ilustrativo y lo que pretende es aportar un contexto más visual de los puntos más relevantes con su icono asociado.
 
