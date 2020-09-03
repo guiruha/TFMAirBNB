@@ -1,7 +1,7 @@
 # Análisis y predicción de precios de alojamientos en AIRBNB
 
 <p align="center">
-  <img src="/imagenes/LogoAirBNB.png" />
+  <img src="/imagenes/logoAirBNB.jpeg" />
 </p>
 
 ## TFM / Máster en Data Science / KSCHOOL
@@ -48,7 +48,7 @@ Los datos trabajados en este proyecto de TFM provienen de diversas fuentes, trat
 
 ## Dataset Principal
 
-El dataset principal consta de csv y geojson obtenidos desde la web de [Inside AirBNB](http://insideairbnb.com/get-the-data.html), organización que se encarga de hacer web scrapping de todos los datos accesibles en la página web de AirBNB de forma mensual. Concretamente, los archivos utilizados constan de dos csv, **listings.csv** y **calendar.csv**, y un geojson correspondiente a **neighbourhood.geojson**, todos ellos presentados a continuación.
+El dataset principal consta de varios csv y un geojson obtenidos desde la web de [Inside AirBNB](http://insideairbnb.com/get-the-data.html), organización que se encarga de hacer web scrapping de todos los datos accesibles en la página web de AirBNB de forma mensual. Concretamente, los archivos utilizados constan de dos tipos de csv, **listings.csv** y **calendar.csv**, y un geojson correspondiente a **neighbourhood.geojson**, todos ellos presentados a continuación.
 
 ### Listings.csv
 
@@ -64,7 +64,7 @@ Es el archivo más importante de los tres. En este csv encontramos toda la infor
 | neighbourhood_group_cleansed | Vecindario/distrito del listing |
 | property_type | Tipo de propiedad, generalizada a cuatro categorías (Apartment, House, Hotel y Other|
 | room_type | Tipo de habitación (Private, Hotel, Shared Room o bien Entire Home) |
-| ammenities | Diccionario de servicios/comodidades adicionales que ofrece el alojamiento |
+| ammenities | Lista de servicios/comodidades adicionales que ofrece el alojamiento |
 | price | Variable a predecir y (en su mayoría) precio por noche del listing |
 | security_deposit | Cantidad de depósito obligatoria a abonar durante la estancia (en caso de ser necesario) |
 | cleaning_fee | Tasa fija de limpieza |
@@ -85,7 +85,7 @@ Es el archivo más importante de los tres. En este csv encontramos toda la infor
 
 ### Calendar.csv
 
-El dataset de calendar nos proporciona información diaria sobre cómo se comportan los precios y la disponibilidad de los listings. A pesar de que encontramos el comportamiento de los precios a nivel diario, la capacidad de almacenamiento y procesamiento nos ha llevado a utilizar medias mensuales de cada listing para reducir el tamaño de los datos. Tan sólo nos centraremos en cuatro columnas relevantes de este csv.
+El dataset de calendar nos proporciona información diaria sobre cómo se comportan los precios y la disponibilidad de los listings (de los meses de Abril y Octubre también). A pesar de que encontramos el comportamiento de los precios a nivel diario, la capacidad de almacenamiento y procesamiento nos ha llevado a utilizar medias mensuales de cada listing para reducir el tamaño de los datos. Tan sólo nos centraremos en cuatro columnas relevantes de este csv.
 
 | Columna       | Descripción          
 | ------------- |------------- | 
@@ -134,7 +134,7 @@ En caso de querer ejecutar los scripts o los notebooks es necesario instalar los
 
 **numpy**, **scipy**, **pandas**, **scikit-learn**, **tensorflow**, **keras**, **geopandas**, **shapely**, **contextily**, **matplotlib**, **seaborn**, **statsmodels**, **datetime**. **keras-tuner**, **xgboost**, **catboost**, **shap**, **GpyOpt**, **livelossplot**.
 
-En caso de no tener todos instalados recomendamos crear un environment a partir del archivo **TFMenvironment.yml** con el siguiente código:
+A fin de no deber instalar todos uno a uno recomendamos crear un environment a partir del archivo **TFMenvironment.yml** con el siguiente código:
 
 ```shell
 $ conda env create -f TFMenvironment.yml
@@ -144,9 +144,12 @@ $ conda env create -f TFMenvironment.yml
 
 ##  Limpieza
 
-[LINK A COLAB]
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/guiruha/TFMAirBNB/blob/master/1_Limpieza.ipynb)
 
-**INPUTS:** Listings.csv, Calendar.csv **OUTPUTS:** DatosLimpios.csv
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/guiruha/TFMAirBNB/blob/master/1_LimpiezaPrueba.ipynb)
+
+
+**INPUTS:** Listings.csv, Calendar.csv **OUTPUTS:** DatosLimpios.csv, Localizaciones.csv
 
 La primera Fase de este proyecto consiste en la limpieza y análisis superficial de los datasets base para la evolución del TFM, listings.csv y calendar.csv. 
 
@@ -186,7 +189,7 @@ df['cancellation_policy'].value_counts()
 
 #### **Variables string de precios**
 
-Todas las columnas del dataset cuyo valor es el de un precio se presentan con un símbolo de dólar al principio y con comas a partir de los millares **E.G. $1,200.00**. La limpieza de estas variables ha sido abordada a través del method chaining de varias funciones **replace** ,para la eliminación de los símbolos anteriormente mencionados, y la transformación de tipo string a tipo float (en las columnas que presentaban Null debido a su naturaleza, E.G. existen listings sin tarifa de limpieza y en vez de ser codificado con 0 se presenta como un Null, se ha imputado valores de 0€).
+Todas las columnas del dataset cuyo valor es el de un precio se presentan con un símbolo de dólar al principio y con comas a partir de los millares **E.G. $1,200.00**. La limpieza de estas variables ha sido abordada a través del method chaining de varias funciones **replace**, para la eliminación de los símbolos anteriormente mencionados, y la transformación de tipo string a tipo float (en las columnas que presentaban Null debido a su naturaleza, E.G. existen listings sin tarifa de limpieza y en vez de ser codificado con 0 se presenta como un Null, se ha imputado valores de 0€).
 
 ```python
 df[['price', 'security_deposit', 'cleaning_fee', 'extra_people']].sample(5)
@@ -206,6 +209,18 @@ df[['price', 'security_deposit', 'cleaning_fee', 'extra_people']].sample(5)
 ```
 
 ![](/imagenes/ColPrice2.png?raw=true)
+
+#### **Discretización de variables**
+
+El tratamiento de los valores continuos, como la columna **review_scores_rating** consitió discretizarla, concretamente en cuatro categorias, **Excellent** en el caso de que la score sea mayor a 90, **Good** en el caso de que esté entre 90 y 70, **NotGood** para las restantes, así como **Unavailable** en caso de no estar disponible.
+
+```python
+
+df['review_scores_rating'] = df['review_scores_rating'].apply(lambda x: 'Excellent' if x >= 90 else \
+                                                              ('Good' if x < 90 and x > 70 else ('NotGood' if x > 0 else 'Unavailable')))
+```
+
+![](/imagenes/Discretizacion.png?raw=true)
 
 #### **Caso Especial: Amenities**
 
