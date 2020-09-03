@@ -872,41 +872,78 @@ Finalizado el proceso de limpieza, exploración y modelización, la visualizaci�
 
 Con el objetivo de acercar a los usuarios a una interfaz interactiva en la que puedan comprobar por cuenta propia los resultados presentados, se realizó una serie de **Dashboards** en **Tableau**. Con él pretendemos que el usuario tenga la posibilidad de contextualizar los datos que han sido incorporados a lo largo de todo el proyecto, e introducidos en los modelos presentados en la fase de modelado.
 
+En caso de que se quiera interactuar por el dashboards, seran necesarios dos pasos, la de la descompresión de los datos en formato de hyper, así como la incorporación de la carpeta denominada landmarks en el repositorio local de Tableau correspondiente a los iconos usados en una parte de la visualización. Tanto los datos como la carpeta con los iconos han sido incorporados en el proyecto de GitHub.
+
 Un rápido vistazo al dashboard base nos revela una división en 3 bloques principales.
 
-![](/imagenes/PresentacionTableau.gif)
+![](/imagenes/TFMAirBNBTableau0.png?raw=true)
 
-El primero de ellos presenta los datos obtenidos de la web de Inside Airbnb. Concretamente, las variables de todos aquellos registros con influencia relevante en la predicción de los modelos: 
+**El primero de ellos** presenta los datos obtenidos de la web de Inside Airbnb. Concretamente, las variables de todos aquellos registros con influencia relevante en la predicción de los modelos: 
 
 En la parte superior, a modo de presentación podremos observar el número de pisos únicos dados de alta en AirBNB durante los años 2017 a 2020, así como la evolución de los precios medios a lo largo del tiempo.
 
 ![](/imagenes/SuperiorTableau.gif)
 
-Bajo esta introducción, se muestra una selección de las principales características de los alojamientos, permitiéndonos esta analizar mediante filtros como cambia la evolución de precios dependiendo de distintos atributos: Tipo de propiedad, tipo de alquiler (E.G. toda la propiedad o solo una habitación), y otros aspectos relevantes que durante el proyecto han resultado ser relevantes en las predicciones, además de ser las primeras a ser consultadas por los usuarios cuando navegas por webs como **AirBNB**, como el número de habitaciones, camas o baños.
+Bajo esta introducción, se muestra una selección de las principales características de los alojamientos, permitiéndonos analizar mediante filtros como cambia la evolución de precios dependiendo de distintos atributos: Tipo de propiedad, tipo de alquiler (E.G. toda la propiedad o solo una habitación), y otros aspectos relevantes que durante el proyecto han resultado ser relevantes en las predicciones, además de ser las primeras a ser consultadas por los usuarios cuando navegas por webs como **AirBNB**, como el número de habitaciones, camas o baños.
 
-Junto a esta hallamos un mapa sensible también a los filtros anteriormente nombrados, cuya influencia puede ser analizada desde dos vertientes, un mapa de distribución de puntos **uno a uno**, donde se puede filtrar por barrio y otras variables continuas, o un mapa de densidad en forma de **colmena**, con el que visualizar los puntos "calientes" o de mayor densidad de cada una de las composiciones elegidas por el usuario final.
+Junto a esta hallamos un mapa sensible también a los filtros anteriormente nombrados, cuya influencia puede ser analizada desde dos vertientes, un mapa de distribución de puntos **uno a uno**, donde se puede filtrar por barrio y otras variables continuas, o un mapa de densidad en forma de **colmena**, con el que visualizar los puntos "calientes" o de mayor densidad de cada una de las composiciones elegidas por el usuario final. En la parte superior de los mapas, y tal como se muestra en el gif a continuación, encontramos un botón que nos permite cambiar la visualización en función del mapa que queramos analizar.
 
 ![](/imagenes/MapaTableau.gif)
 
 ![](/imagenes/TFMAirBNBTableau1.png?raw=true)
 ![](/imagenes/TFMAirBNBTableau1b.png?raw=true)
 
-Un segundo bloque sirve para complementar las características principales del alojamiento. En ella encontramos todas a quellas variable que aportan un valor añadido al precio de los alojamientos, como son los servicios que ofrecen, desde la existencia de **Aire Acondicionado** en el alojamiento hasta si se **Permite Fumar**, el tipo de póliza de cancelación ofrecida así como el mínimo de noches necesarias para poder alquilar. Una vez más, estas tres alternativas también son utilizadas como filtro para la evolución de precios y mapas.
-
+**Un segundo bloque** sirve para complementar las características principales del alojamiento. En ella encontramos todas aquellas variables que aportan un valor añadido al precio de los alojamientos, como son los servicios que ofrecen, desde la existencia de **Aire Acondicionado** hasta si se **Permite Fumar**, el tipo de póliza de cancelación ofrecida así como el mínimo de noches necesarias para poder alquilar. Una vez más, estas tres alternativas también son utilizadas como filtro para la evolución de precios y mapas tal y como se muestra en el gif que podemos ver a continuación.
 
 ![](/imagenes/Bloque2Tableau.gif)
 
+Destacar por último de este segundo bloque, que la visualización del mapa depende de un selector en la parte superior en la que poder escoger tres variables diferentes, cleaning fee, extra people o number of reviews, para su análisis.
+
 ![](/imagenes/TFMAirBNBTableau2.png?raw=true)
 
-Finalmente, en la última parte del Dashboard base, encontramos una visualización que pretende mostrar el tipo de datos obtenidos a raíz del procesado de datasets externos, los cuáles nos han permitido nutrir de información adicional los modelos de predicción.
+Finalmente, **en la tercera parte del Dashboard base**, encontramos una visualización que pretende mostrar el tipo de datos obtenidos a raíz del procesado de datasets externos, los cuáles nos han permitido nutrir de información adicional los modelos de predicción.
 
-Específicamente nos topamos con dos mapas, uno a raíz de datos extraídos de Open Data Barcelona a nivel de transportes y servicios, mostramos los servicios y oferta turística alrededor de cada uno de los alojamientos con un density map. Un parámetro en la parte superior del mapa nos permite cambiar la visualización en base a lo que queramos visualizar y analizar.
+Específicamente podremos navegar por dos mapas, uno a raíz de datos extraídos de Open Data Barcelona a nivel de transportes y servicios, donde mostramos los servicios y oferta turística alrededor de cada uno de los alojamientos con un density map. Un parámetro en la parte superior del mapa nos permite cambiar la visualización en base al transporte o servicio que queramos visualizar y analizar.
 
 ![](/imagenes/Mapa3Tableau.gif)
 
 Por otro lado encontramos el mapa donde podemos ver los landmarks de Barcelona. Esta visualización ha sido posible gracias al dataset de fotografías geolocalizadas de una API de Flickr y la aplicación del modelo de aprendizaje no supervisado de clusterización. El objetivo de este mapa es más ilustrativo y lo que pretende es aportar un contexto más visual de los puntos más relevantes con su icono asociado.
 
 ![](/imagenes/TFMAirBNBTableau3.png?raw=true)
+
+
+La contextualización visual en el dashboard base de los diferentes datasets utilizados para el abordaje del objetivo principal del proyecto, el de desarrollar un modelo predictivo de los precios a través del uso de machine learning y deep learning, nos lleva a **una segunda parte ilustrativa del trabajo realizado, la visualización de los resultados obtenidos de los diferentes modelos de predicción trabajados durante la parte de modelado.**
+
+A nivel de navegación, esta segunda parte tiene una primera parte común a las 4 visualizaciones que nos permite interacturar con los resultados obtenidos después de la fase de modealdo. En todas ellas encontraremos:
+
+- 4 botones que nos permiten navegar por las 4 visualizaciones donde se muestran los resultados de los diferentes modelos trabajados en la fase de modelado.
+- Dos selectores, uno que nos permitirá seleccionar el id de un alojamiento concreto si queremos ver los resultados de los modelos de forma individual o por un grupo concreto de identificadores, y el otro que nos da la opción de seleccionar si queremos visualizar los 4 años de histórico de datos o uno específico.
+
+Empezamos por la primera imagen que podeis ver a continuación, la primera visualización en la que el primer gráfico que encontramos es el resultado de la predicción de los 4 modelos de forma comparativa.
+
+Un segundo gráfico nos muestra un análisis más detallado de las diferencias entre predicción y valor real. La visualización muestra la relación entre el precio real (eje vertical) y el precio pronosticado (escogido en el primer parámetro superior del gráfico y eje horizontal) y, la leyenda de colores y tamaño de los puntos muestra la diferencia entre el precio predicho por el modelo seleccionado (en el segundo selector superior del gráfico) y el precio real.
+
+Una visualización similar a la ya comentada en la fase de modelado pero que hemos considerado interesante incorporar en el dashboard para que el usuario pueda interactuar y así poder entender las diferencias entre las predicciones de los diferentes modelos.
+
+![](/imagenes/TFMAirBNBTableau4.png?raw=true)
+
+Una segunda visualización nos muestra los resultados del modelo de la Regresión lineal, la que hemos considerado nuestro modelo de baseline.
+
+La estructura es muy similar a lo que ya hemos comentado anteriormente, lo que cambia es la visualización del primer gráfico en el que se mantienen únicamente los resultados del precio real y de la predicción de los precios obtenidos de la Regressión Lineal, y por otro lado, de cara a poder trasladar una mejor explicación del análisis obtenido del modelo, hemos incorporado el resultado de los coeficientes de las variables donde se puden observar cuáles han determindado en mayor y menor medidad la variabilidad de la predicción del precio.
+
+![](/imagenes/TFMAirBNBTableau5.png?raw=true)
+
+Llegamos a la tercera pestaña de visualización de esta segunda parte en la que los datos que se muestran son los resultados obtenidos del modelo de XGBoost. De la misma forma que anteriormente, en el primer gráfico se puede observar la comparativa entre el precio real y los obtenidos de la predicción con el modelo de XGBoost y por otro lado, con el objetivo de asegurar la interpretabilidad del algoritmo, se pueden visualizar los valores Shap (Shapley Additive exPlanations), es decir, los valores medios de la contribución marginal a través de todas las permutaciones posibles, de cara a mostrar cuanto contribuye cada una de las variables.
+
+![](/imagenes/TFMAirBNBTableau6.png?raw=true)
+
+Finalmente la última visualización muestra los resultados obtenidos en el último modelo trabajado, la Artificial Neural Network. Así como en las anteriores explicaciones una vez más dejamos en el primer gráfico la comparativa entre el precio real y en este caso con los resultados de los precios predichos obtenidos por la ANN.
+
+En este caso, como no hay la opción de poder visualizar la importancia de las features en la contribución de la determinación de la predicción de los precios, podemos observar la estructura utilizada de la ANN
+
+![](/imagenes/TFMAirBNBTableau7.png?raw=true)
+
+Con todo, consideramos que es un Dashboard muy completo en el que quedan reflejadas las diferentes etapas del proyecto, en la que el usuario puede interacturar, analizar y sacar conclusiones y, que nos ayuda a comunicar de forma visual, óbviamente, todo nuestro trabajo.
 
 
 # Conclusiones y Mejoras
