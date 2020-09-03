@@ -144,9 +144,7 @@ $ conda env create -f TFMenvironment.yml
 
 ##  Limpieza
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/guiruha/TFMAirBNB/blob/master/1_Limpieza.ipynb)
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/guiruha/TFMAirBNB/blob/master/1_LimpiezaPrueba.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github.com/guiruha/TFMAirBNB/blob/master/1_LimpiezaPrueba.ipynb)
 
 
 **INPUTS:** Listings.csv, Calendar.csv **OUTPUTS:** DatosLimpios.csv, Localizaciones.csv
