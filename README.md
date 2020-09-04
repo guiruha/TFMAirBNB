@@ -21,11 +21,11 @@
 * [Desarrollo del Proyecto](https://github.com/guiruha/TFMAirBNB#desarrollo-del-proyecto)
 
 	- [Paquetes y Prerequisitos](https://github.com/guiruha/TFMAirBNB#paquetes-y-prerequsitos)
-	- [Limpieza](https://github.com/guiruha/TFMAirBNB#limpieza)
-	- [Exploración Parte A](https://github.com/guiruha/TFMAirBNB#exploraci%C3%B3n-parte-a)
-	- [Geoexploración](https://github.com/guiruha/TFMAirBNB#geoexploraci%C3%B3n)
-	- [Exploración Parte B](https://github.com/guiruha/TFMAirBNB#exploraci%C3%B3n-parte-b)
-	- [Modelado](https://github.com/guiruha/TFMAirBNB#modelado)
+	- [Limpieza](https://github.com/guiruha/TFMAirBNB#limpieza) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/guiruha/TFMAirBNB/blob/master/notebooks/1_Limpieza.ipynb)
+	- [Exploración Parte A](https://github.com/guiruha/TFMAirBNB#exploraci%C3%B3n-parte-a) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/guiruha/TFMAirBNB/blob/master/notebooks/2_ExploraciónGeneral.ipynb)
+	- [Geoexploración](https://github.com/guiruha/TFMAirBNB#geoexploraci%C3%B3n) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/guiruha/TFMAirBNB/blob/master/notebooks/2B_GeoExploración.ipynb)
+	- [Exploración Parte B](https://github.com/guiruha/TFMAirBNB#exploraci%C3%B3n-parte-b) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/guiruha/TFMAirBNB/blob/master/notebooks/2_ExploraciónGeneral.ipynb)
+	- [Modelado](https://github.com/guiruha/TFMAirBNB#modelado) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/guiruha/TFMAirBNB/blob/master/notebooks/3_Modelado.ipynb)
 
 * [Visualización y Dashboard](https://github.com/guiruha/TFMAirBNB#visualizaci%C3%B3n-y-dashboard)
 
@@ -890,7 +890,7 @@ Finalizado el proceso de limpieza, exploración y modelización, la visualizaci�
 
 Con el objetivo de acercar a los usuarios a una interfaz interactiva en la que puedan comprobar por cuenta propia los resultados presentados, se realizó una serie de **Dashboards** en **Tableau**. Con él pretendemos que el usuario tenga la posibilidad de contextualizar los datos que han sido incorporados a lo largo de todo el proyecto, e introducidos en los modelos presentados en la fase de modelado.
 
-En caso de que se quiera interactuar por el dashboards, seran necesarios dos pasos, la de la descompresión de los datos en formato de hyper, así como la incorporación de la carpeta denominada landmarks en la carpeta de **Shapes** o **Formas** del **Repositorio local de Tableau** (correspondiente a los iconos usados en una parte de la visualización). Tanto los datos como la carpeta con los iconos han sido incorporados en el proyecto de GitHub.
+En caso de que se quiera interactuar con los dashboards, será necesario la incorporación de la carpeta denominada landmarks en la carpeta de **Shapes** o **Formas** del **Repositorio local de Tableau** (correspondiente a los iconos usados en una parte de la visualización). Tanto los datos como la carpeta con los iconos han sido incorporados en el proyecto de GitHub.
 
 Un rápido vistazo al Dashboard principal nos revela una división en 3 bloques generales.
 
@@ -914,10 +914,10 @@ Junto a esta hallamos un mapa sensible también a los filtros anteriormente nomb
 
 ![](/imagenes/Bloque2Tableau.gif)
 
-Por último, Cabe destacar un último añadido en este segundo bloque. Un tercer mapa depende de un selector en la parte superior en la que poder escoger tres variables diferentes, cleaning fee, extra people o number of reviews, donde poder ver más allá del mapa principal donde se sitúan los alojamientos con mayores tasas de limpieza o huéspedes añadidos, así como número de reviews (variables importantes para XGBoost ajustado en Fases previas).
+Por último, cabe destacar un último añadido en este segundo bloque. Un tercer mapa depende de un selector en la parte superior en la que poder escoger tres variables diferentes, cleaning fee, extra people o number of reviews, donde poder ver más allá del mapa principal donde se sitúan los alojamientos con mayores tasas de limpieza o huéspedes añadidos, así como número de reviews (variables importantes para XGBoost ajustado en Fases previas).
 
-[REVISAR AÚN]
-![](/imagenes/TFMAirBNBTableau2.png?raw=true)
+
+![](/imagenes/Mapa2Tableau.gif)
 
 Finalmente, **en el último bloque del Dashboard Principal**, hallamos una visualización que pretende mostrar el tipo de datos obtenidos a raíz del procesado de datasets externos, los cuáles nos han permitido nutrir de información adicional los modelos de predicción.
 
@@ -927,8 +927,8 @@ Específicamente podremos navegar por dos mapas, uno a raíz de datos extraídos
 
 En la base de toda la presentación encontramos el mapa donde podemos ver los landmarks de Barcelona. Esta visualización ha sido posible gracias al dataset de fotografías geolocalizadas de una API de Flickr y la aplicación del modelo de aprendizaje no supervisado de clusterización. El objetivo de este mapa es más ilustrativo y lo que pretende es aportar un contexto más visual a la [Fase de Geoexploración](https://github.com/guiruha/TFMAirBNB#geoexploraci%C3%B3n).
 
-[REVISAR AÚN]
-![](/imagenes/TFMAirBNBTableau3.png?raw=true)
+
+![](/imagenes/Mapa4.png?raw=true)
 
 Más allá de ofrecer una contextualización visual de los diferentes datasets utilizados y la oportunidad de llegar por cuenta propia a las misma conclusiones en el Dashboard Principal, la importancia de comunicar el desenlace de la fase de modelado nos lleva a **una segunda parte ilustrativa del trabajo realizado, la visualización de los resultados obtenidos de los diferentes modelos de predicción.**
 
@@ -937,36 +937,32 @@ A nivel de navegación, esta segunda parte tiene una primera parte común a las 
 - 4 botones que nos permiten navegar por las 4 visualizaciones donde se muestran los resultados de los diferentes modelos trabajados en la fase de modelado.
 - Dos selectores, uno que nos permitirá seleccionar el id de un alojamiento concreto si queremos ver los resultados de los modelos de forma individual o por un grupo concreto de identificadores, y el otro que nos da la opción de seleccionar si queremos visualizar los 4 años de histórico de datos o uno específico.
 
-[AÑADIR ÚLTIMO GIF]
+![](/imagenes/PrediccionesTableau.gif)
 
 Un primer vistazo a este segundo Dashboard nos lleva a un primer gráfico en el que encontramos las predicciones de los 4 modelos a modo de comparativa.
 
 Bajo este, un segundo gráfico nos revela un análisis más detallado de las diferencias entre predicción y valor real. La visualización muestra la relación entre el precio real (eje vertical) y el precio pronosticado por el modelo escogido en el primer parámetro superior del gráfico (eje horizontal). Además la leyenda de colores y tamaño de los puntos muestra la diferencia entre el precio predicho por el segundo modelo seleccionado (en el segundo selector superior del gráfico) y el precio real.
 
-[AÑADIR ÚLTIMO GIF]
+![](/imagenes/PrediccionesTableau2.gif)
 
 Una visualización similar a la ya comentada en la parte final del modelado pero que hemos considerado interesante incorporar en el dashboard para que el usuario pueda interactuar y así poder entender las diferencias entre las predicciones de los diferentes modelos.
 
-[REVISAR ESTO]
-![](/imagenes/TFMAirBNBTableau4.png?raw=true)
-
-Haciendo click en las pestañas superiores accedemos a la segunda parte del nuevo Dashboard, donde se presentan los resultados del modelo de la Regresión Lineal, el que hemos considerado nuestro modelo de baseline.
+Haciendo click en las pestañas superiores accedemos a las otras secciones del nuevo Dashboard. En la segunda de ellas se presentan los resultados del modelo de la Regresión Lineal, el que hemos considerado nuestro modelo de baseline.
 
 Dentro de esta, el gráfico superior aisla las predicciones de la Regresión Lineal para poder facilitar así su comparación con los Valores reales. Más allá de este filtrado, el funcionamiento de dicha visualización se mantiene igual que en la primera parte del Dashboard.
 
-Por otro lado, a fin de que el usuario final pueda comprobar de primera mano las conclusiones de los modelos y, de cara a trasladar una mejro explicación del resultado obtenido por el modelo, se grafican los coeficeintes de cada uno de los features utilizados en el ajuste, puediendo comprobar así cuales han sido más influyentes en el desarrollo de las predicciones, tanto positiva como negativamente.
+Por otro lado, a fin de que el usuario final pueda comprobar de primera mano las conclusiones de los modelos y, de cara a trasladar una mejro explicación del resultado obtenido por el modelo, se grafican los coeficientes de cada uno de los features utilizados en el ajuste, puediendo comprobar así cuales han sido más influyentes en el desarrollo de las predicciones, tanto positiva como negativamente.
 
-[HASTA AQUÍ REVISADO]
 
 ![](/imagenes/TFMAirBNBTableau5.png?raw=true)
 
-Llegamos a la tercera pestaña de visualización de esta segunda parte en la que los datos que se muestran son los resultados obtenidos del modelo de XGBoost. De la misma forma que anteriormente, en el primer gráfico se puede observar la comparativa entre el precio real y los obtenidos de la predicción con el modelo de XGBoost y por otro lado, con el objetivo de asegurar la interpretabilidad del algoritmo, se pueden visualizar los valores Shap (Shapley Additive exPlanations), es decir, los valores medios de la contribución marginal a través de todas las permutaciones posibles, de cara a mostrar cuanto contribuye cada una de las variables.
+La tercera pestaña de visualización de esta segunda parte muestran los resultados obtenidos del modelo de XGBoost. De la misma forma que con la sección anterior, en el primer gráfico se puede observar la comparativa entre el precio real y el pronosticado por el modelo de XGBoost y, por otro lado, con el objetivo de asegurar la interpretabilidad del algoritmo, se pueden visualizar los valores Shap (Shapley Additive exPlanations), es decir, los valores medios de la contribución marginal a través de todas las permutaciones posibles, de cara a mostrar cuanto contribuye cada una de las variables.
 
 ![](/imagenes/TFMAirBNBTableau6.png?raw=true)
 
-Finalmente la última visualización muestra los resultados obtenidos en el último modelo trabajado, la Artificial Neural Network. Así como en las anteriores explicaciones una vez más dejamos en el primer gráfico la comparativa entre el precio real y en este caso con los resultados de los precios predichos obtenidos por la ANN.
+Finalmente, la última visualización muestra los resultados obtenidos en el último modelo trabajado, la Red Neuronal Artificial (ANN). Una última vez el primer gráfico muestra la comparativa entre el precio real y los precios resultantes del ajuste de la Red Neuronal.
 
-En este caso, como no hay la opción de poder visualizar la importancia de las features en la contribución de la determinación de la predicción de los precios, podemos observar la estructura utilizada de la ANN
+Sin embargo, en este caso, como no tenemos la opción de visualizar la importancia de las features (dada la mayor complejidad de la Red Nueronal), se ha optado por mostrar la arquitectura y las funciones de activación utilizadas en este modelo.
 
 ![](/imagenes/TFMAirBNBTableau7.png?raw=true)
 
@@ -977,9 +973,9 @@ Con todo, consideramos que es un Dashboard muy completo en el que quedan refleja
 
 Tras un largo proceso de limpieza, análisis y modelado de los datos hemos logrado un modelo capaz de predecir prácticamente un **97%** de la varianza de los precios con apenas un **0.07%** de **Mean Absolute Error**. El **XGBoost** se ha mostrado imbatible frente al gran alcance del campo del **Deep Learning**, lo cual demuestra por qué sigue siendo el rey de las competiciones de Kaggle a pesar de la existencia de alternativas más modernas y a priori más "potentes".
 
-Dado los resultados de nuestro proyecto nos encontramos muy poco margen de mejora dados los datos que estamos trabajando actualmente, dentro del cuál costaría mucho esfuerzo superar por pocas décimas el Coeficiente de Determinación ya obtenido. No obstante, podemos plantear una serie de mejoras que aporten valor añadido:
+Dado los resultados de nuestro proyecto nos encontramos muy poco margen de mejora con los datos que estamos trabajando actualmente, dentro del cuál costaría mucho esfuerzo superar por pocas décimas el Coeficiente de Determinación ya obtenido. No obstante, podemos plantear una serie de mejoras que aporten valor añadido:
 
-- Mejorar la captura de datos de entrada desde el principio. A pesar de que la web Inside AirBNB realiza un trabajo excepcional de *Web Scrapping*, a menudo nos hemos encontrado con precios mal registrado (a pesar de haber realizado labores de limpieza con anterioridad). Realizar Web Scrapping de primera mano nos aseguraría unos registros más fiables (supondría "scrapear" datos cada mes para tener datos mensuales sobre el comportamiento de precios).
+- Mejorar la captura de datos de entrada desde el principio. A pesar de que la web Inside AirBNB realiza un trabajo excepcional de *Web Scrapping*, a menudo nos hemos encontrado con precios mal registrados (incluso después de haber realizado labores de limpieza con anterioridad). Realizar Web Scrapping de primera mano nos aseguraría unos registros más fiables (supondría "scrapear" datos cada mes para tener datos mensuales sobre el comportamiento de precios).
 
 - No se ha trabajado con **NLP** en pro de concentrar los esfuerzos en las variables **geoespaciales**. Dado que el dataset original cuenta con una serie de columnas relacionadas con descripciones, situación y normas del alojamiento, la búsqueda de palabras clave, aplicación de **Redes Neuronales** para análisis de sentimientos o la simple creación de features como la longitud de la descripción del listing puede aportarnos variables de influencia para futuras predicciones. Además, la disponibilidad de un dataset de **reviews** nos permitiría desarrollar un modelo en el que explicar como las opiniones de los usuarios pueden influenciar la evolución del precio de un alojamiento.
 

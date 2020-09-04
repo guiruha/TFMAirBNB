@@ -3,7 +3,7 @@
 """
 Created on Sat Jul 18 19:11:17 2020
 
-@author: guillem
+@author: Guillem Rochina y Helena Saigí
 """
 
 

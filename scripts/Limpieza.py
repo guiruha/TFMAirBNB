@@ -191,8 +191,6 @@ print('\nCalculamos la media mensual del precio')
 
 cal['price'] = cal['price'].str.replace('$', '').str.replace(',', '').astype('float')
 
-cal[cal['price']>9500]['year'].value_counts()
-
 cal = cal[cal['price']<9500]
 
 cal = cal.groupby(['month_year', 'year', 'month', 'listing_id'])['price'].mean().reset_index()
