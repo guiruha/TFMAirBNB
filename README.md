@@ -4,8 +4,10 @@
 
 # Análisis y predicción de precios de alojamientos en AIRBNB
 ## TFM / Máster en Data Science / KSCHOOL
-#### **Guillem Rochina Aguas y Helena Saigí Aguas**
+#### Autores: **Guillem Rochina Aguas y Helena Saigí Aguas**
 #### 04/09/2020
+
+**[Para el seguimiento del TFM se debe hacer uso de los Notebooks, o bien de Google Colab, siendo esta última la opción más viable si se quiere ejecutar código (algunas partes son muy costosas y requieren hardware potente), los scripts tan sólo han sido utilizados para agilizar la creación de datasets en cada etapa del proyecto]**
 
 # Índice
 
@@ -566,6 +568,14 @@ A pesar de la caída del 5% respecto al R², si llevamos a cabo una validación 
 ```python
 
 def PCA_cross_validation(model, X, y, cv = 5, scoring = 'r2', standarization = True):
+
+  """
+  Taking a model, X and y as an input, it performs a KFold cross-validation where
+  distance features undergo a PCA decomposition process before the MAE or R² calculations.
+  This process is repeated the number of times specified in the "cv" hyperparameter for the
+  sake of avoiding data leakeage during the cross-validation process 
+  """
+  
   kf = KFold(n_splits=cv, random_state=1997, shuffle=True)
   cvscore = []
   for train_index, test_index in kf.split(X):
@@ -937,13 +947,13 @@ A nivel de navegación, esta segunda parte tiene una primera parte común a las 
 - 4 botones que nos permiten navegar por las 4 visualizaciones donde se muestran los resultados de los diferentes modelos trabajados en la fase de modelado.
 - Dos selectores, uno que nos permitirá seleccionar el id de un alojamiento concreto si queremos ver los resultados de los modelos de forma individual o por un grupo concreto de identificadores, y el otro que nos da la opción de seleccionar si queremos visualizar los 4 años de histórico de datos o uno específico.
 
-![](/imagenes/PrediccionesTableau.gif)
+![](/imagenes/PrediccionesTableau2.gif)
 
 Un primer vistazo a este segundo Dashboard nos lleva a un primer gráfico en el que encontramos las predicciones de los 4 modelos a modo de comparativa.
 
 Bajo este, un segundo gráfico nos revela un análisis más detallado de las diferencias entre predicción y valor real. La visualización muestra la relación entre el precio real (eje vertical) y el precio pronosticado por el modelo escogido en el primer parámetro superior del gráfico (eje horizontal). Además la leyenda de colores y tamaño de los puntos muestra la diferencia entre el precio predicho por el segundo modelo seleccionado (en el segundo selector superior del gráfico) y el precio real.
 
-![](/imagenes/PrediccionesTableau2.gif)
+![](/imagenes/PrediccionesTableau.gif)
 
 Una visualización similar a la ya comentada en la parte final del modelado pero que hemos considerado interesante incorporar en el dashboard para que el usuario pueda interactuar y así poder entender las diferencias entre las predicciones de los diferentes modelos.
 
