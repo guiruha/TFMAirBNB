@@ -39,7 +39,7 @@ El sitio web AirBNB permite a propietarios de apartamentos convertirse en 'hosts
 
 ![](/imagenes/AirBNBweb.png?raw=true)
 
-Es por ello que el objetivo principal de este proyecto de TFM es el desarrollo de un modelo predictivo de precios a través del uso de machine learning/deep learning, así como de data engineering para la limpieza y exploración de datos tanto de la web de AirBNB como de datos públicos de la ciudad de Barcelona.
+Es por ello que el objetivo principal de este proyecto de TFM es el desarrollo de un modelo predictivo de precios a través del uso de machine learning/deep learning, así como de feature engineering para la limpieza y exploración de datos tanto de la web de AirBNB como de datos públicos de la ciudad de Barcelona.
 
 De forma alternativa, otro de los usos adicionales a este análisis, sobretodo para usuarios no propietarios, es el de 'buscador de chollos', que permita a usuarios interesados en alquilar habitaciones en la ciudad de Barcelona acceder a 'listings' que a priori deberían tener unos precios más elevados debido a sus características y predicciones por parte del modelo.
 
